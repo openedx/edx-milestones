@@ -11,7 +11,7 @@ from .models import Milestone, CourseMilestone
 class MilestoneManager(object):
 
     @classmethod
-    def add_prerequisite_course_to_course(course, prerequisite_course, milestone=None):
+    def add_prerequisite_course_to_course(course_key, prerequisite_course_key, milestone=None):
         """
         Models the Pre-Requisite Course concept as single Milestone related to a pair of CourseMilestones
         1) Pre-Requisite Course fulfills Milestone
@@ -23,21 +23,21 @@ class MilestoneManager(object):
             except Milestone.DoesNotExist:
                 milestone = Milestone.objects.create(namespace=milestone.namespace, description=milestone.description)
         else:
-            namespace = '{}'.format(prequisite_course.id)
-            description = 'Auto-generated Course Completion Milestone for {}'.format(prerequisite_course.id)
+            namespace = '{}'.format(prequisite_course_key)
+            description = 'Auto-generated Course Completion Milestone for {}'.format(prerequisite_course_key)
             milestone = Milestone.objects.create(namespace=namespace, description=description)
 
         # Create the milestone links now that we have a milestone
         requires_mrt = MilestoneRelationshipType.objects.get_or_create(name='REQUIRES')
         CourseMilestone.objects.get_or_create(
-            course_id=unicode(course.id),
+            course_id=unicode(course_key),
             milestone=milestone,
             milestone_relationship_type=requires_mrt,
         )
 
         fulfills_mrt = MilestoneRelationshipType.objects.get_or_create(name='FULFILLS')
         CourseMilestone.objects.get_or_create(
-            course_id=unicode(prerequisite_course.id),
+            course_id=unicode(prerequisite_course_key),
             milestone=milestone,
             milestone_relationship_type=fulfills_mrt,
         )

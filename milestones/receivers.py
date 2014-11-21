@@ -1,5 +1,9 @@
 """
-Signal handlers supporting various milestones-related use cases.
+Receivers are listeners connected to the Django pub/sub signal
+pipeline.  When they observe a signal they run the decorated operation.
+
+In this particular application, the receivers simply hand-off to the
+orchestration layer, which manages the application's workflows.
 """
 from django.dispatch import receiver
 

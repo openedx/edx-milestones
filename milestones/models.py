@@ -1,12 +1,12 @@
 """
 Database ORM models managed by this Django app
-Please do not integrate directly with these models
+Please do not integrate directly with these models!!!  This app currently
+offers two APIs -- api.py for direct Python integration and receivers.py,
+which leverages Django's signal framework.
 """
 
 from django.db import models
 from model_utils.models import TimeStampedModel
-
-from
 
 
 class Milestone(TimeStampedModel):
