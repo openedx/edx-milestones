@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = milestones
+omit =
+    **/__init__.py
+    **/migrations/*

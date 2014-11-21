@@ -1,4 +1,35 @@
-edx-milestones
-==============
+edx-milestones [![Build Status](https://travis-ci.org/edx/edx-milestones.svg?branch=master)](https://travis-ci.org/edx/edx-milestones) [![Coverage Status](https://coveralls.io/repos/edx/edx-milestones/badge.png?branch=master)](https://coveralls.io/r/edx/edx-milestones?branch=master)
+===================
 
-Temporary home for edx-milestones development
+`milestones` is a Django application used for establishing significant Course and/or Student events in the Open edX platform.
+
+Usage
+-----
+
+Testing
+-------
+
+        $ ./manage.py test
+
+
+How to Contribute
+-----------------
+Contributions are very welcome, but please note that edx-milestones is currently an
+early stage work-in-progress and is changing frequently at this time.
+
+See our
+[CONTRIBUTING](https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst)
+file for more information -- it also contains guidelines for how to maintain
+high code quality, which will make your contribution more likely to be accepted.
+
+
+Reporting Security Issues
+-------------------------
+Please do not report security issues in public. Please email security@edx.org.
+
+
+Mailing List and IRC Channel
+----------------------------
+
+You can discuss this code on the [edx-code Google Group](https://groups.google.com/forum/#!forum/edx-code) or in the
+`edx-code` IRC channel on Freenode.
