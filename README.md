@@ -6,10 +6,23 @@ edx-milestones [![Build Status](https://travis-ci.org/edx/edx-milestones.svg?bra
 Usage
 -----
 
+
 Testing
 -------
 
-        $ ./manage.py test
+        $ ./run_tests
+
+
+Platform Integration
+---------------------
+# Add desired commit hash from github code repository
+    ## edx-platform/requirements/github.txt
+    ## "Our libraries" section
+# Add 'milestones' to the list of installed apps in common.py
+    ## Feature flag conventions are preferred
+# In edx-platform devstack
+    ## pip install -r requirements
+    ## paver test_system -s lms
 
 
 How to Contribute

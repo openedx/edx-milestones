@@ -10,10 +10,12 @@ from django.dispatch import receiver
 
 from .manager import MilestoneManager
 
-if settings.DEBUG:
-    from tests.mock_signals import course_deleted, course_prerequisite_course_added
+if not settings.DEBUG:
+    import util.signals as signals
+else:
+    import tests.mock_signals as signals
 
-@receiver(course_deleted)
+@receiver(signals.course_deleted)
 def on_course_deleted(sender, signal, **kwargs):
     """
     Listens for a 'course_deleted' signal and when observed
@@ -22,7 +24,7 @@ def on_course_deleted(sender, signal, **kwargs):
     MilestoneManager.delete_course_references(**kwargs)
 
 
-@receiver(course_prerequisite_course_added)
+@receiver(signals.course_prerequisite_course_added)
 def on_course_prerequisite_course_added(sender, signal, **kwargs):
     """
     Listens for a 'prerequisite_course_added' signal and when observed
