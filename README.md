@@ -15,14 +15,15 @@ Testing
 
 Platform Integration
 ---------------------
-# Add desired commit hash from github code repository
-    ## edx-platform/requirements/github.txt
-    ## "Our libraries" section
-# Add 'milestones' to the list of installed apps in common.py
-    ## Feature flag conventions are preferred
-# In edx-platform devstack
-    ## pip install -r requirements
-    ## paver test_system -s lms
+* Add desired commit hash from github code repository
+    * edx-platform/requirements/github.txt
+    * "Our libraries" section
+* Add 'milestones' to the list of installed apps:
+    * common.py
+    * Feature flag convention is preferred
+* In edx-platform devstack:
+    * pip install -r requirements
+    * paver test_system -s lms
 
 
 How to Contribute
