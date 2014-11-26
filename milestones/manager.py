@@ -7,10 +7,22 @@ to first consider the thing that fulfills the Milestone, and then
 consider the thing that requires the Milestone.
 """
 import data
-from exceptions import InvalidMilestoneException
-from validators import milestone_is_valid
+import exceptions
+import signals
+import validators
 
 class MilestoneManager(object):
+
+    @classmethod
+    def _validate_course_key(cls, course_key):
+        if not validators.course_key_is_valid(course_key):
+            raise exceptions.InvalidCourseKeyException('The CourseKey you have provided is not valid')
+
+    @classmethod
+    def _validate_milestone(cls, milestone):
+        if not validators.milestone_is_valid(milestone):
+            raise InvalidMilestoneException('The Milestone you have provided is not valid.')
+
 
     @classmethod
     def add_prerequisite_course_to_course(cls, **kwargs):
@@ -23,12 +35,16 @@ class MilestoneManager(object):
         prerequisite_course_key = kwargs.get('prerequisite_course_key')
         milestone = kwargs.get('milestone')
 
-        # If a milestone was provided, we'll need to do some checks
-        # We also create one on-the-fly if it doesn't already exist
+        # Validate the course keys
+        cls._validate_course_key(course_key)
+        cls._validate_course_key(prerequisite_course_key)
+
+        # If a milestone was provided, we'll need to check that as well
+        # We'll create a record for it on-the-fly if one doesn't already exist
         if milestone is not None:
-            if not milestone_is_valid(milestone):
-                raise InvalidMilestoneException('The Milestone entity you have provided is not valid.')
-            milestone = data.create_milestone({
+            _validate_milestone(milestone)
+            milestone = data.create_milestone(
+                {
                     'namespace': milestone.get('namespace'),
                     'description': milestone.get('description'),
                 }
@@ -38,7 +54,8 @@ class MilestoneManager(object):
         if milestone is None:
             auto_namespace = '{}'.format(prerequisite_course_key)
             auto_description = 'Auto-generated Course Completion Milestone for {}'.format(prerequisite_course_key)
-            milestone = data.create_milestone({
+            milestone = data.create_milestone(
+                {
                     'namespace': auto_namespace,
                     'description': auto_description,
                 }
@@ -46,10 +63,20 @@ class MilestoneManager(object):
 
         # Now that the milestone exists, we can link it to the specified courses
         data.create_course_milestone(course_key=course_key, milestone=milestone, relationship='requires')
+        signals.course_milestone_added.send(
+            sender=cls,
+            course_key=course_key,
+            milestone=milestone,
+            milestone_relationship_type='requires'
+        )
+
         data.create_course_milestone(course_key=prerequisite_course_key, milestone=milestone, relationship='fulfills')
-
-        # Broadcast the event to the system
-
+        signals.course_milestone_added.send(
+            sender=cls,
+            course_key=prerequisite_course_key,
+            milestone=milestone,
+            milestone_relationship_type='fulfills'
+        )
 
 
     @classmethod
