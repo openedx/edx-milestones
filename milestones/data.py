@@ -25,6 +25,29 @@ else:
     import tests.mocks.resources as remote
 
 
+def create_milestone(milestone):
+    return internal.Milestone.objects.create(
+        namespace=milestone['namespace'],
+        description=milestone['description']
+    )
+
+
+def get_milestone(milestone, create=False):
+    if milestone is None:
+        return milestone
+    try:
+        milestone = internal.Milestone.objects.get(namespace=milestone.get('namespace'))
+        return milestone
+    except internal.Milestone.DoesNotExist:
+        if create:
+            milestone = internal.Milestone.objects.create(
+                namespace=milestone.namespace,
+                description=milestone.description
+            )
+            return milestone
+        return None
+
+
 def create_course_milestone(course_key, relationship, milestone):
         mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(name=relationship)
         internal.CourseMilestone.objects.get_or_create(
@@ -52,16 +75,9 @@ def delete_course_milestone(course_key, relationship, milestone):
         return True
 
 
-def create_milestone(milestone):
-    return internal.Milestone.objects.create(
-        namespace=milestone['namespace'],
-        description=milestone['description']
-    )
-
-
 def get_course_milestones(course_key, relationship=None):
 
-    if type is None:
+    if relationship is None:
         queryset = internal.Milestone.objects.filter(coursemilestone__course_id=unicode(course_key))
     else:
         mrt = internal.MilestoneRelationshipType.objects.get(name=relationship)
@@ -76,14 +92,10 @@ def get_course_milestones(course_key, relationship=None):
     return course_milestones
 
 
-def get_milestone(milestone, create=False):
-    if milestone is not None:
-        try:
-            milestone = internal.Milestone.objects.get(namespace=milestone.get('namespace'))
-        except internal.Milestone.DoesNotExist:
-            if create:
-                milestone = internal.Milestone.objects.create(
-                    namespace=milestone.namespace,
-                    description=milestone.description
-                )
-    return milestone
+def delete_course_references(course_key):
+    internal.CourseMilestone.objects.filter(course_id=unicode(course_key)).delete()
+    print course_key
+    print internal.Milestone.objects.all()[0].__dict__
+    print len(internal.Milestone.objects.filter(namespace=unicode(course_key)))
+    internal.Milestone.objects.filter(namespace=unicode(course_key)).delete()
+    print len(internal.Milestone.objects.filter(namespace=unicode(course_key)))

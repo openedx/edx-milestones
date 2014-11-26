@@ -21,7 +21,7 @@ def on_course_deleted(sender, signal, **kwargs):
     Listens for a 'course_deleted' signal and when observed
     hands off the event data to the MilestoneManager for processing
     """
-    MilestoneManager.delete_course_references(**kwargs)
+    MilestoneManager.remove_course_references(**kwargs)
 
 
 @receiver(signals.course_prerequisite_course_added)

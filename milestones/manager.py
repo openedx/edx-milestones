@@ -2,9 +2,11 @@
 The MilestoneManager is the orchestration layer that does all of the
 internal running around so the api, receivers, and views don't have to.
 
-Helplful Hint:  When modelling Milestones, I've found that it's helpful
-to first consider the thing that fulfills the Milestone, and then
-consider the thing that requires the Milestone.
+Helplful Hint:  When modeling Milestones, I've found that it's helpful
+to first consider the process for fulfilling the Milestone, and then
+consider the process for requiring the Milestone.
+
+State-altering operations should broadast signals when complete!
 """
 import data
 import exceptions
@@ -24,6 +26,23 @@ class MilestoneManager(object):
             raise InvalidMilestoneException('The Milestone you have provided is not valid.')
 
     @classmethod
+    def get_milestone(cls, **kwargs):
+        """
+        Retrieves the specified milestone, either by id or namespace
+        """
+        print 'GET MILESTONE'
+        milestone = {}
+        if kwargs.get('id'):
+            milestone['id'] = kwargs.get('id')
+        if kwargs.get('namespace'):
+            milestone['namespace'] = kwargs.get('namespace')
+
+        cls._validate_milestone(milestone)
+        print milestone
+        return data.get_milestone(milestone)
+
+
+    @classmethod
     def add_prerequisite_course_to_course(cls, **kwargs):
         """
         Models the Pre-Requisite Course concept as single Milestone related to a pair of CourseMilestones
@@ -41,7 +60,7 @@ class MilestoneManager(object):
         # If a milestone was provided, we'll need to check that as well
         # We'll create a record for it on-the-fly if one doesn't already exist
         if milestone is not None:
-            _validate_milestone(milestone)
+            cls._validate_milestone(milestone)
             milestone = data.create_milestone(
                 {
                     'namespace': milestone.get('namespace'),
@@ -110,7 +129,6 @@ class MilestoneManager(object):
                 milestone=milestone
             )
 
-
     @classmethod
     def get_course_milestones(cls, **kwargs):
         """
@@ -121,3 +139,10 @@ class MilestoneManager(object):
         course_key = kwargs.get('course_key')
         relationship = kwargs.get('relationship')
         return data.get_course_milestones(course_key=course_key, relationship=relationship)
+
+    @classmethod
+    def remove_course_references(cls, **kwargs):
+        course_key = kwargs.get('course_key')
+        cls._validate_course_key(course_key)
+        data.delete_course_references(course_key)
+        signals.course_references_removed.send(sender=cls, course_key=course_key)

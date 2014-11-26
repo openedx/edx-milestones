@@ -19,6 +19,6 @@ def course_key_is_valid(course_key):
 def milestone_is_valid(milestone):
     if milestone is None:
         return False
-    if not len(milestone.namespace):
+    if not len(milestone.get('namespace', '')):
         return False
     return True

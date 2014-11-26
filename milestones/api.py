@@ -15,3 +15,6 @@ from manager import MilestoneManager
 
 def get_course_milestones(**kwargs):
     return MilestoneManager.get_course_milestones(**kwargs)
+
+def get_milestone(**kwargs):
+    return MilestoneManager.get_milestone(**kwargs)

@@ -9,3 +9,4 @@ from django.dispatch import Signal
 # SIGNALS BROADCAST BY THIS APP
 course_milestone_added = Signal(providing_args=["course_key", "relationship", "milestone"])
 course_milestone_removed = Signal(providing_args=["course_key", "relationship", "milestone"])
+course_references_removed = Signal(providing_args=["course_key"])
