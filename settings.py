@@ -20,8 +20,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'milestones', # Add this
-    'django_nose',  #  Add this
+
+    'milestones',
+    'django_nose',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = {}
