@@ -23,7 +23,6 @@ class MilestoneManager(object):
         if not validators.milestone_is_valid(milestone):
             raise InvalidMilestoneException('The Milestone you have provided is not valid.')
 
-
     @classmethod
     def add_prerequisite_course_to_course(cls, **kwargs):
         """
@@ -52,7 +51,7 @@ class MilestoneManager(object):
 
         # If a milestone was not provided, we'll need to create one
         if milestone is None:
-            auto_namespace = '{}'.format(prerequisite_course_key)
+            auto_namespace = unicode(prerequisite_course_key)
             auto_description = 'Auto-generated Course Completion Milestone for {}'.format(prerequisite_course_key)
             milestone = data.create_milestone(
                 {
@@ -62,28 +61,54 @@ class MilestoneManager(object):
             )
 
         # Now that the milestone exists, we can link it to the specified courses
-        data.create_course_milestone(course_key=course_key, milestone=milestone, relationship='requires')
+        data.create_course_milestone(course_key=course_key, relationship='requires', milestone=milestone)
         signals.course_milestone_added.send(
             sender=cls,
             course_key=course_key,
-            milestone=milestone,
-            milestone_relationship_type='requires'
+            relationship='requires',
+            milestone=milestone
         )
 
-        data.create_course_milestone(course_key=prerequisite_course_key, milestone=milestone, relationship='fulfills')
+        data.create_course_milestone(course_key=prerequisite_course_key, relationship='fulfills', milestone=milestone)
         signals.course_milestone_added.send(
             sender=cls,
             course_key=prerequisite_course_key,
-            milestone=milestone,
-            milestone_relationship_type='fulfills'
+            relationship='fulfills',
+            milestone=milestone
         )
-
 
     @classmethod
     def remove_prerequisite_course_from_course(cls, **kwargs):
         course_key = kwargs.get('course_key')
         prerequisite_course_key = kwargs.get('prerequisite_course_key')
+        milestone = kwargs.get('milestone')
 
+        # Validate the course keys
+        cls._validate_course_key(course_key)
+        cls._validate_course_key(prerequisite_course_key)
+
+        # If a milestone was provided, we'll need to check that as well
+        if milestone is not None:
+            _validate_milestone(milestone)
+
+        # If a milestone wash't provided, we'll need to look for a generic one
+        else:
+            milestone = {
+                'namespace': unicode(prerequisite_course_key)
+            }
+            milestone = data.get_milestone(milestone)
+
+        # Okay, if we have a milestone...
+        if milestone is not None:
+
+            # Unlink it from the specified course and broadcast to the system
+            data.delete_course_milestone(course_key=course_key, relationship='requires', milestone=milestone)
+            signals.course_milestone_removed.send(
+                sender=cls,
+                course_key=course_key,
+                relationship='requires',
+                milestone=milestone
+            )
 
 
     @classmethod
@@ -94,5 +119,5 @@ class MilestoneManager(object):
         Returns an array of dicts containing milestones
         """
         course_key = kwargs.get('course_key')
-        type = kwargs.get('type')
-        return data.get_course_milestones(course_key=course_key, type=type)
+        relationship = kwargs.get('relationship')
+        return data.get_course_milestones(course_key=course_key, relationship=relationship)

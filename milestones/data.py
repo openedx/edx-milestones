@@ -25,13 +25,31 @@ else:
     import tests.mocks.resources as remote
 
 
-def create_course_milestone(course_key, milestone, relationship):
+def create_course_milestone(course_key, relationship, milestone):
         mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(name=relationship)
         internal.CourseMilestone.objects.get_or_create(
             course_id=unicode(course_key),
             milestone=milestone,
             milestone_relationship_type=mrt,
         )
+
+
+def delete_course_milestone(course_key, relationship, milestone):
+        try:
+            mrt = internal.MilestoneRelationshipType.objects.get(name=relationship)
+        except internal.MilestoneRelationshipType.DoesNotExist:
+            # If the relationship type doesn't exist then we can't do much more
+            # But it's okay, because the data's gone and we're deleting...
+            return True
+        try:
+            internal.CourseMilestone.objects.get(
+                course_id=unicode(course_key),
+                milestone=milestone,
+                milestone_relationship_type=mrt,
+            ).delete()
+        except internal.CourseMilestone.DoesNotExist:
+            pass
+        return True
 
 
 def create_milestone(milestone):
@@ -41,12 +59,12 @@ def create_milestone(milestone):
     )
 
 
-def get_course_milestones(course_key, type=None):
+def get_course_milestones(course_key, relationship=None):
 
     if type is None:
         queryset = internal.Milestone.objects.filter(coursemilestone__course_id=unicode(course_key))
     else:
-        mrt = internal.MilestoneRelationshipType.objects.get(name=type)
+        mrt = internal.MilestoneRelationshipType.objects.get(name=relationship)
         queryset = internal.Milestone.objects.filter(
             coursemilestone__course_id=unicode(course_key),
             coursemilestone__milestone_relationship_type=mrt.id
@@ -58,11 +76,11 @@ def get_course_milestones(course_key, type=None):
     return course_milestones
 
 
-def get_milestone(milestone, create):
+def get_milestone(milestone, create=False):
     if milestone is not None:
         try:
-            milestone = internal.Milestone.objects.get(namespace=milestone.namespace)
-        except Milestone.DoesNotExist:
+            milestone = internal.Milestone.objects.get(namespace=milestone.get('namespace'))
+        except internal.Milestone.DoesNotExist:
             if create:
                 milestone = internal.Milestone.objects.create(
                     namespace=milestone.namespace,
