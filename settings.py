@@ -1,4 +1,5 @@
 DEBUG=True
+TEST_MODE=True
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TEST_ROOT = "tests"
 TRANSACTIONS_MANAGED = {}

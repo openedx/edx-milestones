@@ -6,7 +6,7 @@ Helplful Hint:  When modelling Milestones, I've found that it's helpful
 to first consider the thing that fulfills the Milestone, and then
 consider the thing that requires the Milestone.
 """
-from data import create_course_milestone, create_milestone, get_course_milestones
+import data
 from exceptions import InvalidMilestoneException
 from validators import milestone_is_valid
 
@@ -28,7 +28,7 @@ class MilestoneManager(object):
         if milestone is not None:
             if not milestone_is_valid(milestone):
                 raise InvalidMilestoneException('The Milestone entity you have provided is not valid.')
-            milestone = create_milestone({
+            milestone = data.create_milestone({
                     'namespace': milestone.get('namespace'),
                     'description': milestone.get('description'),
                 }
@@ -38,15 +38,26 @@ class MilestoneManager(object):
         if milestone is None:
             auto_namespace = '{}'.format(prerequisite_course_key)
             auto_description = 'Auto-generated Course Completion Milestone for {}'.format(prerequisite_course_key)
-            milestone = create_milestone({
+            milestone = data.create_milestone({
                     'namespace': auto_namespace,
                     'description': auto_description,
                 }
             )
 
         # Now that the milestone exists, we can link it to the specified courses
-        create_course_milestone(course_key=course_key, milestone=milestone, relationship='requires')
-        create_course_milestone(course_key=prerequisite_course_key, milestone=milestone, relationship='fulfills')
+        data.create_course_milestone(course_key=course_key, milestone=milestone, relationship='requires')
+        data.create_course_milestone(course_key=prerequisite_course_key, milestone=milestone, relationship='fulfills')
+
+        # Broadcast the event to the system
+
+
+
+    @classmethod
+    def remove_prerequisite_course_from_course(cls, **kwargs):
+        course_key = kwargs.get('course_key')
+        prerequisite_course_key = kwargs.get('prerequisite_course_key')
+
+
 
     @classmethod
     def get_course_milestones(cls, **kwargs):
@@ -57,5 +68,4 @@ class MilestoneManager(object):
         """
         course_key = kwargs.get('course_key')
         type = kwargs.get('type')
-        course_milestones = get_course_milestones(course_key, type=type)
-        return get_course_milestones(course_key=course_key, type=type)
+        return data.get_course_milestones(course_key=course_key, type=type)

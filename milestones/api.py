@@ -2,8 +2,8 @@
 api.py is an interface module for Python-level integration with the
 Milestones app.
 
-In this particular application, the operations simply hand-off to the
-orchestration layer, which manages the application's workflows.
+In this particular application, the API operations simply hand-off to
+the orchestration layer, which manages the application's workflows.
 
 This module is designed primarily for read access, and is helpful for
 unit test assertions.  If you are considering adding write operations

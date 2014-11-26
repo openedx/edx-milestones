@@ -1,22 +1,28 @@
 """
 Application data management/abstraction layer.  Responsible for:
 
-1) Accessing information/state from internal and external resources
-* Internal app models  (through models.py)
-* External app models  (through direct ORM integrations, yuck)
-* Remote data services (through resources.py)
+1) Accessing information from various resources:
+* Internal application state  (through local models in models.py)
+* External application state  (ORM bindings with other apps, yuck)
+* Remote data services (through service adapters in resources.py)
 
-2) Calculating derivative information from existing state
+2) Calculating derivative information from existing state:
 * Algorithms and data manipulations
 * Aggregations
 * Annotations
 * Alternative data representations
 
-Returns standard Python data structures (dicts, arrays of dicts) for easy consumption by callers
+Returns standard Python data structures (dicts, arrays of dicts) for
+easy consumption and manipulation by callers -- the queryset stops here!
 """
-import models as internal
-import resources as remote
+from django.conf import settings
+
 import serializers
+import models as internal
+if not settings.TEST_MODE:
+    import resources as remote
+else:
+    import tests.mocks.resources as remote
 
 
 def create_course_milestone(course_key, milestone, relationship):

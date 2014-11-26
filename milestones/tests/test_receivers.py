@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from opaque_keys.edx.keys import CourseKey
 
-from mock_signals import course_deleted, course_prerequisite_course_added
+from mocks.signals import course_deleted, course_prerequisite_course_added
 from milestones import api
 
 
