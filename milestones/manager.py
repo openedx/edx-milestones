@@ -30,7 +30,6 @@ class MilestoneManager(object):
         """
         Retrieves the specified milestone, either by id or namespace
         """
-        print 'GET MILESTONE'
         milestone = {}
         if kwargs.get('id'):
             milestone['id'] = kwargs.get('id')
@@ -38,7 +37,6 @@ class MilestoneManager(object):
             milestone['namespace'] = kwargs.get('namespace')
 
         cls._validate_milestone(milestone)
-        print milestone
         return data.get_milestone(milestone)
 
 

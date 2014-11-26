@@ -63,7 +63,7 @@ def delete_course_milestone(course_key, relationship, milestone):
         except internal.MilestoneRelationshipType.DoesNotExist:
             # If the relationship type doesn't exist then we can't do much more
             # But it's okay, because the data's gone and we're deleting...
-            return True
+            pass
         try:
             internal.CourseMilestone.objects.get(
                 course_id=unicode(course_key),
@@ -72,7 +72,6 @@ def delete_course_milestone(course_key, relationship, milestone):
             ).delete()
         except internal.CourseMilestone.DoesNotExist:
             pass
-        return True
 
 
 def get_course_milestones(course_key, relationship=None):
@@ -94,8 +93,4 @@ def get_course_milestones(course_key, relationship=None):
 
 def delete_course_references(course_key):
     internal.CourseMilestone.objects.filter(course_id=unicode(course_key)).delete()
-    print course_key
-    print internal.Milestone.objects.all()[0].__dict__
-    print len(internal.Milestone.objects.filter(namespace=unicode(course_key)))
     internal.Milestone.objects.filter(namespace=unicode(course_key)).delete()
-    print len(internal.Milestone.objects.filter(namespace=unicode(course_key)))
