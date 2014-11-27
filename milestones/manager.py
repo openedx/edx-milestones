@@ -96,6 +96,12 @@ class MilestoneManager(object):
 
     @classmethod
     def remove_prerequisite_course_from_course(cls, **kwargs):
+        """
+        Removes the Pre-Requisite Course milestone requirement for the specified course
+        'course_key':  The course with the requirements
+        'prerequisite_course_key': The required course
+        'milestone': Optional, in the case where a specific milestone is known/used
+        """
         course_key = kwargs.get('course_key')
         prerequisite_course_key = kwargs.get('prerequisite_course_key')
         milestone = kwargs.get('milestone')
@@ -131,11 +137,12 @@ class MilestoneManager(object):
     def get_course_milestones(cls, **kwargs):
         """
         Retrieves the set of milestones for a given course
-        'type': optional filter on milestone relationship type
+        'relationship': optional filter on milestone relationship type
         Returns an array of dicts containing milestones
         """
         course_key = kwargs.get('course_key')
         relationship = kwargs.get('relationship')
+        cls._validate_course_key(course_key)
         return data.get_course_milestones(course_key=course_key, relationship=relationship)
 
     @classmethod
