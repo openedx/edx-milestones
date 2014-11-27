@@ -23,7 +23,12 @@ class MilestoneManager(object):
     @classmethod
     def _validate_milestone(cls, milestone):
         if not validators.milestone_is_valid(milestone):
-            raise InvalidMilestoneException('The Milestone you have provided is not valid.')
+            raise exceptions.InvalidMilestoneException('The Milestone you have provided is not valid.')
+
+    @classmethod
+    def _validate_milestone_relationship_type(cls, name):
+        if not validators.milestone_relationship_type_is_valid(name):
+            raise exceptions.InvalidMilestoneRelationshipTypeException('The Milestone Relationship Type you have provided is not valid.')
 
     @classmethod
     def get_milestone(cls, **kwargs):
@@ -39,7 +44,6 @@ class MilestoneManager(object):
         cls._validate_milestone(milestone)
         return data.get_milestone(milestone)
 
-
     @classmethod
     def add_prerequisite_course_to_course(cls, **kwargs):
         """
@@ -47,16 +51,16 @@ class MilestoneManager(object):
         1) Pre-Requisite Course fulfills Milestone
         2) Course requires Milestone
         """
-        course_key = kwargs.get('course_key')
-        prerequisite_course_key = kwargs.get('prerequisite_course_key')
-        milestone = kwargs.get('milestone')
-
         # Validate the course keys
+        course_key = kwargs.get('course_key')
         cls._validate_course_key(course_key)
+
+        prerequisite_course_key = kwargs.get('prerequisite_course_key')
         cls._validate_course_key(prerequisite_course_key)
 
         # If a milestone was provided, we'll need to check that as well
         # We'll create a record for it on-the-fly if one doesn't already exist
+        milestone = kwargs.get('milestone')
         if milestone is not None:
             cls._validate_milestone(milestone)
             milestone = data.create_milestone(
@@ -102,15 +106,15 @@ class MilestoneManager(object):
         'prerequisite_course_key': The required course
         'milestone': Optional, in the case where a specific milestone is known/used
         """
-        course_key = kwargs.get('course_key')
-        prerequisite_course_key = kwargs.get('prerequisite_course_key')
-        milestone = kwargs.get('milestone')
-
         # Validate the course keys
+        course_key = kwargs.get('course_key')
         cls._validate_course_key(course_key)
+
+        prerequisite_course_key = kwargs.get('prerequisite_course_key')
         cls._validate_course_key(prerequisite_course_key)
 
         # If a milestone was provided, we'll need to check that as well
+        milestone = kwargs.get('milestone')
         if milestone is not None:
             cls._validate_milestone(milestone)
 
@@ -141,8 +145,12 @@ class MilestoneManager(object):
         Returns an array of dicts containing milestones
         """
         course_key = kwargs.get('course_key')
-        relationship = kwargs.get('relationship')
         cls._validate_course_key(course_key)
+
+        relationship = kwargs.get('relationship')
+        if relationship is not None:
+            cls._validate_milestone_relationship_type(relationship)
+
         return data.get_course_milestones(course_key=course_key, relationship=relationship)
 
     @classmethod

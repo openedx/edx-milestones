@@ -22,3 +22,15 @@ def milestone_is_valid(milestone):
     if not len(milestone.get('namespace', '')):
         return False
     return True
+
+
+def milestone_relationship_type_is_valid(name):
+    valid_types = [
+        'requires',
+        'fulfills',
+    ]
+    if name is None:
+        return False
+    if name not in valid_types:
+        return False
+    return True
