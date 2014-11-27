@@ -106,7 +106,7 @@ class MilestoneManager(object):
 
         # If a milestone was provided, we'll need to check that as well
         if milestone is not None:
-            _validate_milestone(milestone)
+            cls._validate_milestone(milestone)
 
         # If a milestone wash't provided, we'll need to look for a generic one
         else:
