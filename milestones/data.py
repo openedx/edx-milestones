@@ -26,10 +26,14 @@ else:
 
 
 def create_milestone(milestone):
-    return internal.Milestone.objects.create(
+    milestone, created = internal.Milestone.objects.get_or_create(
         namespace=milestone['namespace'],
-        description=milestone['description']
+        defaults={
+            'description': milestone['description']
+        }
     )
+
+    return milestone
 
 
 def get_milestone(milestone, create=False):
