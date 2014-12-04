@@ -12,8 +12,8 @@ Application data management/abstraction layer.  Responsible for:
 * Annotations
 * Alternative data representations
 
-Returns standard Python data structures (dicts, arrays of dicts) for
-easy consumption and manipulation by callers -- the queryset stops here!
+Accepts and returns standard Python data structures (dicts, arrays of dicts)
+for easy consumption and manipulation by callers -- the queryset stops here!
 """
 from django.conf import settings
 
@@ -26,6 +26,7 @@ else:
 
 
 def create_milestone(milestone):
+    milestone_obj = serializers.deserialize_milestone(milestone)
     milestone, created = internal.Milestone.objects.get_or_create(
         namespace=milestone['namespace'],
         defaults={
@@ -33,50 +34,62 @@ def create_milestone(milestone):
         }
     )
 
-    return milestone
+    return serializers.serialize_milestone(milestone)
 
 
 def get_milestone(milestone, create=False):
     if milestone is None:
-        return milestone
+        return None
+    milestone_obj = serializers.deserialize_milestone(milestone)
     try:
-        milestone = internal.Milestone.objects.get(namespace=milestone.get('namespace'))
-        return milestone
+        if milestone_obj.id is not None:
+            milestone = internal.Milestone.objects.get(id=milestone_obj.id)
+        elif milestone_obj.namespace is not None:
+            milestone = internal.Milestone.objects.get(namespace=milestone_obj.namespace)
+        return serializers.serialize_milestone(milestone)
     except internal.Milestone.DoesNotExist:
         if create:
             milestone = internal.Milestone.objects.create(
-                namespace=milestone.namespace,
-                description=milestone.description
-            )
-            return milestone
+                namespace=milestone_obj.namespace,
+                description=milestone_obj.description
+            ).save()
+            return serializers.serialize_milestone(milestone)
         return None
 
 
 def create_course_milestone(course_key, relationship, milestone):
         mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(name=relationship)
+        milestone_obj = serializers.deserialize_milestone(milestone)
         internal.CourseMilestone.objects.get_or_create(
             course_id=unicode(course_key),
-            milestone=milestone,
+            milestone=milestone_obj,
             milestone_relationship_type=mrt,
         )
 
 
 def delete_course_milestone(course_key, relationship, milestone):
+        milestone_obj = serializers.deserialize_milestone(milestone)
         try:
             mrt = internal.MilestoneRelationshipType.objects.get(name=relationship)
+            try:
+                internal.CourseMilestone.objects.get(
+                    course_id=unicode(course_key),
+                    milestone=milestone_obj.id,
+                    milestone_relationship_type=mrt
+                ).delete()
+            except internal.CourseMilestone.DoesNotExist:
+                pass
+
         except internal.MilestoneRelationshipType.DoesNotExist:
             # If the relationship type doesn't exist then we can't do much more
             # But it's okay, because the data's gone and we're deleting...
-            pass
-        try:
-            internal.CourseMilestone.objects.get(
-                course_id=unicode(course_key),
-                milestone=milestone,
-                milestone_relationship_type=mrt,
-            ).delete()
-        except internal.CourseMilestone.DoesNotExist:
-            pass
-
+            try:
+                internal.CourseMilestone.objects.get(
+                    course_id=unicode(course_key),
+                    milestone=milestone_obj.id,
+                ).delete()
+            except internal.CourseMilestone.DoesNotExist:
+                pass
 
 def get_course_milestones(course_key, relationship=None):
 
