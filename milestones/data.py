@@ -19,10 +19,10 @@ from django.conf import settings
 
 import serializers
 import models as internal
-if not settings.TEST_MODE:
-    import resources as remote
-else:
+if hasattr(settings, 'TEST_MODE') and settings.TEST_MODE:
     import tests.mocks.resources as remote
+else:
+    import resources as remote
 
 
 def create_milestone(milestone):

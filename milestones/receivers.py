@@ -10,10 +10,10 @@ from django.dispatch import receiver
 
 from .manager import MilestoneManager
 
-if not settings.TEST_MODE:
-    import util.signals as signals
-else:
+if hasattr(settings, 'TEST_MODE') and settings.TEST_MODE:
     import tests.mocks.signals as signals
+else:
+    import util.signals as signals
 
 @receiver(signals.course_deleted)
 def on_course_deleted(sender, signal, **kwargs):
