@@ -19,6 +19,9 @@ build
 .pydevproject
 .settings
 
+# pycharm
+.idea/
+
 # Linux Editors
 *~
 \#*\#

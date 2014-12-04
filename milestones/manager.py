@@ -40,6 +40,8 @@ class MilestoneManager(object):
             milestone['id'] = kwargs.get('id')
         if kwargs.get('namespace'):
             milestone['namespace'] = kwargs.get('namespace')
+        if kwargs.get('description'):
+            milestone['description'] = kwargs.get('description')
 
         cls._validate_milestone(milestone)
         return data.get_milestone(milestone)
@@ -62,13 +64,7 @@ class MilestoneManager(object):
         # We'll create a record for it on-the-fly if one doesn't already exist
         milestone = kwargs.get('milestone')
         if milestone is not None:
-            cls._validate_milestone(milestone)
-            milestone = data.create_milestone(
-                {
-                    'namespace': milestone.get('namespace'),
-                    'description': milestone.get('description'),
-                }
-            )
+            milestone = cls.get_milestone(milestone)
 
         # If a milestone was not provided, we'll need to create one
         if milestone is None:

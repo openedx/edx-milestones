@@ -83,7 +83,11 @@ def get_course_milestones(course_key, relationship=None):
     if relationship is None:
         queryset = internal.Milestone.objects.filter(coursemilestone__course_id=unicode(course_key))
     else:
-        mrt = internal.MilestoneRelationshipType.objects.get(name=relationship)
+        try:
+            mrt = internal.MilestoneRelationshipType.objects.get(name=relationship)
+        except internal.MilestoneRelationshipType.DoesNotExist:
+            # If the relationship type doesn't exist then we can't do much more
+            return None
         queryset = internal.Milestone.objects.filter(
             coursemilestone__course_id=unicode(course_key),
             coursemilestone__milestone_relationship_type=mrt.id
