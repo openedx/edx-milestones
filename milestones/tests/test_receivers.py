@@ -78,11 +78,11 @@ class ReceiverTestCase(TestCase):
         self.assertEqual(len(self.signal_log), 2)
         self.assertEqual(self.signal_log[0]['course_key'], self.test_course_key)
         self.assertEqual(self.signal_log[0]['relationship'], 'requires')
-        self.assertEqual(self.signal_log[0]['milestone'].namespace, unicode(self.test_prerequisite_course_key))
+        self.assertEqual(self.signal_log[0]['milestone']['namespace'], unicode(self.test_prerequisite_course_key))
 
         self.assertEqual(self.signal_log[1]['course_key'], self.test_prerequisite_course_key)
         self.assertEqual(self.signal_log[1]['relationship'], 'fulfills')
-        self.assertEqual(self.signal_log[1]['milestone'].namespace, unicode(self.test_prerequisite_course_key))
+        self.assertEqual(self.signal_log[1]['milestone']['namespace'], unicode(self.test_prerequisite_course_key))
 
     def test_on_course_prerequisite_course_removed(self):
 
@@ -130,4 +130,4 @@ class ReceiverTestCase(TestCase):
         # Confirm the workflow events were properly emitted
         self.assertEqual(len(self.signal_log), 1)
         self.assertEqual(self.signal_log[0]['course_key'], self.test_course_key)
-        self.assertEqual(self.signal_log[0]['milestone'].namespace, unicode(self.test_prerequisite_course_key))
+        self.assertEqual(self.signal_log[0]['milestone']['namespace'], unicode(self.test_prerequisite_course_key))

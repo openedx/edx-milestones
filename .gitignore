@@ -2,7 +2,10 @@
 *.py[co]
 
 # Packaging files:
-*.egg*
+*.eggs
+
+# Installation artifacts
+src
 
 # Sphinx docs:
 build
