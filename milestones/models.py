@@ -12,13 +12,14 @@ from model_utils.models import TimeStampedModel
 class Milestone(TimeStampedModel):
     """
     A Milestone is a representation of an accomplishment which can be
-    attained by a student. Milestones have a base set of meta data
+    attained by a user. Milestones have a base set of meta data
     describing the milestone, including id, name, and description.
     Milestones can be used to drive functionality and behavior 'behind
     the scenes' in Open edX, such as with the Pre-Requisite Course and
     Course Pre-Assessment use cases.
     """
-    namespace = models.CharField(max_length=255, unique=True)
+    namespace = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     description = models.TextField()
     active = models.BooleanField(default=True)
 
@@ -62,6 +63,14 @@ class CourseMilestone(TimeStampedModel):
     milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
     active = models.BooleanField(default=True)
 
+    class Meta:
+        """ Meta class for this Django model """
+        unique_together = (("course_id", "milestone"),)
+        # index_together = [
+        #     ["course_id", "milestone"],
+        #     ["course_id", "milestone", "milestone_relationship_type"],
+        # ]
+
 
 class CourseContentMilestone(TimeStampedModel):
     """
@@ -80,18 +89,33 @@ class CourseContentMilestone(TimeStampedModel):
     milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
     active = models.BooleanField(default=True)
 
+    class Meta:
+        """ Meta class for this Django model """
+        unique_together = (("course_id", "content_id", "milestone"),)
+        # index_together = [
+        #     ["course_id", "content_id"],
+        #     ["course_id", "content_id", "milestone"],
+        #     ["course_id", "content_id", "milestone", "milestone_relationship_type"],
+        # ]
 
-class StudentMilestone(TimeStampedModel):
+class UserMilestone(TimeStampedModel):
     """
-    A StudentMilestone represents an stage reached or event experienced
-    by a Student during their interactions with the Open edX platform.
+    A UserMilestone represents an stage reached or event experienced
+    by a User during their interactions with the Open edX platform.
     The addition of a MilestoneRelationshipType field in this model
-    allows for use cases such as "Goals", in which a Student might keep
+    allows for use cases such as "Goals", in which a User might keep
     a list of Milestones they are interested in attaining. Side Note: In
     the Mozilla Open Badges world, this collection concept is referred
     to as the user's "backpack".
     """
-    student_id = models.IntegerField(db_index=True)
+    user_id = models.IntegerField(db_index=True)
     milestone = models.ForeignKey(Milestone, db_index=True)
-    milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
+    source = models.TextField(blank=True)
     active = models.BooleanField(default=True)
+
+    class Meta:
+        """ Meta class for this Django model """
+        unique_together = ("user_id", "milestone")
+        # index_together = [
+        #     ["user_id", "milestone"],
+        # ]

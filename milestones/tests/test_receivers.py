@@ -5,7 +5,6 @@ from django.test import TestCase
 from opaque_keys.edx.keys import CourseKey
 
 from milestones import api
-from milestones.signals import course_milestone_added, course_milestone_removed
 
 from mocks import signals as mock_signals
 
@@ -15,18 +14,20 @@ class ReceiverTestCase(TestCase):
         self.signal_log = []
         self.test_course_key = CourseKey.from_string('the/course/key')
         self.test_prerequisite_course_key = CourseKey.from_string('prerequisite/course/key')
-
+        self.test_milestone_data = {
+            'name': 'Test Milestone',
+            'namespace': unicode(self.test_prerequisite_course_key),
+            'description': 'This is only a test.',
+        }
 
     def test_on_course_deleted(self):
         # Note, this test adds a milestone and two course links
         # We're going to confirm that all three entities are removed
 
         # Add a new milestone and links to the system
-        mock_signals.course_prerequisite_course_added.send(
-            sender=self,
-            course_key=self.test_course_key,
-            prerequisite_course_key=self.test_prerequisite_course_key,
-        )
+        milestone = api.add_milestone(milestone=self.test_milestone_data)
+        milestones = api.add_course_milestone(course_key=self.test_course_key, relationship='requires', milestone=milestone)
+        milestones = api.add_course_milestone(course_key=self.test_prerequisite_course_key, relationship='fulfills', milestone=milestone)
 
         # Inform the milestones app that the prerequisite course has
         # now been removed from the system.
@@ -36,8 +37,8 @@ class ReceiverTestCase(TestCase):
         )
 
         # Confirm the milestone and links no longer exist
-        milestone = api.get_milestone(namespace=unicode(self.test_prerequisite_course_key))
-        self.assertIsNone(milestone)
+        milestones = api.get_milestones(namespace=unicode(self.test_prerequisite_course_key))
+        self.assertEqual(len(milestones), 0)
 
         course_milestones = api.get_course_milestones(course_key=self.test_course_key)
         self.assertEqual(len(course_milestones), 0)
@@ -45,89 +46,52 @@ class ReceiverTestCase(TestCase):
         prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key)
         self.assertEqual(len(prereq_milestones), 0)
 
-    def test_on_course_prerequisite_course_added(self):
+    # def test_on_course_prerequisite_course_added(self):
 
-        # Define and connect the local signal listener before doing anything
-        @receiver(course_milestone_added)
-        def signal_listener(sender, signal, course_key, relationship, milestone):
-            self.signal_log.append(
-                {
-                    'course_key': course_key,
-                    'relationship': relationship,
-                    'milestone': milestone
-                }
-            )
+    #     # Broadcast the event to the application
+    #     mock_signals.course_prerequisite_course_added.send(
+    #         sender=self,
+    #         course_key=self.test_course_key,
+    #         prerequisite_course_key=self.test_prerequisite_course_key,
+    #     )
 
-        # Broadcast the event to the application
-        mock_signals.course_prerequisite_course_added.send(
-            sender=self,
-            course_key=self.test_course_key,
-            prerequisite_course_key=self.test_prerequisite_course_key,
-        )
+    #     # Confirm the prerequisite course fulfills its generic milestone
+    #     # The namespace for generic course milestones is the course identifier
+    #     prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key, relationship='fulfills')
+    #     self.assertEqual(unicode(self.test_prerequisite_course_key), prereq_milestones[0]['namespace'])
 
-        # Confirm the prerequisite course fulfills its generic milestone
-        # The namespace for generic course milestones is the course identifier
-        prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key, relationship='fulfills')
-        self.assertEqual(unicode(self.test_prerequisite_course_key), prereq_milestones[0]['namespace'])
+    #     # Confirm the main course requires the prerequisite course's generic milestone
+    #     course_milestones = api.get_course_milestones(course_key=self.test_course_key, relationship='requires')
+    #     self.assertEqual(unicode(self.test_prerequisite_course_key), course_milestones[0]['namespace'])
 
-        # Confirm the main course requires the prerequisite course's generic milestone
-        course_milestones = api.get_course_milestones(course_key=self.test_course_key, relationship='requires')
-        self.assertEqual(unicode(self.test_prerequisite_course_key), course_milestones[0]['namespace'])
+    # def test_on_course_prerequisite_course_removed(self):
 
-        # Confirm the workflow events were properly emitted
-        self.assertEqual(len(self.signal_log), 2)
-        self.assertEqual(self.signal_log[0]['course_key'], self.test_course_key)
-        self.assertEqual(self.signal_log[0]['relationship'], 'requires')
-        self.assertEqual(self.signal_log[0]['milestone']['namespace'], unicode(self.test_prerequisite_course_key))
+    #     # Broadcast the events to the application
+    #     mock_signals.course_prerequisite_course_added.send(
+    #         sender=self,
+    #         course_key=self.test_course_key,
+    #         prerequisite_course_key=self.test_prerequisite_course_key,
+    #     )
 
-        self.assertEqual(self.signal_log[1]['course_key'], self.test_prerequisite_course_key)
-        self.assertEqual(self.signal_log[1]['relationship'], 'fulfills')
-        self.assertEqual(self.signal_log[1]['milestone']['namespace'], unicode(self.test_prerequisite_course_key))
+    #     # Confirm the prerequisite course fulfills its generic milestone
+    #     prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key, relationship='fulfills')
+    #     self.assertEqual(unicode(self.test_prerequisite_course_key), prereq_milestones[0]['namespace'])
 
-    def test_on_course_prerequisite_course_removed(self):
-
-        # Define and connect the local signal listener before doing anything
-        @receiver(course_milestone_removed)
-        def signal_listener(sender, signal, course_key, relationship, milestone):
-            self.signal_log.append(
-                {
-                    'course_key': course_key,
-                    'relationship': relationship,
-                    'milestone': milestone
-                }
-            )
-
-        # Broadcast the events to the application
-        mock_signals.course_prerequisite_course_added.send(
-            sender=self,
-            course_key=self.test_course_key,
-            prerequisite_course_key=self.test_prerequisite_course_key,
-        )
-
-        # Confirm the prerequisite course fulfills its generic milestone
-        prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key, relationship='fulfills')
-        self.assertEqual(unicode(self.test_prerequisite_course_key), prereq_milestones[0]['namespace'])
-
-        # Confirm the main course requires the prerequisite course's generic milestone
-        course_milestones = api.get_course_milestones(course_key=self.test_course_key, relationship='requires')
-        self.assertEqual(len(course_milestones), 1)
+    #     # Confirm the main course requires the prerequisite course's generic milestone
+    #     course_milestones = api.get_course_milestones(course_key=self.test_course_key, relationship='requires')
+    #     self.assertEqual(len(course_milestones), 1)
 
 
-        mock_signals.course_prerequisite_course_removed.send(
-            sender=self,
-            course_key=self.test_course_key,
-            prerequisite_course_key=self.test_prerequisite_course_key,
-        )
+    #     mock_signals.course_prerequisite_course_removed.send(
+    #         sender=self,
+    #         course_key=self.test_course_key,
+    #         prerequisite_course_key=self.test_prerequisite_course_key,
+    #     )
 
-        # Confirm the prerequisite course still fulfills its generic milestone
-        prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key, relationship='fulfills')
-        self.assertEqual(unicode(self.test_prerequisite_course_key), prereq_milestones[0]['namespace'])
+    #     # Confirm the prerequisite course still fulfills its generic milestone
+    #     prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key, relationship='fulfills')
+    #     self.assertEqual(unicode(self.test_prerequisite_course_key), prereq_milestones[0]['namespace'])
 
-        # Confirm the main course no longer requires the prerequisite course's generic milestone
-        course_milestones = api.get_course_milestones(course_key=self.test_course_key, relationship='requires')
-        self.assertEqual(len(course_milestones), 0)
-
-        # Confirm the workflow events were properly emitted
-        self.assertEqual(len(self.signal_log), 1)
-        self.assertEqual(self.signal_log[0]['course_key'], self.test_course_key)
-        self.assertEqual(self.signal_log[0]['milestone']['namespace'], unicode(self.test_prerequisite_course_key))
+    #     # Confirm the main course no longer requires the prerequisite course's generic milestone
+    #     course_milestones = api.get_course_milestones(course_key=self.test_course_key, relationship='requires')
+    #     self.assertEqual(len(course_milestones), 0)
