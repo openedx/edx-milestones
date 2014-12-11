@@ -63,7 +63,7 @@ def delete_milestone(milestone):
         )
         milestone_obj.active = False
         milestone_obj.save()
-    except Milestone.DoesNotExist:
+    except internal.Milestone.DoesNotExist:
         pass
 
 
@@ -114,29 +114,43 @@ def fetch_course_milestones(course_key, relationship=None):
     Retrieves the set of milestones currently linked to the specified course
     Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
     """
-    if relationship is None:
-        queryset = internal.Milestone.objects.filter(
-            coursemilestone__course_id=unicode(course_key),
-            active=True
-        )
-    else:
-        try:
-            mrt = internal.MilestoneRelationshipType.objects.get(
-                name=relationship,
-                active=True
-            )
-        except internal.MilestoneRelationshipType.DoesNotExist:
-            # If the relationship type doesn't exist then we can't do much more
-            return None
-        queryset = internal.Milestone.objects.filter(
-            coursemilestone__course_id=unicode(course_key),
+    mrt = _get_relationship_type(relationship)
+    queryset = internal.Milestone.objects.filter(
+        coursemilestone__course_id=unicode(course_key),
+        active=True
+    )
+    # if milestones relationship type found then apply the filter
+    if mrt:
+        queryset = queryset.filter(
             coursemilestone__milestone_relationship_type=mrt.id,
-            active=True,
         )
+
     course_milestones = []
     if len(queryset):
         for milestone in queryset:
             course_milestones.append(serializers.serialize_milestone(milestone))
+    return course_milestones
+
+
+def fetch_courses_milestones(course_keys, relationship=None):
+    """
+    Retrieves the set of milestones currently linked to the specified courses
+    Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
+    """
+    mrt = _get_relationship_type(relationship)
+    queryset = internal.CourseMilestone.objects.filter(
+        course_id__in=course_keys,
+        active=True
+    ).select_related('milestone')
+    # if milestones relationship type found then apply the filter
+    if mrt:
+        queryset = queryset.filter(
+            milestone_relationship_type=mrt.id,
+        )
+    course_milestones = []
+    if len(queryset):
+        for milestone in queryset:
+            course_milestones.append(serializers.serialize_milestone_with_course(milestone))
     return course_milestones
 
 
@@ -245,3 +259,19 @@ def fetch_user_milestones(user, milestone=None):
 def delete_course_references(course_key):
     internal.CourseMilestone.objects.filter(course_id=unicode(course_key)).delete()
     internal.Milestone.objects.filter(namespace=unicode(course_key)).delete()
+
+
+def _get_relationship_type(relationship):
+    """
+    Retrieves milestone relationship type object from backend
+    """
+    mrt = None
+    if relationship:
+        try:
+            mrt = internal.MilestoneRelationshipType.objects.get(
+                name=relationship,
+                active=True
+            )
+        except internal.MilestoneRelationshipType.DoesNotExist:
+            mrt = None
+    return mrt
