@@ -73,6 +73,7 @@ def edit_milestone(milestone):
         _raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     return edited_milestone
 
+
 def get_milestone(id):
     """
     Retrieves the specified milestone
@@ -129,11 +130,19 @@ def get_course_milestones(course_key, relationship=None):
 
     if relationship is not None:
         _validate_milestone_relationship_type(relationship)
+    return data.fetch_courses_milestones(course_keys=[course_key], relationship=relationship)
 
-    return data.fetch_course_milestones(course_key=course_key, relationship=relationship)
 
+def get_course_required_milestones(course_key, user):
+    """
+    Retrieves the set of required milestones for a given course that a user has not yet collected
+    """
+    _validate_course_key(course_key)
+    _validate_user(user)
+    required_milestones = data.fetch_courses_milestones([course_key], 'requires', user)
+    return required_milestones
 
-def get_courses_milestones(course_keys, relationship=None):
+def get_courses_milestones(course_keys, relationship=None, user=None):
     """
     Retrieves the set of milestones for list of courses
     'relationship': optional filter on milestone relationship type (string, eg: 'requires')
@@ -144,7 +153,7 @@ def get_courses_milestones(course_keys, relationship=None):
     if relationship is not None:
         _validate_milestone_relationship_type(relationship)
 
-    return data.fetch_courses_milestones(course_keys=course_keys, relationship=relationship)
+    return data.fetch_courses_milestones(course_keys=course_keys, relationship=relationship, user=user)
 
 
 def remove_course_milestone(course_key, milestone):
@@ -233,7 +242,6 @@ def user_has_milestone(user, milestone):
     return len(data.fetch_user_milestones(user, milestone))
 
 
-
 def remove_course_references(course_key):
     """
     Removes orphaned course references from application state
@@ -241,64 +249,3 @@ def remove_course_references(course_key):
     """
     _validate_course_key(course_key)
     data.delete_course_references(course_key)
-
-
-
-# def add_prerequisite_course_to_course(course_key, prerequisite_course_key, milestone=None):
-#     """
-#     Models the Pre-Requisite Course concept as single Milestone related to a pair of CourseMilestones
-#     1) Pre-Requisite Course fulfills Milestone
-#     2) Course requires Milestone
-#     """
-#     # Validate the course keys
-#     _validate_course_key(course_key)
-#     _validate_course_key(prerequisite_course_key)
-
-#     # If a milestone was provided, we'll need to check that as well
-#     # We'll create a record for it on-the-fly if one doesn't already exist
-#     if milestone is not None:
-#         milestone = get_milestone(milestone)
-
-#     # If a milestone was not provided, we'll need to create one
-#     if milestone is None:
-#         auto_namespace = unicode(prerequisite_course_key)
-#         auto_description = 'Auto-generated Course Completion Milestone for {}'.format(prerequisite_course_key)
-#         milestone = data.create_milestone(
-#             {
-#                 'namespace': auto_namespace,
-#                 'description': auto_description,
-#             }
-#         )
-
-#     # Now that the milestone exists, we can link it to the specified courses
-#     data.create_course_milestone(course_key=course_key, relationship='requires', milestone=milestone)
-#     data.create_course_milestone(course_key=prerequisite_course_key, relationship='fulfills', milestone=milestone)
-
-
-# def remove_prerequisite_course_from_course(course_key, prerequisite_course_key, milestone=None):
-#     """
-#     Removes the Pre-Requisite Course milestone requirement for the specified course
-#     'course_key':  The course with the requirements
-#     'prerequisite_course_key': The required course
-#     'milestone': Optional, in the case where a specific milestone is known/used
-#     """
-#     # Validate the course keys
-#     _validate_course_key(course_key)
-#     _validate_course_key(prerequisite_course_key)
-
-#     # If a milestone was provided, we'll need to check that as well
-#     if milestone is not None:
-#         _validate_milestone(milestone)
-
-#     # If a milestone wash't provided, we'll need to look for a generic one
-#     else:
-#         milestone = {
-#             'namespace': unicode(prerequisite_course_key)
-#         }
-#         milestone = data.fetch_milestones(milestone)
-
-#     # Okay, if we have a milestone...
-#     if milestone is not None:
-
-#         # Unlink it from the specified course \
-#         data.delete_course_milestone(course_key=course_key, relationship='requires', milestone=milestone)

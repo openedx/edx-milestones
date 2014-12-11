@@ -27,13 +27,23 @@ class MilestonesApiTestCase(TestCase):
         })
         self.assertGreater(milestone['id'], 0)
 
-    def test_add_milestone_missing_namespace(self):
+    def test_add_milestone_invalid_namespaces_throw_exceptions(self):
         try:
             milestone = api.add_milestone({
                 'name': 'Local Milestone',
+                'namespace': '',  # Should throw an exception
                 'description': 'Local Milestone Description'
             })
-            self.fail('Expected InvalidMilestoneException')
+            self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')
+        except exceptions.InvalidMilestoneException:
+            pass
+
+        try:
+            milestone = api.add_milestone({
+                'name': 'Local Milestone',  # Missing namespace should throw exception
+                'description': 'Local Milestone Description'
+            })
+            self.fail('Missing Milestone Namespace: Expected InvalidMilestoneException')
         except exceptions.InvalidMilestoneException:
             pass
 
@@ -45,7 +55,7 @@ class MilestonesApiTestCase(TestCase):
         self.test_milestone['namespace'] = ''
         try:
             edited_milestone = api.edit_milestone(self.test_milestone)
-            self.fail('Expected InvalidMilestoneException')
+            self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')
         except exceptions.InvalidMilestoneException:
             pass
 
@@ -56,17 +66,19 @@ class MilestonesApiTestCase(TestCase):
         self.assertEqual(milestone['description'], self.test_milestone['description'])
 
     def test_get_milestones(self):
+        namespace = 'test_get_milestones'
         milestone1 = api.add_milestone({
             'name': 'Local Milestone 1',
-            'namespace': 'test_get_milestones',
+            'namespace': namespace,
             'description': 'Local Milestone 1 Description'
         })
         milestone2 = api.add_milestone({
             'name': 'Local Milestone 2',
-            'namespace': 'test_get_milestones',
+            'namespace': namespace,
             'description': 'Local Milestone 2 Description'
         })
-        milestones = api.get_milestones
+        milestones = api.get_milestones(namespace=namespace)
+        self.assertEqual(len(milestones), 2)
 
     def test_remove_milestone(self):
         api.remove_milestone(self.test_milestone['id'])
@@ -93,6 +105,47 @@ class MilestonesApiTestCase(TestCase):
         requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key, 'requires')
         self.assertEqual(len(requirer_milestones), 1)
+
+    def test_get_course_unfulfilled_milestones(self):
+        namespace = 'test_get_milestones'
+        milestone1 = api.add_milestone({
+            'name': 'Local Milestone 1',
+            'namespace': namespace,
+            'description': 'Local Milestone 1 Description'
+        })
+        requirer = api.add_course_milestone(self.test_course_key, 'requires', milestone1)
+
+        milestone2 = api.add_milestone({
+            'name': 'Local Milestone 2',
+            'namespace': namespace,
+            'description': 'Local Milestone 2 Description'
+        })
+        requirer = api.add_course_milestone(self.test_course_key, 'requires', milestone2)
+
+        # Confirm that the course has only two milestones, and that the User still needs to collect both
+        course_milestones = api.get_course_milestones(self.test_course_key)
+        self.assertEqual(len(course_milestones), 2)
+        required_milestones = api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)
+
+        # Link the User to Milestone 2 (this one is now 'collected')
+        api.add_user_milestone(self.serialized_test_user, milestone2)
+        user_milestones = api.get_user_milestones(self.serialized_test_user)
+        self.assertEqual(len(user_milestones), 1)
+        self.assertEqual(user_milestones[0]['id'], milestone2['id'])
+
+        # Only Milestone 1 should be listed as 'required' for the course at this point
+        required_milestones = api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)
+        self.assertEqual(len(required_milestones), 1)
+        self.assertEqual(required_milestones[0]['id'], milestone1['id'])
+
+        # Link the User to Milestone 1 (this one is now 'collected', as well)
+        api.add_user_milestone(self.serialized_test_user, milestone1)
+        user_milestones = api.get_user_milestones(self.serialized_test_user)
+        self.assertEqual(len(user_milestones), 2)
+
+        # And there should be no more Milestones required for this User+Course
+        required_milestones = api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)
+        self.assertEqual(len(required_milestones), 0)
 
     def test_get_courses_milestones(self):
         requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
