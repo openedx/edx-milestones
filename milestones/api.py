@@ -70,7 +70,7 @@ def edit_milestone(milestone):
     _validate_milestone(milestone)
     edited_milestone = data.update_milestone(milestone)
     if edited_milestone is None:
-        _raise_invalid_milestone_exception(milestone)
+        _raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     return edited_milestone
 
 def get_milestone(id):
@@ -131,6 +131,20 @@ def get_course_milestones(course_key, relationship=None):
         _validate_milestone_relationship_type(relationship)
 
     return data.fetch_course_milestones(course_key=course_key, relationship=relationship)
+
+
+def get_courses_milestones(course_keys, relationship=None):
+    """
+    Retrieves the set of milestones for list of courses
+    'relationship': optional filter on milestone relationship type (string, eg: 'requires')
+    Returns an array of dicts containing milestones
+    """
+    [_validate_course_key(course_key) for course_key in course_keys]
+
+    if relationship is not None:
+        _validate_milestone_relationship_type(relationship)
+
+    return data.fetch_courses_milestones(course_keys=course_keys, relationship=relationship)
 
 
 def remove_course_milestone(course_key, milestone):

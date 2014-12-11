@@ -14,6 +14,16 @@ def serialize_milestone(milestone):
     }
 
 
+def serialize_milestone_with_course(course_milestone):
+    return {
+        'id': course_milestone.milestone.id,
+        'name': course_milestone.milestone.name,
+        'namespace': course_milestone.milestone.namespace,
+        'description': course_milestone.milestone.description,
+        'course_id': course_milestone.course_id
+    }
+
+
 def serialize_milestones(milestones):
     response_data = []
     for milestone in milestones:

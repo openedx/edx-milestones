@@ -94,6 +94,13 @@ class MilestonesApiTestCase(TestCase):
         requirer_milestones = api.get_course_milestones(self.test_course_key, 'requires')
         self.assertEqual(len(requirer_milestones), 1)
 
+    def test_get_courses_milestones(self):
+        requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
+        requirer = api.add_course_milestone(self.test_prerequisite_course_key, 'requires', self.test_milestone)
+        requirer_milestones = api.get_courses_milestones([self.test_course_key, self.test_prerequisite_course_key],
+                                                         'requires')
+        self.assertEqual(len(requirer_milestones), 2)
+
     def test_remove_course_milestone(self):
         requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key, 'requires')
