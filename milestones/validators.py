@@ -30,7 +30,7 @@ def content_key_is_valid(content_key):
 def milestone_is_valid(milestone):
     if milestone is None:
         return False
-    if not len(milestone.get('namespace', '')):
+    if milestone.get('namespace') is None or len(milestone.get('namespace')) == 0:
         return False
     return True
 
