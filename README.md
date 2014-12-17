@@ -5,7 +5,7 @@ edx-milestones (`milestones`) is a Django application which manages significant 
 
 Usage
 -----
-*  Milestones was originally designed to support the use case for 'pre-requisite courses'.  Rather than simply linking two courses together, the edX team took the opportunity to create a more flexible feature which could cover multiple scenarios going forward.
+*  Milestones is designed to support the use case for 'pre-requisite courses'.  Rather than simply linking two courses together, the edX team took the opportunity to create a more flexible feature which could cover multiple scenarios going forward.
 
 *  Milestones listens for Django system events (signals), such as 'added a prerequisite course' and modifies its internal state/models accordingly.  Signals can be defined/emitted from any location in Open edX.  Specific event listeners can be found in receivers.py.  In addition, a read-specific query interface is available in api.py for integration into platform views and other apps.
 
