@@ -8,4 +8,5 @@ install:
     - "pip install -r test_requirements.txt"
 # command to run tests
 script: coverage run ./manage.py test
+script: coverage report -m
 after_success: coveralls
