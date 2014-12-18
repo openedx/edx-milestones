@@ -12,13 +12,16 @@ install:
     - "pip install -r test_requirements.txt"
 
 # command to run tests
-script: coverage run ./manage.py test
+script:
+  - make test doc quality
+
+# script: coverage run ./manage.py test
 
 after_success: coveralls
 
-# command to generate console report (available in Travis CI console)
-script:
-    - coverage report -m
-    - pep8 milestones  --config=.pep8
-    - pylint milestones --rcfile=.pylintrc --reports=no || exit 0
+# # command to generate console report (available in Travis CI console)
+# script:
+#     - coverage report -m
+#     - pep8 milestones  --config=.pep8
+#     - pylint milestones --rcfile=.pylintrc --reports=no || exit 0
 
