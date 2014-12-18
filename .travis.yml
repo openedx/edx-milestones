@@ -20,12 +20,8 @@ install:
 
 # command to run tests
 script:
-    - coverage run ./manage.py test
+    - coverage run ./manage.py test -v2
+    - coverage report -m
     - make validate
 
-
 after_success: coveralls
-
-# # command to generate console report (available in Travis CI console)
-script:
-    - coverage report -m
