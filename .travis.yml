@@ -1,10 +1,13 @@
 language: python
 
+
 python:
   - "2.7"
 
+
 before_install:
   - export DJANGO_SETTINGS_MODULE=settings
+
 
 # command to install dependencies
 install:
@@ -14,11 +17,12 @@ install:
     - "pip install -r requirements.txt"
     - "pip install -r test_requirements.txt"
 
+
 # command to run tests
 script:
-  - make test doc quality
+    - coverage -m run ./manage.py test
+    - make quality
 
-# script: coverage run ./manage.py test
 
 after_success: coveralls
 
