@@ -5,6 +5,7 @@ from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from milestones import api, exceptions
 
+
 class MilestonesApiTestCase(TestCase):
 
     def setUp(self):

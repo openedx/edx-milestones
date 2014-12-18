@@ -21,14 +21,11 @@ install:
 # command to run tests
 script:
     - coverage run ./manage.py test
-    - make quality
+    - make validate
 
 
 after_success: coveralls
 
 # # command to generate console report (available in Travis CI console)
-# script:
-#     - coverage report -m
-#     - pep8 milestones  --config=.pep8
-#     - pylint milestones --rcfile=.pylintrc --reports=no || exit 0
-
+script:
+    - coverage report -m

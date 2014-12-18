@@ -17,11 +17,12 @@ import exceptions
 import validators
 
 
-### PRIVATE/INTERNAL FUNCTIONS ###
+# PRIVATE/INTERNAL FUNCTIONS
 def _raise_exception(entity_type, entity, exception):
     raise exception(
         'The {} you have provided is not valid: {}'.format(entity_type, entity)
     )
+
 
 def _validate_course_key(course_key):
     """ Validation helper """
@@ -53,7 +54,7 @@ def _validate_user(user):
         _raise_exception("User", user, exceptions.InvalidUserException)
 
 
-### PUBLIC FUNCTIONS ###
+# PUBLIC FUNCTIONS
 def add_milestone(milestone):
     """
     Passes a new milestone to the data layer for storage
@@ -141,6 +142,7 @@ def get_course_required_milestones(course_key, user):
     _validate_user(user)
     required_milestones = data.fetch_courses_milestones([course_key], 'requires', user)
     return required_milestones
+
 
 def get_courses_milestones(course_keys, relationship=None, user=None):
     """

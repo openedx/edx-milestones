@@ -77,7 +77,6 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'UserMilestone', fields ['user_id', 'milestone']
         db.create_unique('milestones_usermilestone', ['user_id', 'milestone_id'])
 
-
     def backwards(self, orm):
         # Removing unique constraint on 'UserMilestone', fields ['user_id', 'milestone']
         db.delete_unique('milestones_usermilestone', ['user_id', 'milestone_id'])
@@ -102,7 +101,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'UserMilestone'
         db.delete_table('milestones_usermilestone')
-
 
     models = {
         'milestones.coursecontentmilestone': {

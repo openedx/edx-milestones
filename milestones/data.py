@@ -29,7 +29,7 @@ else:
     import resources as remote
 
 
-### PRIVATE/INTERNAL METHODS ###
+# PRIVATE/INTERNAL METHODS
 def _get_relationship_type(relationship):
     """
     Retrieves milestone relationship type object from backend
@@ -46,7 +46,7 @@ def _get_relationship_type(relationship):
     return mrt
 
 
-### PUBLIC METHODS ###
+# PUBLIC METHODS
 def create_milestone(milestone):
     milestone_obj = serializers.deserialize_milestone(milestone)
     milestone, created = internal.Milestone.objects.get_or_create(

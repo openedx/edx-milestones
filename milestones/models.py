@@ -98,6 +98,7 @@ class CourseContentMilestone(TimeStampedModel):
         #     ["course_id", "content_id", "milestone", "milestone_relationship_type"],
         # ]
 
+
 class UserMilestone(TimeStampedModel):
     """
     A UserMilestone represents an stage reached or event experienced
