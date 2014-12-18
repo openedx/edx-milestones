@@ -8,7 +8,7 @@ orchestration layer, which manages the application's workflows.
 from django.conf import settings
 from django.dispatch import receiver
 
-import api
+import milestones.api as api
 
 
 if hasattr(settings, 'TEST_MODE') and settings.TEST_MODE:

@@ -19,9 +19,8 @@ Note the terminology difference at this layer vs. API -- create/fetch/update/del
 """
 from django.conf import settings
 
-import serializers
-
-import models as internal
+import milestones.models as internal
+import milestones.serializers as serializers
 
 if hasattr(settings, 'TEST_MODE') and settings.TEST_MODE:
     import tests.mocks.resources as remote

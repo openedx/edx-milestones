@@ -4,7 +4,7 @@ Validators confirm the integrity of inbound information prior to a data.py hando
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
-import data
+import milestones.data as data
 
 
 def course_key_is_valid(course_key):
@@ -60,7 +60,7 @@ def milestone_relationship_type_is_valid(name):
 
 
 def user_is_valid(user):
-        """
+    """
     User object validation
     """
     if user is None:

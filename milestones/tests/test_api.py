@@ -3,7 +3,8 @@ from django.test import TestCase
 
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
-from milestones import api, exceptions
+import milestones.api as api
+import milestones.exceptions as exceptions
 
 
 class MilestonesApiTestCase(TestCase):

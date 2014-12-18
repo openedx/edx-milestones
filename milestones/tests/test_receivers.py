@@ -4,9 +4,9 @@ from django.test import TestCase
 
 from opaque_keys.edx.keys import CourseKey
 
-from milestones import api
+import milestones.api as api
 
-from mocks import signals as mock_signals
+from milestones.tests.mocks import signals as mock_signals
 
 
 class ReceiverTestCase(TestCase):

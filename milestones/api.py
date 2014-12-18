@@ -12,9 +12,9 @@ consider the process for requiring the Milestone.
 
 Note the terminology difference at this layer vs. Data -- add/edit/get/remove
 """
-import data
-import exceptions
-import validators
+import milestones.data as data
+import milestones.exceptions as exceptions
+import milestones.validators as validators
 
 
 # PRIVATE/INTERNAL FUNCTIONS
