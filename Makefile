@@ -9,11 +9,11 @@ test.requirements:
 	pip install -q -r requirements.txt
 
 test:
-	coverage run -m nose
-	# nosetests --with-coverage --cover-inclusive --cover-branches \
-		# --cover-html --cover-html-dir=$(COVERAGE)/html/ \
-		# --cover-xml --cover-xml-file=$(COVERAGE)/coverage.xml \
-		# --cover-package=$(PACKAGE) $(PACKAGE)/
+	# coverage run -m nose
+	nosetests --with-coverage --cover-inclusive --cover-branches \
+		--cover-html --cover-html-dir=$(COVERAGE)/html/ \
+		--cover-xml --cover-xml-file=$(COVERAGE)/coverage.xml \
+		--cover-package=$(PACKAGE) $(PACKAGE)/
 
 quality:
 	pep8 --config=.pep8 $(PACKAGE)

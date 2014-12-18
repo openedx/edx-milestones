@@ -3,6 +3,9 @@ language: python
 python:
   - "2.7"
 
+before_install:
+  - export DJANGO_SETTINGS_MODULE=settings
+
 # command to install dependencies
 install:
     - "pip install coveralls"
