@@ -1,3 +1,4 @@
+# pylint: disable=no-member
 """
 Application data management/abstraction layer.  Responsible for:
 
@@ -16,16 +17,17 @@ Accepts and returns standard Python data structures (dicts, arrays of dicts)
 for easy consumption and manipulation by callers -- the queryset stops here!
 
 Note the terminology difference at this layer vs. API -- create/fetch/update/delete/
+
+When the time comes for remote resources, import the module like so:
+if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
+    import milestones.tests.mocks.resources as remote
+else:
+    import milestones.resources as remote
 """
 from django.conf import settings
 
 import milestones.models as internal
 import milestones.serializers as serializers
-
-if hasattr(settings, 'TEST_MODE') and settings.TEST_MODE:
-    import tests.mocks.resources as remote
-else:
-    import resources as remote
 
 
 # PRIVATE/INTERNAL METHODS

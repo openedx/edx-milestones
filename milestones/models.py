@@ -1,3 +1,5 @@
+# pylint: disable=no-init
+# pylint: disable=old-style-class
 # pylint: disable=too-few-public-methods
 """
 Database ORM models managed by this Django app
