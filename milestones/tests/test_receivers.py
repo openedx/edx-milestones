@@ -1,5 +1,7 @@
-from django.conf import settings
-from django.dispatch import receiver
+# pylint: disable=too-many-public-methods
+"""
+Test Case Module for Milestones Signal Receivers
+"""
 from django.test import TestCase
 
 from opaque_keys.edx.keys import CourseKey
@@ -10,6 +12,9 @@ from milestones.tests.mocks import signals as mock_signals
 
 
 class ReceiverTestCase(TestCase):
+    """
+    Main Test Suite for Milestones Signal Receivers
+    """
 
     def setUp(self):
         """
@@ -32,8 +37,16 @@ class ReceiverTestCase(TestCase):
 
         # Add a new milestone and links to the system
         milestone = api.add_milestone(milestone=self.test_milestone_data)
-        milestones = api.add_course_milestone(course_key=self.test_course_key, relationship='requires', milestone=milestone)
-        milestones = api.add_course_milestone(course_key=self.test_prerequisite_course_key, relationship='fulfills', milestone=milestone)
+        api.add_course_milestone(
+            course_key=self.test_course_key,
+            relationship='requires',
+            milestone=milestone
+        )
+        api.add_course_milestone(
+            course_key=self.test_prerequisite_course_key,
+            relationship='fulfills',
+            milestone=milestone
+        )
 
         # Inform the milestones app that the prerequisite course has
         # now been removed from the system.

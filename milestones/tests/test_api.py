@@ -1,3 +1,8 @@
+# pylint: disable=invalid-name
+# pylint: disable=too-many-public-methods
+"""
+Milestones API Module Test Cases
+"""
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -8,7 +13,9 @@ import milestones.exceptions as exceptions
 
 
 class MilestonesApiTestCase(TestCase):
-
+    """
+    Main Test Case module for Milestones API
+    """
     def setUp(self):
         """
         Test Case scaffolding
@@ -16,7 +23,13 @@ class MilestonesApiTestCase(TestCase):
         self.test_course_key = CourseKey.from_string('the/course/key')
         self.test_prerequisite_course_key = CourseKey.from_string('the/prerequisite/key')
         self.test_content_key = UsageKey.from_string('i4x://the/content/key/12345678')
-        self.test_user = User.objects.create(first_name='Test', last_name='User', email='test_user@edx.org', username='test_user', password='ABcd12!@')
+        self.test_user = User.objects.create(
+            first_name='Test',
+            last_name='User',
+            email='test_user@edx.org',
+            username='test_user',
+            password='ABcd12!@'
+        )
         self.serialized_test_user = self.test_user.__dict__
         self.test_milestone = api.add_milestone({
             'name': 'Test Milestone',
@@ -36,7 +49,7 @@ class MilestonesApiTestCase(TestCase):
     def test_add_milestone_invalid_namespaces_throw_exceptions(self):
         """ Unit Test """
         try:
-            milestone = api.add_milestone({
+            api.add_milestone({
                 'name': 'Local Milestone',
                 'namespace': '',  # Should throw an exception
                 'description': 'Local Milestone Description'
@@ -46,7 +59,7 @@ class MilestonesApiTestCase(TestCase):
             pass
 
         try:
-            milestone = api.add_milestone({
+            api.add_milestone({
                 'name': 'Local Milestone',  # Missing namespace should throw exception
                 'description': 'Local Milestone Description'
             })
@@ -57,13 +70,13 @@ class MilestonesApiTestCase(TestCase):
     def test_edit_milestone(self):
         """ Unit Test """
         self.test_milestone['name'] = 'Edited Milestone'
-        edited_milestone = api.edit_milestone(self.test_milestone)
+        api.edit_milestone(self.test_milestone)
 
     def test_edit_milestone_missing_namespace(self):
         """ Unit Test """
         self.test_milestone['namespace'] = ''
         try:
-            edited_milestone = api.edit_milestone(self.test_milestone)
+            api.edit_milestone(self.test_milestone)
             self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')
         except exceptions.InvalidMilestoneException:
             pass
@@ -78,12 +91,12 @@ class MilestonesApiTestCase(TestCase):
     def test_get_milestones(self):
         """ Unit Test """
         namespace = 'test_get_milestones'
-        milestone1 = api.add_milestone({
+        api.add_milestone({
             'name': 'Local Milestone 1',
             'namespace': namespace,
             'description': 'Local Milestone 1 Description'
         })
-        milestone2 = api.add_milestone({
+        api.add_milestone({
             'name': 'Local Milestone 2',
             'namespace': namespace,
             'description': 'Local Milestone 2 Description'
@@ -99,12 +112,19 @@ class MilestonesApiTestCase(TestCase):
 
     def test_add_course_milestone(self):
         """ Unit Test """
-        requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
+        api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key, 'requires')
         self.assertEqual(len(requirer_milestones), 1)
 
-        fulfiller = api.add_course_milestone(self.test_prerequisite_course_key, 'fulfills', self.test_milestone)
-        fulfiller_milestones = api.get_course_milestones(self.test_prerequisite_course_key, 'fulfills')
+        api.add_course_milestone(
+            self.test_prerequisite_course_key,
+            'fulfills',
+            self.test_milestone
+        )
+        fulfiller_milestones = api.get_course_milestones(
+            self.test_prerequisite_course_key,
+            'fulfills'
+        )
         self.assertEqual(len(fulfiller_milestones), 1)
 
     def test_add_course_milestone_bogus_milestone_relationship_type(self):
@@ -117,7 +137,7 @@ class MilestonesApiTestCase(TestCase):
 
     def test_get_course_milestones(self):
         """ Unit Test """
-        requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
+        api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key, 'requires')
         self.assertEqual(len(requirer_milestones), 1)
 
@@ -129,19 +149,22 @@ class MilestonesApiTestCase(TestCase):
             'namespace': namespace,
             'description': 'Local Milestone 1 Description'
         })
-        requirer = api.add_course_milestone(self.test_course_key, 'requires', milestone1)
+        api.add_course_milestone(self.test_course_key, 'requires', milestone1)
 
         milestone2 = api.add_milestone({
             'name': 'Local Milestone 2',
             'namespace': namespace,
             'description': 'Local Milestone 2 Description'
         })
-        requirer = api.add_course_milestone(self.test_course_key, 'requires', milestone2)
+        api.add_course_milestone(self.test_course_key, 'requires', milestone2)
 
         # Confirm that the course has only two milestones, and that the User still needs to collect both
         course_milestones = api.get_course_milestones(self.test_course_key)
         self.assertEqual(len(course_milestones), 2)
-        required_milestones = api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)
+        required_milestones = api.get_course_required_milestones(
+            self.test_course_key,
+            self.serialized_test_user
+        )
 
         # Link the User to Milestone 2 (this one is now 'collected')
         api.add_user_milestone(self.serialized_test_user, milestone2)
@@ -150,7 +173,10 @@ class MilestonesApiTestCase(TestCase):
         self.assertEqual(user_milestones[0]['id'], milestone2['id'])
 
         # Only Milestone 1 should be listed as 'required' for the course at this point
-        required_milestones = api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)
+        required_milestones = api.get_course_required_milestones(
+            self.test_course_key,
+            self.serialized_test_user
+        )
         self.assertEqual(len(required_milestones), 1)
         self.assertEqual(required_milestones[0]['id'], milestone1['id'])
 
@@ -160,20 +186,33 @@ class MilestonesApiTestCase(TestCase):
         self.assertEqual(len(user_milestones), 2)
 
         # And there should be no more Milestones required for this User+Course
-        required_milestones = api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)
+        required_milestones = api.get_course_required_milestones(
+            self.test_course_key,
+            self.serialized_test_user
+        )
         self.assertEqual(len(required_milestones), 0)
 
     def test_get_courses_milestones(self):
         """ Unit Test """
-        requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
-        requirer = api.add_course_milestone(self.test_prerequisite_course_key, 'requires', self.test_milestone)
-        requirer_milestones = api.get_courses_milestones([self.test_course_key, self.test_prerequisite_course_key],
-                                                         'requires')
+        api.add_course_milestone(
+            self.test_course_key,
+            'requires',
+            self.test_milestone
+        )
+        api.add_course_milestone(
+            self.test_prerequisite_course_key,
+            'requires',
+            self.test_milestone
+        )
+        requirer_milestones = api.get_courses_milestones(
+            [self.test_course_key, self.test_prerequisite_course_key],
+            'requires'
+        )
         self.assertEqual(len(requirer_milestones), 2)
 
     def test_remove_course_milestone(self):
         """ Unit Test """
-        requirer = api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
+        api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key, 'requires')
         self.assertEqual(len(requirer_milestones), 1)
         api.remove_course_milestone(self.test_course_key, self.test_milestone)
@@ -188,41 +227,96 @@ class MilestonesApiTestCase(TestCase):
 
     def test_add_course_content_milestone(self):
         """ Unit Test """
-        requirer = api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'requires', self.test_milestone)
-        requirer_milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key, 'requires')
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'requires',
+            self.test_milestone
+        )
+        requirer_milestones = api.get_course_content_milestones(
+            self.test_course_key,
+            self.test_content_key,
+            'requires'
+        )
         self.assertEqual(len(requirer_milestones), 1)
 
-        fulfiller = api.add_course_content_milestone(self.test_prerequisite_course_key, self.test_content_key, 'fulfills', self.test_milestone)
-        fulfiller_milestones = api.get_course_content_milestones(self.test_prerequisite_course_key, self.test_content_key, 'fulfills')
+        api.add_course_content_milestone(
+            self.test_prerequisite_course_key,
+            self.test_content_key,
+            'fulfills',
+            self.test_milestone
+        )
+        fulfiller_milestones = api.get_course_content_milestones(
+            self.test_prerequisite_course_key,
+            self.test_content_key,
+            'fulfills'
+        )
         self.assertEqual(len(fulfiller_milestones), 1)
 
     def test_add_course_content_milestone_bogus_milestone_relationship_type(self):
         """ Unit Test """
         try:
-            api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'whatever', self.test_milestone)
+            api.add_course_content_milestone(
+                self.test_course_key,
+                self.test_content_key,
+                'whatever',
+                self.test_milestone
+            )
             self.fail('Expected InvalidMilestoneRelationshipTypeException')
         except exceptions.InvalidMilestoneRelationshipTypeException:
             pass
 
     def test_get_course_content_milestones(self):
         """ Unit Test """
-        requirer = api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'requires', self.test_milestone)
-        requirer_milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key, 'requires')
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'requires',
+            self.test_milestone
+        )
+        requirer_milestones = api.get_course_content_milestones(
+            self.test_course_key,
+            self.test_content_key,
+            'requires'
+        )
         self.assertEqual(len(requirer_milestones), 1)
 
     def test_remove_course_content_milestone(self):
         """ Unit Test """
-        requirer = api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'requires', self.test_milestone)
-        requirer_milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key, 'requires')
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'requires',
+            self.test_milestone
+        )
+        requirer_milestones = api.get_course_content_milestones(
+            self.test_course_key,
+            self.test_content_key,
+            'requires'
+        )
         self.assertEqual(len(requirer_milestones), 1)
-        api.remove_course_content_milestone(self.test_course_key, self.test_content_key, self.test_milestone)
-        requirer_milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key)
+        api.remove_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            self.test_milestone
+        )
+        requirer_milestones = api.get_course_content_milestones(
+            self.test_course_key,
+            self.test_content_key
+        )
         self.assertEqual(len(requirer_milestones), 0)
 
     def test_remove_course_content_milestone_missing_milestone(self):
         """ Unit Test """
-        api.remove_course_content_milestone(self.test_course_key, self.test_content_key, self.test_milestone)
-        requirer_milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key)
+        api.remove_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            self.test_milestone
+        )
+        requirer_milestones = api.get_course_content_milestones(
+            self.test_course_key,
+            self.test_content_key
+        )
         self.assertEqual(len(requirer_milestones), 0)
 
     def test_add_user_milestone(self):
@@ -237,7 +331,7 @@ class MilestonesApiTestCase(TestCase):
 
     def test_remove_user_milestone(self):
         """ Unit Test """
-        user_milestone = api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+        api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
         api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertFalse(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
@@ -249,7 +343,7 @@ class MilestonesApiTestCase(TestCase):
 
     def test_user_has_milestone(self):
         """ Unit Test """
-        user_milestone = api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+        api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
         api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertFalse(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
@@ -258,8 +352,15 @@ class MilestonesApiTestCase(TestCase):
         """ Unit Test """
         api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 1)
-        api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'fulfills', self.test_milestone)
-        self.assertEqual(len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 1)
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'fulfills',
+            self.test_milestone
+        )
+        self.assertEqual(
+            len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 1)
         api.remove_course_references(self.test_course_key)
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 0)
-        self.assertEqual(len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 0)
+        self.assertEqual(
+            len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 0)

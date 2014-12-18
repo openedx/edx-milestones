@@ -52,7 +52,7 @@ def create_milestone(milestone):
     Returns a dictionary representation of the object
     """
     milestone_obj = serializers.deserialize_milestone(milestone)
-    milestone, __ = internal.Milestone.objects.get_or_create(
+    milestone, __ = internal.Milestone.objects.get_or_create(  # pylint: disable=invalid-name
         namespace=milestone_obj.namespace,
         name=milestone_obj.name,
         active=True,
@@ -123,7 +123,7 @@ def create_course_milestone(course_key, relationship, milestone):
     Inserts a new course-milestone into app/local state
     No response currently defined for this operation
     """
-    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(
+    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(  # pylint: disable=invalid-name
         name=relationship,
         active=True
     )
@@ -188,7 +188,7 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
     Inserts a new course-content-milestone into app/local state
     No response currently defined for this operation
     """
-    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(
+    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(  # pylint: disable=invalid-name
         name=relationship,
         active=True
     )

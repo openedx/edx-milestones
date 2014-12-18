@@ -15,7 +15,7 @@ import milestones.api as api
 
 # TEST_MODE is a local app setting, TRAVIS_MODE is for Travis CI builds
 try:
-    import util.signals as signals
+    import util.signals as signals  # pylint: disable=import-error
 except ImportError:
     if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
         import milestones.tests.mocks.signals as signals
