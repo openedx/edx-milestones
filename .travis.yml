@@ -17,6 +17,7 @@ script: coverage run ./manage.py test
 after_success: coveralls
 
 # command to generate console report (available in Travis CI console)
-script: coverage report -m
-script: pep8 milestones  --config=.pep8
-script: pylint milestones --rcfile=.pylintrc || exit 0
+script:
+    - coverage report -m
+    - pylint milestones --rcfile=.pylintrc --reports=no || exit 0
+    - pep8 milestones  --config=.pep8
