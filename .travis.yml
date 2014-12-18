@@ -18,10 +18,12 @@ install:
     - "pip install -r test_requirements.txt"
 
 
-# command to run tests
+# command to run tests and quality checks
 script:
-    - coverage run ./manage.py test -v2
+    - coverage run ./manage.py test
     - coverage report -m
-    - make validate
+    - pep8 --config=.pep8 milestones
+    - pylint --rcfile=.pylintrc milestones
+
 
 after_success: coveralls
