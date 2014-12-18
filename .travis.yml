@@ -19,5 +19,6 @@ after_success: coveralls
 # command to generate console report (available in Travis CI console)
 script:
     - coverage report -m
-    - pylint milestones --rcfile=.pylintrc --reports=no || exit 0
     - pep8 milestones  --config=.pep8
+    - pylint milestones --rcfile=.pylintrc --reports=no || exit 0
+
