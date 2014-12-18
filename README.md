@@ -1,4 +1,4 @@
-edx-milestones [![Build Status](https://travis-ci.org/edx/edx-milestones.svg?branch=master)](https://travis-ci.org/edx/edx-milestones) [![Coverage Status](https://coveralls.io/repos/edx/edx-milestones/badge.png?branch=master)](https://coveralls.io/r/edx/edx-milestones?branch=master)
+edx-milestones [![Build Status](https://travis-ci.org/edx/edx-milestones.svg?branch=master)](https://travis-ci.org/edx/edx-milestones) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-milestones.svg)](https://coveralls.io/r/edx/edx-milestones?branch=master)
 ===================
 
 edx-milestones (`milestones`) is a Django application which manages significant Course and/or Student events in the Open edX platform.
@@ -11,7 +11,7 @@ Usage
 
 *  Milestones supports the 'pre-requisite course' use case in the following way:
     * Course author selects Course 101 in Studio as a pre-requisite of Course 102
-        * Studio: 
+        * Studio:
             * Emits an 'added_course_prerequisite_course' signal
         * Milestones:
             * Observes the signal

@@ -15,7 +15,7 @@ import milestones.api as api
 
 # TEST_MODE is a local app setting, TRAVIS_MODE is for Travis CI builds
 if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
-    import tests.mocks.signals as signals
+    import  milestones.tests.mocks.signals as signals
 else:
     import util.signals as signals
 

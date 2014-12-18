@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """
 Database ORM models managed by this Django app
 Please do not integrate directly with these models!!!  This app currently

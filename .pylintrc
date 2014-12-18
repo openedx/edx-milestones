@@ -38,7 +38,9 @@ load-plugins=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-#disable=
+# I0011     locally-disabled   (module-level pylint overrides)
+# W0232     no-init            (for classes)
+disable=I0011,W0232
 
 
 [REPORTS]
