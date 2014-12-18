@@ -20,7 +20,7 @@ install:
 
 # command to run tests
 script:
-    - coverage -m run ./manage.py test
+    - coverage run ./manage.py test
     - make quality
 
 
