@@ -6,6 +6,9 @@ from models import Milestone
 
 
 def serialize_milestone(milestone):
+    """
+    Milestone object-to-dict serialization
+    """
     return {
         'id': milestone.id,
         'name': milestone.name,
@@ -15,6 +18,9 @@ def serialize_milestone(milestone):
 
 
 def serialize_milestone_with_course(course_milestone):
+    """
+    CourseMilestone serialization (composite object)
+    """
     return {
         'id': course_milestone.milestone.id,
         'name': course_milestone.milestone.name,
@@ -25,6 +31,10 @@ def serialize_milestone_with_course(course_milestone):
 
 
 def serialize_milestones(milestones):
+    """
+    Milestone serialization
+    Converts list of objects to list of dicts
+    """
     response_data = []
     for milestone in milestones:
         response_data.append(serialize_milestone(milestone))
@@ -32,6 +42,9 @@ def serialize_milestones(milestones):
 
 
 def deserialize_milestone(milestone_dict):
+    """
+    Milestone dict-to-object serialization
+    """
     return Milestone(
         id=milestone_dict.get('id'),
         name=milestone_dict.get('name'),

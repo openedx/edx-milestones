@@ -8,6 +8,9 @@ import data
 
 
 def course_key_is_valid(course_key):
+    """
+    Course key object validation
+    """
     if course_key is None:
         return False
     try:
@@ -18,6 +21,9 @@ def course_key_is_valid(course_key):
 
 
 def content_key_is_valid(content_key):
+    """
+    Course module/content/usage key object validation
+    """
     if content_key is None:
         return False
     try:
@@ -28,6 +34,9 @@ def content_key_is_valid(content_key):
 
 
 def milestone_is_valid(milestone):
+    """
+    Milestone object validation
+    """
     if milestone is None:
         return False
     if milestone.get('namespace') is None or len(milestone.get('namespace')) == 0:
@@ -36,6 +45,9 @@ def milestone_is_valid(milestone):
 
 
 def milestone_relationship_type_is_valid(name):
+    """
+    Milestone relationship type object validation
+    """
     valid_types = [
         'requires',
         'fulfills',
@@ -48,6 +60,9 @@ def milestone_relationship_type_is_valid(name):
 
 
 def user_is_valid(user):
+        """
+    User object validation
+    """
     if user is None:
         return False
     if not user.get('id', 0):

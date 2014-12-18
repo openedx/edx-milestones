@@ -23,7 +23,7 @@ script:
     - coverage run ./manage.py test
     - coverage report -m
     - pep8 --config=.pep8 milestones
-    - pylint --rcfile=.pylintrc milestones
+    - pylint --rcfile=.pylintrc milestones --report=no
 
 
 after_success: coveralls

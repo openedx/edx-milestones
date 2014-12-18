@@ -19,6 +19,7 @@ import validators
 
 # PRIVATE/INTERNAL FUNCTIONS
 def _raise_exception(entity_type, entity, exception):
+    """ Exception helper """
     raise exception(
         'The {} you have provided is not valid: {}'.format(entity_type, entity)
     )

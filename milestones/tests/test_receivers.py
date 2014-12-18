@@ -12,6 +12,9 @@ from mocks import signals as mock_signals
 class ReceiverTestCase(TestCase):
 
     def setUp(self):
+        """
+        Test Case scaffolding
+        """
         self.signal_log = []
         self.test_course_key = CourseKey.from_string('the/course/key')
         self.test_prerequisite_course_key = CourseKey.from_string('prerequisite/course/key')
@@ -22,8 +25,10 @@ class ReceiverTestCase(TestCase):
         }
 
     def test_on_course_deleted(self):
-        # Note, this test adds a milestone and two course links
-        # We're going to confirm that all three entities are removed
+        """
+        Note, this test adds a milestone and two course links
+        We're going to confirm that all three entities are removed
+        """
 
         # Add a new milestone and links to the system
         milestone = api.add_milestone(milestone=self.test_milestone_data)

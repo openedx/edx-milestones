@@ -48,6 +48,10 @@ def _get_relationship_type(relationship):
 
 # PUBLIC METHODS
 def create_milestone(milestone):
+    """
+    Inserts a new milestone into app/local state
+    Returns a dictionary representation of the object
+    """
     milestone_obj = serializers.deserialize_milestone(milestone)
     milestone, created = internal.Milestone.objects.get_or_create(
         namespace=milestone['namespace'],
@@ -61,6 +65,10 @@ def create_milestone(milestone):
 
 
 def update_milestone(milestone):
+    """
+    Updates an existing milestone in app/local state
+    Returns a dictionary representation of the object
+    """
     milestone_obj = serializers.deserialize_milestone(milestone)
     try:
         milestone = internal.Milestone.objects.get(id=milestone_obj.id)
@@ -74,6 +82,10 @@ def update_milestone(milestone):
 
 
 def delete_milestone(milestone):
+    """
+    Deletes an existing milestone from app/local state
+    No return currently defined for this operation
+    """
     milestone_obj = serializers.deserialize_milestone(milestone)
     try:
         milestone_obj = internal.Milestone.objects.get(
@@ -87,6 +99,10 @@ def delete_milestone(milestone):
 
 
 def fetch_milestones(milestone, create=False):
+    """
+    Retrieves a set of matching milestones from app/local state
+    Returns a list-of-dicts representation of the object
+    """
     if milestone is None:
         return None
     milestone_obj = serializers.deserialize_milestone(milestone)
@@ -104,6 +120,10 @@ def fetch_milestones(milestone, create=False):
 
 
 def create_course_milestone(course_key, relationship, milestone):
+    """
+    Inserts a new course-milestone into app/local state
+    No response currently defined for this operation
+    """
     mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(
         name=relationship,
         active=True
@@ -118,6 +138,10 @@ def create_course_milestone(course_key, relationship, milestone):
 
 
 def delete_course_milestone(course_key, milestone):
+    """
+    Removes an existing course-milestone from app/local state
+    No response currently defined for this operation
+    """
     try:
         internal.CourseMilestone.objects.get(
             course_id=unicode(course_key),
@@ -161,6 +185,10 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
 
 
 def create_course_content_milestone(course_key, content_key, relationship, milestone):
+    """
+    Inserts a new course-content-milestone into app/local state
+    No response currently defined for this operation
+    """
     mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(
         name=relationship,
         active=True
@@ -176,6 +204,10 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
 
 
 def delete_course_content_milestone(course_key, content_key, milestone):
+    """
+    Removes an existing course-content-milestone from app/local state
+    No response currently defined for this operation
+    """
     try:
         internal.CourseContentMilestone.objects.get(
             course_id=unicode(course_key),
@@ -221,6 +253,10 @@ def fetch_course_content_milestones(course_key, content_key, relationship=None):
 
 
 def create_user_milestone(user, milestone):
+    """
+    Inserts a new user-milestone into app/local state
+    No response currently defined for this operation
+    """
     milestone_obj = serializers.deserialize_milestone(milestone)
     internal.UserMilestone.objects.get_or_create(
         user_id=user['id'],
@@ -230,6 +266,10 @@ def create_user_milestone(user, milestone):
 
 
 def delete_user_milestone(user, milestone):
+    """
+    Removes an existing user-milestone from app/local state
+    No response currently defined for this operation
+    """
     try:
         internal.UserMilestone.objects.get(
             user_id=user['id'],
@@ -263,5 +303,8 @@ def fetch_user_milestones(user, milestone=None):
 
 
 def delete_course_references(course_key):
+    """
+    Removes references to course keys within this app (ref: receivers.py and api.py)
+    """
     internal.CourseMilestone.objects.filter(course_id=unicode(course_key)).delete()
     internal.Milestone.objects.filter(namespace=unicode(course_key)).delete()
