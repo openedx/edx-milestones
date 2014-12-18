@@ -1,12 +1,22 @@
 language: python
+
 python:
   - "2.7"
+
 # command to install dependencies
 install:
     - "pip install coveralls"
+    - "pip install pep8"
+    - "pip install pylint"
     - "pip install -r requirements.txt"
     - "pip install -r test_requirements.txt"
+
 # command to run tests
 script: coverage run ./manage.py test
+
 after_success: coveralls
+
+# command to generate console report (available in Travis CI console)
 script: coverage report -m
+script: pep8
+script: pylint
