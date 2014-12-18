@@ -76,12 +76,12 @@ def edit_milestone(milestone):
     return edited_milestone
 
 
-def get_milestone(id):
+def get_milestone(milestone_id):
     """
     Retrieves the specified milestone
     """
     milestone = {
-        'id': id,
+        'id': milestone_id,
     }
     milestones = data.fetch_milestones(milestone)
     if not len(milestones):
@@ -101,14 +101,14 @@ def get_milestones(namespace):
     return data.fetch_milestones(milestone)
 
 
-def remove_milestone(id):
+def remove_milestone(milestone_id):
     """
     Removes the specified milestone
     """
     milestone = {
-        'id': id,
+        'id': milestone_id,
     }
-    milestones = data.delete_milestone(milestone)
+    data.delete_milestone(milestone)
 
 
 def add_course_milestone(course_key, relationship, milestone):
@@ -151,12 +151,15 @@ def get_courses_milestones(course_keys, relationship=None, user=None):
     'relationship': optional filter on milestone relationship type (string, eg: 'requires')
     Returns an array of dicts containing milestones
     """
-    [_validate_course_key(course_key) for course_key in course_keys]
+    [_validate_course_key(course_key) for course_key in course_keys]  # pylint: disable=expression-not-assigned
 
     if relationship is not None:
         _validate_milestone_relationship_type(relationship)
 
-    return data.fetch_courses_milestones(course_keys=course_keys, relationship=relationship, user=user)
+    return data.fetch_courses_milestones(
+        course_keys=course_keys,
+        relationship=relationship,
+        user=user)
 
 
 def remove_course_milestone(course_key, milestone):
@@ -196,7 +199,11 @@ def get_course_content_milestones(course_key, content_key, relationship=None):
     if relationship is not None:
         _validate_milestone_relationship_type(relationship)
 
-    return data.fetch_course_content_milestones(course_key=course_key, content_key=content_key, relationship=relationship)
+    return data.fetch_course_content_milestones(
+        course_key=course_key,
+        content_key=content_key,
+        relationship=relationship
+    )
 
 
 def remove_course_content_milestone(course_key, content_key, milestone):
@@ -206,7 +213,11 @@ def remove_course_content_milestone(course_key, content_key, milestone):
     _validate_course_key(course_key)
     _validate_content_key(content_key)
     _validate_milestone(milestone)
-    return data.delete_course_content_milestone(course_key=course_key, content_key=content_key, milestone=milestone)
+    return data.delete_course_content_milestone(
+        course_key=course_key,
+        content_key=content_key,
+        milestone=milestone
+    )
 
 
 def add_user_milestone(user, milestone):

@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 """
 Mock signals module -- use these to trick Milestones into thinking the system
 has broadcast a signal that it is listening for in receivers.py

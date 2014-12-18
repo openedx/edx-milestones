@@ -24,8 +24,6 @@ if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
 else:
     import milestones.resources as remote
 """
-from django.conf import settings
-
 import milestones.models as internal
 import milestones.serializers as serializers
 
@@ -54,12 +52,12 @@ def create_milestone(milestone):
     Returns a dictionary representation of the object
     """
     milestone_obj = serializers.deserialize_milestone(milestone)
-    milestone, created = internal.Milestone.objects.get_or_create(
-        namespace=milestone['namespace'],
-        name=milestone['name'],
+    milestone, __ = internal.Milestone.objects.get_or_create(
+        namespace=milestone_obj.namespace,
+        name=milestone_obj.name,
         active=True,
         defaults={
-            'description': milestone['description'],
+            'description': milestone_obj.description,
         }
     )
     return serializers.serialize_milestone(milestone)
@@ -99,7 +97,7 @@ def delete_milestone(milestone):
         pass
 
 
-def fetch_milestones(milestone, create=False):
+def fetch_milestones(milestone):
     """
     Retrieves a set of matching milestones from app/local state
     Returns a list-of-dicts representation of the object
@@ -125,7 +123,7 @@ def create_course_milestone(course_key, relationship, milestone):
     Inserts a new course-milestone into app/local state
     No response currently defined for this operation
     """
-    mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(
+    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(
         name=relationship,
         active=True
     )
@@ -190,7 +188,7 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
     Inserts a new course-content-milestone into app/local state
     No response currently defined for this operation
     """
-    mrt, created = internal.MilestoneRelationshipType.objects.get_or_create(
+    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(
         name=relationship,
         active=True
     )
