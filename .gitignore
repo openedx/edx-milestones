@@ -50,5 +50,6 @@ Desktop.ini
 nosetests.xml
 reports/
 coverage/
+htmlcov/
 acceptance_tests/*.png
 
