@@ -5,9 +5,6 @@ pipeline.  When they observe a signal they run the decorated operation.
 In this particular application, the receivers simply hand-off to the
 orchestration layer, which manages the application's workflows.
 """
-import os
-
-from django.conf import settings
 from django.dispatch import receiver
 
 import milestones.api as api

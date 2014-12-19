@@ -3,16 +3,12 @@
 """
 Milestones API Module Test Cases
 """
-from django.contrib.auth.models import User
-from django.test import TestCase
-
-from opaque_keys.edx.keys import CourseKey, UsageKey
-
 import milestones.api as api
 import milestones.exceptions as exceptions
+import milestones.tests.utils as utils
 
 
-class MilestonesApiTestCase(TestCase):
+class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
     """
     Main Test Case module for Milestones API
     """
@@ -20,17 +16,7 @@ class MilestonesApiTestCase(TestCase):
         """
         Milestones API Test Case scaffolding
         """
-        self.test_course_key = CourseKey.from_string('the/course/key')
-        self.test_prerequisite_course_key = CourseKey.from_string('the/prerequisite/key')
-        self.test_content_key = UsageKey.from_string('i4x://the/content/key/12345678')
-        self.test_user = User.objects.create(
-            first_name='Test',
-            last_name='User',
-            email='test_user@edx.org',
-            username='test_user',
-            password='ABcd12!@'
-        )
-        self.serialized_test_user = self.test_user.__dict__
+        super(MilestonesApiTestCase, self).setUp()
         self.test_milestone = api.add_milestone({
             'name': 'Test Milestone',
             'namespace': unicode(self.test_course_key),
@@ -350,7 +336,6 @@ class MilestonesApiTestCase(TestCase):
             self.fail('Expected InvalidMilestoneRelationshipTypeException')  # pragma: no cover
         except exceptions.InvalidMilestoneRelationshipTypeException:
             pass
-
 
     def test_get_course_content_milestones(self):
         """ Unit Test: test_get_course_content_milestones """

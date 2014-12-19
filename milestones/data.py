@@ -115,6 +115,7 @@ def fetch_milestones(milestone):
         ))
     return []
 
+
 def create_course_milestone(course_key, relationship, milestone):
     """
     Inserts a new course-milestone into app/local state
