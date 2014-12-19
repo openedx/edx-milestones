@@ -31,6 +31,7 @@ class ReceiverTestCase(TestCase):
 
     def test_on_course_deleted(self):
         """
+        Unit Test: test_on_course_deleted
         Note, this test adds a milestone and two course links
         We're going to confirm that all three entities are removed
         """

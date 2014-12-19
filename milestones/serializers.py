@@ -30,6 +30,20 @@ def serialize_milestone_with_course(course_milestone):
     }
 
 
+def serialize_milestone_with_course_content(course_content_milestone):
+    """
+    CourseContentMilestone serialization (composite object)
+    """
+    return {
+        'id': course_content_milestone.milestone.id,
+        'name': course_content_milestone.milestone.name,
+        'namespace': course_content_milestone.milestone.namespace,
+        'description': course_content_milestone.milestone.description,
+        'course_id': course_content_milestone.course_id,
+        'content_id': course_content_milestone.content_id
+    }
+
+
 def serialize_milestones(milestones):
     """
     Milestone serialization

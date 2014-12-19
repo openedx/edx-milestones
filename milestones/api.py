@@ -159,6 +159,28 @@ def get_course_required_milestones(course_key, user):
     return required_milestones
 
 
+def get_course_milestones_fulfillment_paths(course_key, user):
+    """
+    Returns a collection composed of the possible fulfillment/collection opportunites
+    """
+    _validate_course_key(course_key)
+    _validate_user(user)
+    # Retrieve the outstanding milestones for this course, for this user
+    required_milestones = data.fetch_courses_milestones([course_key], 'requires', user)
+
+    # Build the set of fulfillment paths for the outstanding milestones
+    fulfillment_paths = {}
+    for milestone in required_milestones:
+        dict_key = 'milestone_{}'.format(milestone['id'])
+        fulfillment_paths[dict_key] = {}
+        fulfillment_paths[dict_key]['courses'] = \
+            data.fetch_milestone_courses(milestone, 'fulfills')
+        fulfillment_paths[dict_key]['content'] = \
+            data.fetch_milestone_course_content(milestone, 'fulfills')
+    print fulfillment_paths
+    return fulfillment_paths
+
+
 def get_courses_milestones(course_keys, relationship=None, user=None):
     """
     Retrieves the set of milestones for list of courses

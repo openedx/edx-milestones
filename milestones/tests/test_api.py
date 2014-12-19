@@ -59,7 +59,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         api.edit_milestone(self.test_milestone)
 
     def test_edit_milestone_missing_namespace(self):
-        """ Unit Test """
+        """ Unit Test: test_edit_milestone_missing_namespace """
         self.test_milestone['namespace'] = ''
         try:
             api.edit_milestone(self.test_milestone)
@@ -68,7 +68,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             pass
 
     def test_edit_milestone_bogus_milestone(self):
-        """ Unit Test """
+        """ Unit Test: test_edit_milestone_bogus_milestone """
         self.test_milestone['id'] = 12345
         self.test_milestone['namespace'] = 'bogus.milestones'
         try:
@@ -292,7 +292,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         self.assertEqual(len(fulfiller_milestones), 1)
 
     def test_add_course_content_milestone_bogus_content_key(self):
-        """ Unit Test """
+        """ Unit Test: test_add_course_content_milestone_bogus_content_key """
         try:
             api.add_course_content_milestone(
                 self.test_course_key,
@@ -414,26 +414,26 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
     def test_remove_user_milestone(self):
-        """ Unit Test """
+        """ Unit Test: test_remove_user_milestone """
         api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
         api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertFalse(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
     def test_remove_user_milestone_missing_milestone(self):
-        """ Unit Test """
+        """ Unit Test: test_remove_user_milestone_missing_milestone """
         api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertFalse(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
     def test_user_has_milestone(self):
-        """ Unit Test """
+        """ Unit Test: test_user_has_milestone """
         api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
         api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertFalse(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
     def test_remove_course_references(self):
-        """ Unit Test """
+        """ Unit Test: test_remove_course_references """
         api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 1)
         api.add_course_content_milestone(
@@ -448,3 +448,79 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 0)
         self.assertEqual(
             len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 0)
+
+    def test_get_course_milestones_fulfillment_paths(self):
+        """
+        Unit Test: test_get_course_milestones_fulfillment_paths
+        """
+        api.add_course_milestone(
+            self.test_course_key,
+            'requires',
+            self.test_milestone
+        )
+        local_requires_milestone = api.add_milestone({
+            'name': 'Local Requires Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Requires Milestone Description'
+        })
+        api.add_course_milestone(
+            self.test_course_key,
+            'requires',
+            local_requires_milestone
+        )
+        local_fulfills_milestone = api.add_milestone({
+            'name': 'Local Fulfills Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Fulfills Milestone Description'
+        })
+        api.add_course_milestone(
+            self.test_course_key,
+            'fulfills',
+            local_fulfills_milestone
+        )
+        api.add_course_milestone(
+            self.test_prerequisite_course_key,
+            'fulfills',
+            self.test_milestone
+        )
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'fulfills',
+            self.test_milestone
+        )
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'fulfills',
+            local_requires_milestone
+        )
+        paths = api.get_course_milestones_fulfillment_paths(
+            self.test_course_key,
+            self.serialized_test_user
+        )
+        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 0)
+        self.assertEqual(
+            len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
+            2
+        )
+        self.assertEqual(len(paths['milestone_1']['content']), 1)
+        self.assertEqual(len(paths['milestone_1']['courses']), 1)
+        self.assertEqual(len(paths['milestone_2']['content']), 1)
+        self.assertEqual(len(paths['milestone_2']['courses']), 0)
+
+        api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+
+        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 1)
+        self.assertEqual(
+            len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
+            1
+        )
+
+        paths = api.get_course_milestones_fulfillment_paths(
+            self.test_course_key,
+            self.serialized_test_user
+        )
+        self.assertFalse('milestone_1' in paths)
+        self.assertEqual(len(paths['milestone_2']['content']), 1)
+        self.assertEqual(len(paths['milestone_2']['courses']), 0)

@@ -169,8 +169,10 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     # To pull the list of milestones a user HAS, use get_user_milestones
     # Use fetch_courses_milestones to pull the list of milestones that a user does not yet
     # have for the specified course
+    print len(queryset)
     if relationship == 'requires' and user and user.get('id', 0) > 0:
         queryset = queryset.exclude(milestone__usermilestone__user_id=user['id'])
+    print len(queryset)
 
     # Assemble the response container
     course_milestones = []
@@ -218,8 +220,9 @@ def delete_course_content_milestone(course_key, content_key, milestone):
 
 def fetch_course_content_milestones(course_key, content_key, relationship=None):
     """
-    Retrieves the set of milestones currently linked to the specified course
+    Retrieves the set of milestones currently linked to the specified course content
     Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
+    Optionally pass in 'user' to further-filter the set (ex. for retrieving unfulfilled milestones)
     """
     if relationship is None:
         queryset = internal.Milestone.objects.filter(
@@ -240,6 +243,61 @@ def fetch_course_content_milestones(course_key, content_key, relationship=None):
         for milestone in queryset:
             course_content_milestones.append(serializers.serialize_milestone(milestone))
     return course_content_milestones
+
+
+def fetch_milestone_courses(milestone, relationship=None):
+    """
+    Retrieves the set of courses currently linked to the specified milestone
+    Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
+    """
+    milestone_obj = serializers.deserialize_milestone(milestone)
+    queryset = internal.CourseMilestone.objects.filter(
+        milestone=milestone_obj,
+        active=True
+    ).select_related('milestone')
+
+    # if milestones relationship type found then apply the filter
+    if relationship is not None:  # pragma: no cover
+        mrt = _get_milestone_relationship_type(relationship)
+        queryset = queryset.filter(
+            milestone_relationship_type=mrt.id,
+        )
+
+    # Assemble the response container
+    milestone_courses = []
+    if len(queryset):
+        for milestone in queryset:
+            milestone_courses.append(serializers.serialize_milestone_with_course(milestone))
+
+    return milestone_courses
+
+
+def fetch_milestone_course_content(milestone, relationship=None):
+    """
+    Retrieves the set of course content modules currently linked to the specified milestone
+    Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
+    """
+    milestone_obj = serializers.deserialize_milestone(milestone)
+    queryset = internal.CourseContentMilestone.objects.filter(
+        milestone=milestone_obj,
+        active=True
+    ).select_related('milestone')
+
+    # if milestones relationship type found then apply the filter
+    if relationship is not None:  # pragma: no cover
+        mrt = _get_milestone_relationship_type(relationship)
+        queryset = queryset.filter(
+            milestone_relationship_type=mrt.id,
+        )
+
+    # Assemble the response container
+    milestone_course_content = []
+    for milestone in queryset:
+        milestone_course_content.append(
+            serializers.serialize_milestone_with_course_content(milestone)
+        )
+
+    return milestone_course_content
 
 
 def create_user_milestone(user, milestone):
