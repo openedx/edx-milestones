@@ -24,25 +24,23 @@ if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
 else:
     import milestones.resources as remote
 """
+import milestones.exceptions as exceptions
 import milestones.models as internal
 import milestones.serializers as serializers
 
 
 # PRIVATE/INTERNAL METHODS
-def _get_relationship_type(relationship):
+def _get_milestone_relationship_type(relationship):
     """
     Retrieves milestone relationship type object from backend
     """
-    mrt = None
-    if relationship:
-        try:
-            mrt = internal.MilestoneRelationshipType.objects.get(
-                name=relationship,
-                active=True
-            )
-        except internal.MilestoneRelationshipType.DoesNotExist:
-            mrt = None
-    return mrt
+    try:
+        return internal.MilestoneRelationshipType.objects.get(
+            name=relationship,
+            active=True
+        )
+    except internal.MilestoneRelationshipType.DoesNotExist:
+        raise exceptions.InvalidMilestoneRelationshipTypeException()
 
 
 # PUBLIC METHODS
@@ -76,7 +74,7 @@ def update_milestone(milestone):
         milestone.description = milestone_obj.description
         milestone.active = milestone_obj.active
     except internal.Milestone.DoesNotExist:
-        return None
+        raise exceptions.InvalidMilestoneException()
     return serializers.serialize_milestone(milestone)
 
 
@@ -103,20 +101,19 @@ def fetch_milestones(milestone):
     Returns a list-of-dicts representation of the object
     """
     if milestone is None:
-        return None
+        raise exceptions.InvalidMilestoneException()
     milestone_obj = serializers.deserialize_milestone(milestone)
     if milestone_obj.id is not None:
-        milestones = internal.Milestone.objects.filter(
+        return serializers.serialize_milestones(internal.Milestone.objects.filter(
             id=milestone_obj.id,
             active=True,
-        )
-    elif milestone_obj.namespace is not None:
-        milestones = internal.Milestone.objects.filter(
+        ))
+    if milestone_obj.namespace is not None:
+        return serializers.serialize_milestones(internal.Milestone.objects.filter(
             namespace=milestone_obj.namespace,
             active=True
-        )
-    return serializers.serialize_milestones(milestones)
-
+        ))
+    return []
 
 def create_course_milestone(course_key, relationship, milestone):
     """
@@ -162,8 +159,8 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     ).select_related('milestone')
 
     # if milestones relationship type found then apply the filter
-    mrt = _get_relationship_type(relationship)
-    if mrt:
+    if relationship is not None:
+        mrt = _get_milestone_relationship_type(relationship)
         queryset = queryset.filter(
             milestone_relationship_type=mrt.id,
         )
@@ -230,14 +227,7 @@ def fetch_course_content_milestones(course_key, content_key, relationship=None):
             active=True
         )
     else:
-        try:
-            mrt = internal.MilestoneRelationshipType.objects.get(
-                name=relationship,
-                active=True
-            )
-        except internal.MilestoneRelationshipType.DoesNotExist:
-            # If the relationship type doesn't exist then we can't do much more
-            return None
+        mrt = _get_milestone_relationship_type(relationship)
         queryset = internal.Milestone.objects.filter(
             coursecontentmilestone__course_id=unicode(course_key),
             coursecontentmilestone__content_id=unicode(content_key),

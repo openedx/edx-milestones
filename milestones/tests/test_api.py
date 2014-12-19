@@ -54,7 +54,7 @@ class MilestonesApiTestCase(TestCase):
                 'namespace': '',  # Should throw an exception
                 'description': 'Local Milestone Description'
             })
-            self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')
+            self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')  # pragma: no cover
         except exceptions.InvalidMilestoneException:
             pass
 
@@ -63,7 +63,7 @@ class MilestonesApiTestCase(TestCase):
                 'name': 'Local Milestone',  # Missing namespace should throw exception
                 'description': 'Local Milestone Description'
             })
-            self.fail('Missing Milestone Namespace: Expected InvalidMilestoneException')
+            self.fail('Missing Milestone Namespace: Expected InvalidMilestoneException')  # pragma: no cover
         except exceptions.InvalidMilestoneException:
             pass
 
@@ -77,7 +77,7 @@ class MilestonesApiTestCase(TestCase):
         self.test_milestone['namespace'] = ''
         try:
             api.edit_milestone(self.test_milestone)
-            self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')
+            self.fail('Empty Milestone Namespace: Expected InvalidMilestoneException')  # pragma: no cover
         except exceptions.InvalidMilestoneException:
             pass
 
@@ -87,7 +87,12 @@ class MilestonesApiTestCase(TestCase):
         self.test_milestone['namespace'] = 'bogus.milestones'
         try:
             api.edit_milestone(self.test_milestone)
-            self.fail('Milestone Not Found: Expected InvalidMilestoneException')
+            self.fail('Milestone Not Found: Expected InvalidMilestoneException')  # pragma: no cover
+        except exceptions.InvalidMilestoneException:
+            pass
+        try:
+            api.edit_milestone(None)
+            self.fail('Milestone Not Found: Expected InvalidMilestoneException')  # pragma: no cover
         except exceptions.InvalidMilestoneException:
             pass
 
@@ -120,6 +125,15 @@ class MilestonesApiTestCase(TestCase):
         milestone = api.get_milestone(self.test_milestone['id'])
         self.assertIsNone(milestone)
 
+    def test_remove_milestone_bogus_milestone(self):
+        """ Unit Test: test_remove_milestone_bogus_milestone """
+        api.remove_milestone(self.test_milestone['id'])
+        milestone = api.get_milestone(self.test_milestone['id'])
+        self.assertIsNone(milestone)
+        api.remove_milestone(self.test_milestone['id'])
+        milestone = api.get_milestone(self.test_milestone['id'])
+        self.assertIsNone(milestone)
+
     def test_add_course_milestone(self):
         """ Unit Test: test_add_course_milestone """
         api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
@@ -138,10 +152,15 @@ class MilestonesApiTestCase(TestCase):
         self.assertEqual(len(fulfiller_milestones), 1)
 
     def test_add_course_milestone_bogus_course_key(self):
-        """ Unit Test: test_add_course_milestone_bogus_milestone_relationship_type """
+        """ Unit Test: test_add_course_milestone_bogus_course_key """
         try:
             api.add_course_milestone('12345667av', 'whatever', self.test_milestone)
-            self.fail('Expected InvalidCourseKeyException')
+            self.fail('Expected InvalidCourseKeyException')  # pragma: no cover
+        except exceptions.InvalidCourseKeyException:
+            pass
+        try:
+            api.add_course_milestone(None, 'whatever', self.test_milestone)
+            self.fail('Expected InvalidCourseKeyException')  # pragma: no cover
         except exceptions.InvalidCourseKeyException:
             pass
 
@@ -149,7 +168,7 @@ class MilestonesApiTestCase(TestCase):
         """ Unit Test: test_add_course_milestone_bogus_milestone_relationship_type """
         try:
             api.add_course_milestone(self.test_course_key, 'whatever', self.test_milestone)
-            self.fail('Expected InvalidMilestoneRelationshipTypeException')
+            self.fail('Expected InvalidMilestoneRelationshipTypeException')  # pragma: no cover
         except exceptions.InvalidMilestoneRelationshipTypeException:
             pass
 
@@ -222,10 +241,15 @@ class MilestonesApiTestCase(TestCase):
             'requires',
             self.test_milestone
         )
+        local_milestone = api.add_milestone({
+            'name': 'Local Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone Description'
+        })
         api.add_course_milestone(
-            'another/course/key',
+            self.test_course_key,
             'fulfills',
-            self.test_milestone
+            local_milestone
         )
         requirer_milestones = api.get_courses_milestones(
             [self.test_course_key, self.test_prerequisite_course_key],
@@ -290,7 +314,17 @@ class MilestonesApiTestCase(TestCase):
                 'whatever',
                 self.test_milestone
             )
-            self.fail('Expected InvalidContentKeyException')
+            self.fail('Expected InvalidContentKeyException')  # pragma: no cover
+        except exceptions.InvalidContentKeyException:
+            pass
+        try:
+            api.add_course_content_milestone(
+                self.test_course_key,
+                None,
+                'whatever',
+                self.test_milestone
+            )
+            self.fail('Expected InvalidContentKeyException')  # pragma: no cover
         except exceptions.InvalidContentKeyException:
             pass
 
@@ -303,9 +337,20 @@ class MilestonesApiTestCase(TestCase):
                 'whatever',
                 self.test_milestone
             )
-            self.fail('Expected InvalidMilestoneRelationshipTypeException')
+            self.fail('Expected InvalidMilestoneRelationshipTypeException')  # pragma: no cover
         except exceptions.InvalidMilestoneRelationshipTypeException:
             pass
+        try:
+            api.add_course_content_milestone(
+                self.test_course_key,
+                self.test_content_key,
+                None,
+                self.test_milestone
+            )
+            self.fail('Expected InvalidMilestoneRelationshipTypeException')  # pragma: no cover
+        except exceptions.InvalidMilestoneRelationshipTypeException:
+            pass
+
 
     def test_get_course_content_milestones(self):
         """ Unit Test: test_get_course_content_milestones """
@@ -369,7 +414,12 @@ class MilestonesApiTestCase(TestCase):
         """ Unit Test: test_add_user_milestone_bogus_user """
         try:
             api.add_user_milestone({'identifier': 'abcd'}, self.test_milestone)
-            self.fail('Expected InvalidUserException')
+            self.fail('Expected InvalidUserException')  # pragma: no cover
+        except exceptions.InvalidUserException:
+            pass
+        try:
+            api.add_user_milestone(None, self.test_milestone)
+            self.fail('Expected InvalidUserException')  # pragma: no cover
         except exceptions.InvalidUserException:
             pass
 

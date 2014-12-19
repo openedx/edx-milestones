@@ -18,41 +18,55 @@ import milestones.validators as validators
 
 
 # PRIVATE/INTERNAL FUNCTIONS
-def _raise_exception(entity_type, entity, exception):
-    """ Exception helper """
-    raise exception(
-        'The {} you have provided is not valid: {}'.format(entity_type, entity)
-    )
-
 
 def _validate_course_key(course_key):
     """ Validation helper """
     if not validators.course_key_is_valid(course_key):
-        _raise_exception("CourseKey", course_key, exceptions.InvalidCourseKeyException)
+        exceptions.raise_exception(
+            "CourseKey",
+            course_key,
+            exceptions.InvalidCourseKeyException
+        )
 
 
 def _validate_content_key(content_key):
     """ Validation helper """
     if not validators.content_key_is_valid(content_key):
-        _raise_exception("ContentKey", content_key, exceptions.InvalidContentKeyException)
+        exceptions.raise_exception(
+            "ContentKey",
+            content_key,
+            exceptions.InvalidContentKeyException
+        )
 
 
 def _validate_milestone(milestone):
     """ Validation helper """
     if not validators.milestone_is_valid(milestone):
-        _raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
+        exceptions.raise_exception(
+            "Milestone",
+            milestone,
+            exceptions.InvalidMilestoneException
+        )
 
 
 def _validate_milestone_relationship_type(name):
     """ Validation helper """
     if not validators.milestone_relationship_type_is_valid(name):
-        _raise_exception("MilestoneRelationshipType", name, exceptions.InvalidMilestoneRelationshipTypeException)
+        exceptions.raise_exception(
+            "MilestoneRelationshipType",
+            name,
+            exceptions.InvalidMilestoneRelationshipTypeException
+        )
 
 
 def _validate_user(user):
     """ Validation helper """
     if not validators.user_is_valid(user):
-        _raise_exception("User", user, exceptions.InvalidUserException)
+        exceptions.raise_exception(
+            "User",
+            user,
+            exceptions.InvalidUserException
+        )
 
 
 # PUBLIC FUNCTIONS
@@ -70,10 +84,10 @@ def edit_milestone(milestone):
     Passes an updated milestone to the data layer for storage
     """
     _validate_milestone(milestone)
-    edited_milestone = data.update_milestone(milestone)
-    if edited_milestone is None:
-        _raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
-    return edited_milestone
+    try:
+        return data.update_milestone(milestone)
+    except exceptions.InvalidMilestoneException:
+        raise
 
 
 def get_milestone(milestone_id):
