@@ -56,12 +56,6 @@ class ReceiverTestCase(TestCase):
             course_key=self.test_prerequisite_course_key
         )
 
-        # Confirm the milestone and links no longer exist
-        milestones = api.get_milestones(namespace=unicode(self.test_prerequisite_course_key))
-        self.assertEqual(len(milestones), 0)
-
-        course_milestones = api.get_course_milestones(course_key=self.test_course_key)
-        self.assertEqual(len(course_milestones), 0)
-
+        # Confirm the course relationship no longer exists
         prereq_milestones = api.get_course_milestones(course_key=self.test_prerequisite_course_key)
         self.assertEqual(len(prereq_milestones), 0)

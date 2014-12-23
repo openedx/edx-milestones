@@ -52,13 +52,23 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
             'namespace': unicode(self.test_course_key),
             'description': 'Test Milestone Description',
         })
-        api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'requires', milestone1)
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'requires',
+            milestone1
+        )
         milestone2 = api.add_milestone({
             'name': 'Test Milestone 2',
             'namespace': unicode(self.test_course_key),
             'description': 'Test Milestone Description 2',
         })
-        api.add_course_content_milestone(self.test_course_key, self.test_content_key, 'fulfills', milestone2)
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'fulfills',
+            milestone2
+        )
         try:
             data.fetch_course_content_milestones(
                 self.test_course_key,
@@ -84,3 +94,26 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
 
         milestones = data.fetch_milestones(milestone={})
         self.assertEqual(len(milestones), 0)
+
+    def test_fetch_course_content_milestones_null_keys(self):
+        """ Unit Test: test_fetch_courses_milestones_invalid_milestone"""
+        namespace = '{}.entrance_exams'.format(unicode(self.test_course_key))
+        milestone1 = api.add_milestone({
+            'name': 'Test Milestone',
+            'namespace': namespace,
+            'description': 'Test Milestone Description',
+        })
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'requires',
+            milestone1
+        )
+        milestones = data.fetch_milestones(milestone={'namespace': namespace})
+        self.assertEqual(len(milestones), 1)
+
+        ccms = data.fetch_course_content_milestones(None, self.test_content_key, relationship=None)
+        self.assertEqual(len(ccms), 1)
+
+        ccms = data.fetch_course_content_milestones(self.test_course_key, None, relationship=None)
+        self.assertEqual(len(ccms), 1)

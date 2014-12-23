@@ -84,15 +84,22 @@ def delete_milestone(milestone):
     No return currently defined for this operation
     """
     milestone_obj = serializers.deserialize_milestone(milestone)
-    try:
-        milestone_obj = internal.Milestone.objects.get(
-            id=milestone_obj.id,
-            active=True
-        )
-        milestone_obj.active = False
-        milestone_obj.save()
-    except internal.Milestone.DoesNotExist:
-        pass
+    _delete_milestone(milestone_obj)
+
+
+def _delete_milestone(milestone):
+    """
+    Internal helper for milestone removals -- also removes defined dependencies
+    """
+    # Remove related entities, and then remove the Milestone
+    internal.CourseMilestone.objects.filter(
+        milestone=milestone.id).delete()
+    internal.CourseContentMilestone.objects.filter(
+        milestone=milestone.id).delete()
+    internal.UserMilestone.objects.filter(
+        milestone=milestone.id).delete()
+    internal.Milestone.objects.filter(
+        id=milestone.id).delete()
 
 
 def fetch_milestones(milestone):
@@ -169,10 +176,8 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     # To pull the list of milestones a user HAS, use get_user_milestones
     # Use fetch_courses_milestones to pull the list of milestones that a user does not yet
     # have for the specified course
-    print len(queryset)
     if relationship == 'requires' and user and user.get('id', 0) > 0:
         queryset = queryset.exclude(milestone__usermilestone__user_id=user['id'])
-    print len(queryset)
 
     # Assemble the response container
     course_milestones = []
@@ -224,24 +229,26 @@ def fetch_course_content_milestones(course_key, content_key, relationship=None):
     Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
     Optionally pass in 'user' to further-filter the set (ex. for retrieving unfulfilled milestones)
     """
-    if relationship is None:
-        queryset = internal.Milestone.objects.filter(
-            coursecontentmilestone__course_id=unicode(course_key),
-            coursecontentmilestone__content_id=unicode(content_key),
-            active=True
-        )
-    else:
+    queryset = internal.Milestone.objects.filter(active=True)
+
+    if course_key:
+        queryset = queryset.filter(coursecontentmilestone__course_id=unicode(course_key))
+
+    if content_key:
+        queryset = queryset.filter(coursecontentmilestone__content_id=unicode(content_key))
+
+    if relationship:
         mrt = _get_milestone_relationship_type(relationship)
         queryset = internal.Milestone.objects.filter(
-            coursecontentmilestone__course_id=unicode(course_key),
-            coursecontentmilestone__content_id=unicode(content_key),
             coursecontentmilestone__milestone_relationship_type=mrt.id,
             active=True,
         )
+
     course_content_milestones = []
     if len(queryset):
         for milestone in queryset:
             course_content_milestones.append(serializers.serialize_milestone(milestone))
+
     return course_content_milestones
 
 
@@ -350,9 +357,17 @@ def fetch_user_milestones(user, milestone=None):
     return user_milestones
 
 
+def delete_content_references(content_key):
+    """
+    Removes references to content keys within this app (ref: api.py)
+    Supports the 'delete entrance exam' Studio use case, when Milestones is enabled
+    """
+    internal.CourseContentMilestone.objects.filter(content_id=unicode(content_key)).delete()
+
+
 def delete_course_references(course_key):
     """
     Removes references to course keys within this app (ref: receivers.py and api.py)
     """
     internal.CourseMilestone.objects.filter(course_id=unicode(course_key)).delete()
-    internal.Milestone.objects.filter(namespace=unicode(course_key)).delete()
+    internal.CourseContentMilestone.objects.filter(course_id=unicode(course_key)).delete()

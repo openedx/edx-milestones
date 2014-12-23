@@ -177,7 +177,6 @@ def get_course_milestones_fulfillment_paths(course_key, user):
             data.fetch_milestone_courses(milestone, 'fulfills')
         fulfillment_paths[dict_key]['content'] = \
             data.fetch_milestone_course_content(milestone, 'fulfills')
-    print fulfillment_paths
     return fulfillment_paths
 
 
@@ -225,7 +224,7 @@ def add_course_content_milestone(course_key, content_key, relationship, mileston
 
 def get_course_content_milestones(course_key, content_key, relationship=None):
     """
-    Retrieves the set of milestones for a given course module
+    Retrieves the set of milestones for a given course content module
     'relationship': optional filter on milestone relationship type (string, eg: 'requires')
     Returns an array of dicts containing milestones
     """
@@ -244,7 +243,7 @@ def get_course_content_milestones(course_key, content_key, relationship=None):
 
 def remove_course_content_milestone(course_key, content_key, milestone):
     """
-    Removes the specfied milestone from the specified course module
+    Removes the specified milestone from the specified course content module
     """
     _validate_course_key(course_key)
     _validate_content_key(content_key)
@@ -294,8 +293,17 @@ def user_has_milestone(user, milestone):
 
 def remove_course_references(course_key):
     """
-    Removes orphaned course references from application state
-    See lms/djangoapps/courseware/management/commands/delete_course_references.py
+    Removes course references from application state
+    See edx-platform/lms/djangoapps/courseware/management/commands/delete_course_references.py
     """
     _validate_course_key(course_key)
     data.delete_course_references(course_key)
+
+
+def remove_content_references(content_key):
+    """
+    Removes content references from application state
+    See edx-platform/cms/djangoapps/contentstore/views/entrance_exam.py:_delete_entrance_exam
+    """
+    _validate_content_key(content_key)
+    data.delete_content_references(content_key)

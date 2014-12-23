@@ -19,7 +19,7 @@ class Milestone(TimeStampedModel):
     describing the milestone, including id, name, and description.
     Milestones can be used to drive functionality and behavior 'behind
     the scenes' in Open edX, such as with the Pre-Requisite Course and
-    Course Pre-Assessment use cases.
+    Course Entrance Exam use cases.
     """
     namespace = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
@@ -59,7 +59,7 @@ class CourseMilestone(TimeStampedModel):
     of specifying CourseKeyFields in this model, as well as related ones
     below. In addition, a MilestoneRelationshipType specifies the
     particular sort of relationship that exists between the Course and
-    the Milestone, such as "Pre-Requisite".
+    the Milestone, such as "requires".
     """
     course_id = models.CharField(max_length=255, db_index=True)
     milestone = models.ForeignKey(Milestone, db_index=True)
@@ -69,10 +69,6 @@ class CourseMilestone(TimeStampedModel):
     class Meta:
         """ Meta class for this Django model """
         unique_together = (("course_id", "milestone"),)
-        # index_together = [
-        #     ["course_id", "milestone"],
-        #     ["course_id", "milestone", "milestone_relationship_type"],
-        # ]
 
 
 class CourseContentMilestone(TimeStampedModel):
@@ -84,7 +80,7 @@ class CourseContentMilestone(TimeStampedModel):
     of specifying LocationKeyFields in this model, as well as related
     ones. In addition, a MilestoneRelationshipType specifies the
     particular sort of relationship that exists between the Milestone
-    and the CourseContent, such as "Pre-Assessment" or "Entrance Exam".
+    and the CourseContent, such as "requires" or "fulfills".
     """
     course_id = models.CharField(max_length=255, db_index=True)
     content_id = models.CharField(max_length=255, db_index=True)
@@ -95,19 +91,14 @@ class CourseContentMilestone(TimeStampedModel):
     class Meta:
         """ Meta class for this Django model """
         unique_together = (("course_id", "content_id", "milestone"),)
-        # index_together = [
-        #     ["course_id", "content_id"],
-        #     ["course_id", "content_id", "milestone"],
-        #     ["course_id", "content_id", "milestone", "milestone_relationship_type"],
-        # ]
 
 
 class UserMilestone(TimeStampedModel):
     """
     A UserMilestone represents an stage reached or event experienced
     by a User during their interactions with the Open edX platform.
-    The addition of a MilestoneRelationshipType field in this model
-    allows for use cases such as "Goals", in which a User might keep
+    The future addition of a MilestoneRelationshipType field in this model
+    could support use cases such as "Goals", in which a User might keep
     a list of Milestones they are interested in attaining. Side Note: In
     the Mozilla Open Badges world, this collection concept is referred
     to as the user's "backpack".
@@ -120,6 +111,3 @@ class UserMilestone(TimeStampedModel):
     class Meta:
         """ Meta class for this Django model """
         unique_together = ("user_id", "milestone")
-        # index_together = [
-        #     ["user_id", "milestone"],
-        # ]

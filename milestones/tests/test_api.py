@@ -434,8 +434,11 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
 
     def test_remove_course_references(self):
         """ Unit Test: test_remove_course_references """
+        # Add a course dependency on the test milestone
         api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 1)
+
+        # Add a content fulfillment for the test milestone
         api.add_course_content_milestone(
             self.test_course_key,
             self.test_content_key,
@@ -444,8 +447,29 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         )
         self.assertEqual(
             len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 1)
+
+        # Remove the course dependency
         api.remove_course_references(self.test_course_key)
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 0)
+
+    def test_remove_content_references(self):
+        """ Unit Test: test_remove_content_references """
+        # Add a course dependency on the test milestone
+        api.add_course_milestone(self.test_course_key, 'requires', self.test_milestone)
+        self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 1)
+
+        # Add a content fulfillment for the test milestone
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'fulfills',
+            self.test_milestone
+        )
+        self.assertEqual(
+            len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 1)
+
+        # Remove the content dependency
+        api.remove_content_references(self.test_content_key)
         self.assertEqual(
             len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 0)
 
