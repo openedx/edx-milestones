@@ -173,10 +173,12 @@ def get_course_milestones_fulfillment_paths(course_key, user):
     for milestone in required_milestones:
         dict_key = 'milestone_{}'.format(milestone['id'])
         fulfillment_paths[dict_key] = {}
-        fulfillment_paths[dict_key]['courses'] = \
-            data.fetch_milestone_courses(milestone, 'fulfills')
-        fulfillment_paths[dict_key]['content'] = \
-            data.fetch_milestone_course_content(milestone, 'fulfills')
+        milestone_courses = data.fetch_milestone_courses(milestone, 'fulfills')
+        if len(milestone_courses):
+            fulfillment_paths[dict_key]['courses'] = milestone_courses
+        milestone_course_contnet = data.fetch_milestone_course_content(milestone, 'fulfills')
+        if len(milestone_course_content):
+            fulfillment_paths[dict_key]['content'] = milestone_course_content
     return fulfillment_paths
 
 
