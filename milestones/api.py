@@ -165,6 +165,7 @@ def get_course_milestones_fulfillment_paths(course_key, user):
     """
     _validate_course_key(course_key)
     _validate_user(user)
+
     # Retrieve the outstanding milestones for this course, for this user
     required_milestones = data.fetch_courses_milestones([course_key], 'requires', user)
 
@@ -176,7 +177,7 @@ def get_course_milestones_fulfillment_paths(course_key, user):
         milestone_courses = data.fetch_milestone_courses(milestone, 'fulfills')
         if len(milestone_courses):
             fulfillment_paths[dict_key]['courses'] = milestone_courses
-        milestone_course_contnet = data.fetch_milestone_course_content(milestone, 'fulfills')
+        milestone_course_content = data.fetch_milestone_course_content(milestone, 'fulfills')
         if len(milestone_course_content):
             fulfillment_paths[dict_key]['content'] = milestone_course_content
     return fulfillment_paths

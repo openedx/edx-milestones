@@ -264,7 +264,7 @@ def fetch_milestone_courses(milestone, relationship=None):
     ).select_related('milestone')
 
     # if milestones relationship type found then apply the filter
-    if relationship is not None:  # pragma: no cover
+    if relationship is not None:
         mrt = _get_milestone_relationship_type(relationship)
         queryset = queryset.filter(
             milestone_relationship_type=mrt.id,
@@ -291,7 +291,7 @@ def fetch_milestone_course_content(milestone, relationship=None):
     ).select_related('milestone')
 
     # if milestones relationship type found then apply the filter
-    if relationship is not None:  # pragma: no cover
+    if relationship is not None:
         mrt = _get_milestone_relationship_type(relationship)
         queryset = queryset.filter(
             milestone_relationship_type=mrt.id,

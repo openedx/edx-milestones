@@ -117,3 +117,28 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
 
         ccms = data.fetch_course_content_milestones(self.test_course_key, None, relationship=None)
         self.assertEqual(len(ccms), 1)
+
+    def test_fetch_milestone_courses_no_relationship_type(self):
+        """ Unit Test: test_fetch_milestone_courses_no_relationship_type"""
+        milestone1 = api.add_milestone({
+            'name': 'Test Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Test Milestone Description',
+        })
+        api.add_course_milestone(self.test_course_key, 'fulfills', milestone1)
+        self.assertEqual(len(data.fetch_milestone_courses(milestone1)), 1)
+
+    def test_fetch_milestone_course_content_no_relationship_type(self):
+        """ Unit Test: test_fetch_milestone_courses_no_relationship_type"""
+        milestone1 = api.add_milestone({
+            'name': 'Test Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Test Milestone Description',
+        })
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            'fulfills',
+            milestone1
+        )
+        self.assertEqual(len(data.fetch_milestone_course_content(milestone1)), 1)

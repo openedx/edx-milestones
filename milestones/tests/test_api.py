@@ -3,6 +3,8 @@
 """
 Milestones API Module Test Cases
 """
+from opaque_keys.edx.keys import UsageKey
+
 import milestones.api as api
 import milestones.exceptions as exceptions
 import milestones.tests.utils as utils
@@ -473,78 +475,140 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         self.assertEqual(
             len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 0)
 
-    def test_get_course_milestones_fulfillment_paths(self):
+    def test_get_course_milestones_fulfillment_paths(self):  # pylint: disable=too-many-statements
         """
         Unit Test: test_get_course_milestones_fulfillment_paths
         """
+        # Create three milestones in order tto cover all logical branches
+        local_milestone_1 = api.add_milestone({
+            'name': 'Local Milestone 1',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone 1 Description'
+        })
+        local_milestone_2 = api.add_milestone({
+            'name': 'Local Milestone 2',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone 2 Description'
+        })
+        local_milestone_3 = api.add_milestone({
+            'name': 'Local Milestone 3',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone 3 Description'
+        })
+
+        # Specify the milestone requirements
         api.add_course_milestone(
             self.test_course_key,
             'requires',
-            self.test_milestone
+            local_milestone_1
         )
-        local_requires_milestone = api.add_milestone({
-            'name': 'Local Requires Milestone',
-            'namespace': unicode(self.test_course_key),
-            'description': 'Local Requires Milestone Description'
-        })
         api.add_course_milestone(
             self.test_course_key,
             'requires',
-            local_requires_milestone
+            local_milestone_2
         )
-        local_fulfills_milestone = api.add_milestone({
-            'name': 'Local Fulfills Milestone',
-            'namespace': unicode(self.test_course_key),
-            'description': 'Local Fulfills Milestone Description'
-        })
         api.add_course_milestone(
             self.test_course_key,
+            'requires',
+            local_milestone_3
+        )
+
+        # Specify the milestone fulfillments (via course and content)
+        api.add_course_milestone(
+            self.test_prerequisite_course_key,
             'fulfills',
-            local_fulfills_milestone
+            local_milestone_1
         )
         api.add_course_milestone(
             self.test_prerequisite_course_key,
             'fulfills',
-            self.test_milestone
+            local_milestone_2
         )
         api.add_course_content_milestone(
             self.test_course_key,
-            self.test_content_key,
+            UsageKey.from_string('i4x://the/content/key/123456789'),
             'fulfills',
-            self.test_milestone
+            local_milestone_2
         )
         api.add_course_content_milestone(
             self.test_course_key,
-            self.test_content_key,
+            UsageKey.from_string('i4x://the/content/key/123456789'),
             'fulfills',
-            local_requires_milestone
+            local_milestone_3
         )
+        api.add_course_content_milestone(
+            self.test_course_key,
+            UsageKey.from_string('i4x://the/content/key/987654321'),
+            'fulfills',
+            local_milestone_3
+        )
+
+        # Confirm the starting state for this test (user has no milestones, course requires three)
+        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 0)
+        self.assertEqual(
+            len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
+            3
+        )
+        # Check the possible fulfillment paths for the milestones for this course
         paths = api.get_course_milestones_fulfillment_paths(
             self.test_course_key,
             self.serialized_test_user
         )
-        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 0)
+        # Indexes/identifiers begin @ 2 due to setUp creating a global milestone for other tests
+        self.assertEqual(len(paths['milestone_2']['courses']), 1)
+        self.assertIsNone(paths['milestone_2'].get('content'))
+        self.assertEqual(len(paths['milestone_3']['courses']), 1)
+        self.assertEqual(len(paths['milestone_3']['content']), 1)
+        self.assertIsNone(paths['milestone_4'].get('courses'))
+        self.assertEqual(len(paths['milestone_4']['content']), 2)
+
+        # Collect the first milestone (two should remain)
+        api.add_user_milestone(self.serialized_test_user, local_milestone_1)
+        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 1)
         self.assertEqual(
             len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
             2
         )
-        self.assertEqual(len(paths['milestone_1']['content']), 1)
-        self.assertEqual(len(paths['milestone_1']['courses']), 1)
-        self.assertEqual(len(paths['milestone_2']['content']), 1)
-        self.assertEqual(len(paths['milestone_2']['courses']), 0)
-
-        api.add_user_milestone(self.serialized_test_user, self.test_milestone)
-
-        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 1)
-        self.assertEqual(
-            len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
-            1
-        )
-
+        # Check the remaining fulfillment paths for the milestones for this course
         paths = api.get_course_milestones_fulfillment_paths(
             self.test_course_key,
             self.serialized_test_user
         )
-        self.assertFalse('milestone_1' in paths)
-        self.assertEqual(len(paths['milestone_2']['content']), 1)
-        self.assertEqual(len(paths['milestone_2']['courses']), 0)
+        self.assertIsNone(paths.get('milestone_2'))
+        self.assertEqual(len(paths['milestone_3']['courses']), 1)
+        self.assertEqual(len(paths['milestone_3']['content']), 1)
+        self.assertIsNone(paths['milestone_4'].get('courses'))
+        self.assertEqual(len(paths['milestone_4']['content']), 2)
+
+        # Collect the second milestone (one should remain)
+        api.add_user_milestone(self.serialized_test_user, local_milestone_2)
+        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 2)
+        self.assertEqual(
+            len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
+            1
+        )
+        # Check the remaining fulfillment paths for the milestones for this course
+        paths = api.get_course_milestones_fulfillment_paths(
+            self.test_course_key,
+            self.serialized_test_user
+        )
+        self.assertIsNone(paths.get('milestone_2'))
+        self.assertIsNone(paths.get('milestone_3'))
+        self.assertIsNone(paths['milestone_4'].get('courses'))
+        self.assertEqual(len(paths['milestone_4']['content']), 2)
+
+        # Collect the third milestone
+        api.add_user_milestone(self.serialized_test_user, local_milestone_3)
+        self.assertEqual(len(api.get_user_milestones(self.serialized_test_user)), 3)
+        self.assertEqual(
+            len(api.get_course_required_milestones(self.test_course_key, self.serialized_test_user)),
+            0
+        )
+        # Check the remaining fulfillment paths for the milestones for this course
+        paths = api.get_course_milestones_fulfillment_paths(
+            self.test_course_key,
+            self.serialized_test_user
+        )
+        self.assertIsNone(paths.get('milestone_2'))
+        self.assertIsNone(paths.get('milestone_3'))
+        self.assertIsNone(paths.get('milestone_4'))
