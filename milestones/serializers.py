@@ -2,7 +2,7 @@
 Data layer serialization operations.  Converts querysets to simple
 python containers (mainly arrays and dicts).
 """
-from milestones.models import Milestone
+from . import models
 
 
 def serialize_milestone(milestone):
@@ -59,7 +59,7 @@ def deserialize_milestone(milestone_dict):
     """
     Milestone dict-to-object serialization
     """
-    return Milestone(
+    return models.Milestone(
         id=milestone_dict.get('id'),
         name=milestone_dict.get('name'),
         namespace=milestone_dict.get('namespace'),

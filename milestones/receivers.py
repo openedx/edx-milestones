@@ -7,12 +7,12 @@ orchestration layer, which manages the application's workflows.
 """
 from django.dispatch import receiver
 
-import milestones.api as api
+from . import api
 
 try:
-    import util.signals as signals  # pylint: disable=import-error
+    from util import signals  # pylint: disable=import-error
 except ImportError:
-    import milestones.tests.mocks.signals as signals
+    from milestones.tests.mocks import signals
 
 
 @receiver(signals.course_deleted)

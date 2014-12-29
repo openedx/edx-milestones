@@ -1,4 +1,4 @@
 """
 Milestones app initialization module
 """
-from milestones import receivers
+from . import receivers
