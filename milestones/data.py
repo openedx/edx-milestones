@@ -40,7 +40,13 @@ def _get_milestone_relationship_type(relationship):
             active=True
         )
     except internal.MilestoneRelationshipType.DoesNotExist:
-        raise exceptions.InvalidMilestoneRelationshipTypeException()
+        if relationship in ['requires', 'fulfills']:
+            return internal.MilestoneRelationshipType.objects.create(
+                name=relationship,
+                active=True
+            )
+        else:
+            raise exceptions.InvalidMilestoneRelationshipTypeException()
 
 
 # PUBLIC METHODS
@@ -128,15 +134,12 @@ def create_course_milestone(course_key, relationship, milestone):
     Inserts a new course-milestone into app/local state
     No response currently defined for this operation
     """
-    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(  # pylint: disable=invalid-name
-        name=relationship,
-        active=True
-    )
+    relationship_type = _get_milestone_relationship_type(relationship)
     milestone_obj = serializers.deserialize_milestone(milestone)
     internal.CourseMilestone.objects.get_or_create(
         course_id=unicode(course_key),
         milestone=milestone_obj,
-        milestone_relationship_type=mrt,
+        milestone_relationship_type=relationship_type,
         active=True,
     )
 
@@ -193,16 +196,13 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
     Inserts a new course-content-milestone into app/local state
     No response currently defined for this operation
     """
-    mrt, __ = internal.MilestoneRelationshipType.objects.get_or_create(  # pylint: disable=invalid-name
-        name=relationship,
-        active=True
-    )
+    relationship_type = _get_milestone_relationship_type(relationship)
     milestone_obj = serializers.deserialize_milestone(milestone)
     internal.CourseContentMilestone.objects.get_or_create(
         course_id=unicode(course_key),
         content_id=unicode(content_key),
         milestone=milestone_obj,
-        milestone_relationship_type=mrt,
+        milestone_relationship_type=relationship_type,
         active=True,
     )
 
