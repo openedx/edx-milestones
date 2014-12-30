@@ -24,9 +24,9 @@ if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
 else:
     import milestones.resources as remote
 """
-import exceptions
-import models as internal
-import serializers
+from . import exceptions
+from . import models as internal
+from . import serializers
 
 
 # PRIVATE/INTERNAL METHODS
