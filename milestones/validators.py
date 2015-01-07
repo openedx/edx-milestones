@@ -4,6 +4,8 @@ Validators confirm the integrity of inbound information prior to a data.py hando
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
+from .data import fetch_milestone_relationship_types
+
 
 def course_key_is_valid(course_key):
     """
@@ -31,13 +33,17 @@ def content_key_is_valid(content_key):
     return True
 
 
-def milestone_is_valid(milestone):
+def milestone_data_is_valid(milestone_data):
     """
-    Milestone object validation
+    Milestone data validation
     """
-    if milestone is None:
+    if milestone_data is None:
         return False
-    if milestone.get('namespace') is None or len(milestone.get('namespace')) == 0:
+    if 'id' in milestone_data and not milestone_data.get('id'):
+        return False
+    if 'name' in milestone_data and not len(milestone_data.get('name')):
+        return False
+    if 'namespace' in milestone_data and not len(milestone_data.get('namespace')):
         return False
     return True
 
@@ -46,15 +52,7 @@ def milestone_relationship_type_is_valid(name):
     """
     Milestone relationship type object validation
     """
-    valid_types = [
-        'requires',
-        'fulfills',
-    ]
-    if name is None:
-        return False
-    if name not in valid_types:
-        return False
-    return True
+    return name in fetch_milestone_relationship_types().values()
 
 
 def user_is_valid(user):

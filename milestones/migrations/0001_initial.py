@@ -13,19 +13,23 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
             ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('namespace', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('namespace', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
+            ('display_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('description', self.gf('django.db.models.fields.TextField')()),
             ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal('milestones', ['Milestone'])
+
+        # Adding unique constraint on 'Milestone', fields ['namespace', 'name']
+        db.create_unique('milestones_milestone', ['namespace', 'name'])
 
         # Adding model 'MilestoneRelationshipType'
         db.create_table('milestones_milestonerelationshiptype', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
             ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=25, db_index=True)),
             ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
@@ -70,6 +74,7 @@ class Migration(SchemaMigration):
             ('user_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
             ('milestone', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['milestones.Milestone'])),
             ('source', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('collected', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('active', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal('milestones', ['UserMilestone'])
@@ -86,6 +91,9 @@ class Migration(SchemaMigration):
 
         # Removing unique constraint on 'CourseMilestone', fields ['course_id', 'milestone']
         db.delete_unique('milestones_coursemilestone', ['course_id', 'milestone_id'])
+
+        # Removing unique constraint on 'Milestone', fields ['namespace', 'name']
+        db.delete_unique('milestones_milestone', ['namespace', 'name'])
 
         # Deleting model 'Milestone'
         db.delete_table('milestones_milestone')
@@ -125,14 +133,15 @@ class Migration(SchemaMigration):
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'})
         },
         'milestones.milestone': {
-            'Meta': {'object_name': 'Milestone'},
+            'Meta': {'unique_together': "(('namespace', 'name'),)", 'object_name': 'Milestone'},
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'description': ('django.db.models.fields.TextField', [], {}),
+            'display_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'namespace': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
+            'namespace': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
         },
         'milestones.milestonerelationshiptype': {
             'Meta': {'object_name': 'MilestoneRelationshipType'},
@@ -141,11 +150,12 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '25', 'db_index': 'True'})
         },
         'milestones.usermilestone': {
             'Meta': {'unique_together': "(('user_id', 'milestone'),)", 'object_name': 'UserMilestone'},
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'collected': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'milestone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['milestones.Milestone']"}),

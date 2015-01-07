@@ -1,41 +1,27 @@
 """
 Application-specific exception classes used throughout the implementation
 """
+from django.core.exceptions import ValidationError
 
 
-class InvalidCourseKeyException(Exception):
-    """
-    CourseKey validation exception class
-    """
-    pass
+class InvalidCourseKeyException(ValidationError):
+    """ CourseKey validation exception class """
 
 
-class InvalidContentKeyException(Exception):
-    """
-    Course content/module/usage key validation exception class
-    """
-    pass
+class InvalidContentKeyException(ValidationError):
+    """ Course content/module/usage key validation exception class """
 
 
-class InvalidMilestoneException(Exception):
-    """
-    Milestone validation exception class
-    """
-    pass
+class InvalidMilestoneException(ValidationError):
+    """ Milestone validation exception class """
 
 
-class InvalidMilestoneRelationshipTypeException(Exception):
-    """
-    Milestone Relationship Type validation exception class
-    """
-    pass
+class InvalidMilestoneRelationshipTypeException(ValidationError):
+    """ Milestone Relationship Type validation exception class """
 
 
-class InvalidUserException(Exception):
-    """
-    User validation exception class
-    """
-    pass
+class InvalidUserException(ValidationError):
+    """ User validation exception class """
 
 
 def raise_exception(entity_type, entity, exception):

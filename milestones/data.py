@@ -1,4 +1,4 @@
-# pylint: disable=no-member
+# pylint: disable=no-member,expression-not-assigned
 """
 Application data management/abstraction layer.  Responsible for:
 
@@ -32,7 +32,7 @@ from . import serializers
 # PRIVATE/INTERNAL METHODS
 def _get_milestone_relationship_type(relationship):
     """
-    Retrieves milestone relationship type object from backend
+    Retrieves milestone relationship type object from backend datastore
     """
     try:
         return internal.MilestoneRelationshipType.objects.get(
@@ -40,21 +40,41 @@ def _get_milestone_relationship_type(relationship):
             active=True
         )
     except internal.MilestoneRelationshipType.DoesNotExist:
-        if relationship in ['requires', 'fulfills']:
-            return internal.MilestoneRelationshipType.objects.create(
-                name=relationship,
-                active=True
-            )
-        else:
-            raise exceptions.InvalidMilestoneRelationshipTypeException()
+        exceptions.raise_exception(
+            "MilestoneRelationshipType",
+            {'name': relationship},
+            exceptions.InvalidMilestoneRelationshipTypeException
+        )
+
+
+def _inactivate_record(record):
+    """
+    Disables database records by setting the 'active' attribute to False
+    The queries in this module filter out inactive records as part of their criteria
+    This effectively allows us to soft-delete records so they are not lost forever
+    """
+
+    record.active = False
+    record.save()
 
 
 # PUBLIC METHODS
 def create_milestone(milestone):
     """
-    Inserts a new milestone into app/local state
-    Returns a dictionary representation of the object
+    Inserts a new milestone into app/local state given the following dictionary:
+    {
+        'name': string,
+        'display_name': string,
+        'namespace': string,
+        'description': string
+    }
+    Returns an updated dictionary including a new 'id': integer field/value
     """
+    # Trust, but verify...
+    if not milestone.get('name'):
+        exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
+    if not milestone.get('namespace'):
+        exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     milestone_obj = serializers.deserialize_milestone(milestone)
     milestone, __ = internal.Milestone.objects.get_or_create(  # pylint: disable=invalid-name
         namespace=milestone_obj.namespace,
@@ -62,6 +82,7 @@ def create_milestone(milestone):
         active=True,
         defaults={
             'description': milestone_obj.description,
+            'display_name': milestone_obj.display_name,
         }
     )
     return serializers.serialize_milestone(milestone)
@@ -80,32 +101,50 @@ def update_milestone(milestone):
         milestone.description = milestone_obj.description
         milestone.active = milestone_obj.active
     except internal.Milestone.DoesNotExist:
-        raise exceptions.InvalidMilestoneException()
+        exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     return serializers.serialize_milestone(milestone)
 
 
 def delete_milestone(milestone):
     """
-    Deletes an existing milestone from app/local state
+    Inactivates an existing milestone from app/local state
     No return currently defined for this operation
     """
     milestone_obj = serializers.deserialize_milestone(milestone)
-    _delete_milestone(milestone_obj)
+
+    [_inactivate_record(record) for record in internal.CourseMilestone.objects.filter(
+        milestone_id=milestone_obj.id,
+        active=True
+    )]
+
+    [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
+        milestone_id=milestone_obj.id,
+        active=True
+    )]
+
+    [_inactivate_record(record) for record in internal.UserMilestone.objects.filter(
+        milestone_id=milestone_obj.id,
+        active=True
+    )]
+
+    [_inactivate_record(record) for record in internal.Milestone.objects.filter(
+        id=milestone_obj.id,
+        active=True
+    )]
 
 
-def _delete_milestone(milestone):
+def fetch_milestone(milestone_id):
     """
-    Internal helper for milestone removals -- also removes defined dependencies
+    Retrieves a specific milestone from app/local state
+    Returns a dictionary representation of the object
     """
-    # Remove related entities, and then remove the Milestone
-    internal.CourseMilestone.objects.filter(
-        milestone=milestone.id).delete()
-    internal.CourseContentMilestone.objects.filter(
-        milestone=milestone.id).delete()
-    internal.UserMilestone.objects.filter(
-        milestone=milestone.id).delete()
-    internal.Milestone.objects.filter(
-        id=milestone.id).delete()
+    if not milestone_id:
+        exceptions.raise_exception("Milestone", {'id': milestone_id}, exceptions.InvalidMilestoneException)
+    milestone = {'id': milestone_id}
+    milestones = fetch_milestones(milestone)
+    if not len(milestones):
+        exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
+    return milestones[0]
 
 
 def fetch_milestones(milestone):
@@ -114,19 +153,28 @@ def fetch_milestones(milestone):
     Returns a list-of-dicts representation of the object
     """
     if milestone is None:
-        raise exceptions.InvalidMilestoneException()
+        exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     milestone_obj = serializers.deserialize_milestone(milestone)
     if milestone_obj.id is not None:
         return serializers.serialize_milestones(internal.Milestone.objects.filter(
             id=milestone_obj.id,
             active=True,
         ))
-    if milestone_obj.namespace is not None:
+    if milestone_obj.namespace:
         return serializers.serialize_milestones(internal.Milestone.objects.filter(
-            namespace=milestone_obj.namespace,
+            namespace=unicode(milestone_obj.namespace),
             active=True
         ))
-    return []
+
+    # If we get to this point the caller is attempting to match on an unsupported field
+    exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
+
+
+def fetch_milestone_relationship_types():
+    """
+    Model accessor method to return supported milestone relationship types
+    """
+    return internal.MilestoneRelationshipType.get_supported_milestone_relationship_types()
 
 
 def create_course_milestone(course_key, relationship, milestone):
@@ -150,12 +198,15 @@ def delete_course_milestone(course_key, milestone):
     No response currently defined for this operation
     """
     try:
-        internal.CourseMilestone.objects.get(
+        record = internal.CourseMilestone.objects.get(
             course_id=unicode(course_key),
             milestone=milestone['id'],
             active=True,
-        ).delete()
+        )
+        _inactivate_record(record)
     except internal.CourseMilestone.DoesNotExist:
+        # If we're being asked to delete a course-milestone link
+        # that does not exist in the database then our work is done
         pass
 
 
@@ -163,6 +214,7 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     """
     Retrieves the set of milestones currently linked to the specified courses
     Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
+    Optionally pass in 'user' to constrain the set to those which the user has collected
     """
     queryset = internal.CourseMilestone.objects.filter(
         course_id__in=course_keys,
@@ -179,16 +231,11 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     # To pull the list of milestones a user HAS, use get_user_milestones
     # Use fetch_courses_milestones to pull the list of milestones that a user does not yet
     # have for the specified course
-    if relationship == 'requires' and user and user.get('id', 0) > 0:
+    relationships = fetch_milestone_relationship_types()
+    if relationship == relationships['REQUIRES'] and user and user.get('id', 0) > 0:
         queryset = queryset.exclude(milestone__usermilestone__user_id=user['id'])
 
-    # Assemble the response container
-    course_milestones = []
-    if len(queryset):
-        for milestone in queryset:
-            course_milestones.append(serializers.serialize_milestone_with_course(milestone))
-
-    return course_milestones
+    return [serializers.serialize_milestone_with_course(milestone) for milestone in queryset]
 
 
 def create_course_content_milestone(course_key, content_key, relationship, milestone):
@@ -213,43 +260,40 @@ def delete_course_content_milestone(course_key, content_key, milestone):
     No response currently defined for this operation
     """
     try:
-        internal.CourseContentMilestone.objects.get(
+        record = internal.CourseContentMilestone.objects.get(
             course_id=unicode(course_key),
             content_id=unicode(content_key),
             milestone=milestone['id'],
             active=True,
-        ).delete()
+        )
+        _inactivate_record(record)
     except internal.CourseContentMilestone.DoesNotExist:
+        # If we're being asked to delete a course-content-milestone link
+        # that does not exist in the database then our work is done
         pass
 
 
-def fetch_course_content_milestones(course_key, content_key, relationship=None):
+def fetch_course_content_milestones(content_key, course_key=None, relationship=None):
     """
     Retrieves the set of milestones currently linked to the specified course content
     Optionally pass in 'relationship' (ex. 'fulfills') to filter down the set
     Optionally pass in 'user' to further-filter the set (ex. for retrieving unfulfilled milestones)
     """
-    queryset = internal.Milestone.objects.filter(active=True)
+    queryset = internal.CourseContentMilestone.objects.filter(
+        active=True
+    ).select_related('milestone')
 
-    if course_key:
-        queryset = queryset.filter(coursecontentmilestone__course_id=unicode(course_key))
+    if course_key is not None:
+        queryset = queryset.filter(course_id=unicode(course_key))
 
-    if content_key:
-        queryset = queryset.filter(coursecontentmilestone__content_id=unicode(content_key))
+    if content_key is not None:
+        queryset = queryset.filter(content_id=unicode(content_key))
 
-    if relationship:
+    if relationship is not None:
         mrt = _get_milestone_relationship_type(relationship)
-        queryset = internal.Milestone.objects.filter(
-            coursecontentmilestone__milestone_relationship_type=mrt.id,
-            active=True,
-        )
+        queryset = queryset.filter(milestone_relationship_type=mrt.id)
 
-    course_content_milestones = []
-    if len(queryset):
-        for milestone in queryset:
-            course_content_milestones.append(serializers.serialize_milestone(milestone))
-
-    return course_content_milestones
+    return [serializers.serialize_milestone(ccm.milestone) for ccm in queryset]
 
 
 def fetch_milestone_courses(milestone, relationship=None):
@@ -265,18 +309,11 @@ def fetch_milestone_courses(milestone, relationship=None):
 
     # if milestones relationship type found then apply the filter
     if relationship is not None:
-        mrt = _get_milestone_relationship_type(relationship)
         queryset = queryset.filter(
-            milestone_relationship_type=mrt.id,
+            milestone_relationship_type__name=relationship,
         )
 
-    # Assemble the response container
-    milestone_courses = []
-    if len(queryset):
-        for milestone in queryset:
-            milestone_courses.append(serializers.serialize_milestone_with_course(milestone))
-
-    return milestone_courses
+    return [serializers.serialize_milestone_with_course(milestone) for milestone in queryset]
 
 
 def fetch_milestone_course_content(milestone, relationship=None):
@@ -292,19 +329,11 @@ def fetch_milestone_course_content(milestone, relationship=None):
 
     # if milestones relationship type found then apply the filter
     if relationship is not None:
-        mrt = _get_milestone_relationship_type(relationship)
         queryset = queryset.filter(
-            milestone_relationship_type=mrt.id,
+            milestone_relationship_type__name=relationship,
         )
 
-    # Assemble the response container
-    milestone_course_content = []
-    for milestone in queryset:
-        milestone_course_content.append(
-            serializers.serialize_milestone_with_course_content(milestone)
-        )
-
-    return milestone_course_content
+    return [serializers.serialize_milestone_with_course_content(milestone) for milestone in queryset]
 
 
 def create_user_milestone(user, milestone):
@@ -326,48 +355,61 @@ def delete_user_milestone(user, milestone):
     No response currently defined for this operation
     """
     try:
-        internal.UserMilestone.objects.get(
+        record = internal.UserMilestone.objects.get(
             user_id=user['id'],
             milestone=milestone['id'],
             active=True,
-        ).delete()
+        )
+        _inactivate_record(record)
     except internal.UserMilestone.DoesNotExist:
+        # If we're being asked to delete a user-milestone link
+        # that does not exist in the database then our work is done
         pass
 
 
-def fetch_user_milestones(user, milestone=None):
+def fetch_user_milestones(user, milestone_data):
     """
     Retrieves the set of milestones currently linked to the specified user
     """
-    if milestone is None:
-        queryset = internal.Milestone.objects.filter(
-            usermilestone__user_id=user['id'],
-            active=True,
-        )
-    else:
-        queryset = internal.Milestone.objects.filter(
-            id=milestone['id'],
-            usermilestone__user_id=user['id'],
-            active=True,
-        )
-    user_milestones = []
-    if len(queryset):
-        for milestone in queryset:
-            user_milestones.append(serializers.serialize_milestone(milestone))
-    return user_milestones
+    queryset = internal.Milestone.objects.filter(
+        usermilestone__user_id=user['id'],
+        usermilestone__active=True,
+    )
+
+    # We don't currently support a 'fetch all' use case -- must supply at least one filter
+    if not milestone_data.get('id') and not milestone_data.get('namespace'):
+        exceptions.raise_exception("Milestone", milestone_data, exceptions.InvalidMilestoneException)
+
+    if milestone_data.get('id'):
+        queryset.filter(id=milestone_data['id'])
+
+    if milestone_data.get('namespace'):
+        queryset.filter(namespace=milestone_data['namespace'])
+
+    return [serializers.serialize_milestone(milestone) for milestone in queryset]
 
 
 def delete_content_references(content_key):
     """
-    Removes references to content keys within this app (ref: api.py)
+    Inactivates references to content keys within this app (ref: api.py)
     Supports the 'delete entrance exam' Studio use case, when Milestones is enabled
     """
-    internal.CourseContentMilestone.objects.filter(content_id=unicode(content_key)).delete()
+    [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
+        content_id=unicode(content_key),
+        active=True
+    )]
 
 
 def delete_course_references(course_key):
     """
-    Removes references to course keys within this app (ref: receivers.py and api.py)
+    Inactivates references to course keys within this app (ref: receivers.py and api.py)
     """
-    internal.CourseMilestone.objects.filter(course_id=unicode(course_key)).delete()
-    internal.CourseContentMilestone.objects.filter(course_id=unicode(course_key)).delete()
+    [_inactivate_record(record) for record in internal.CourseMilestone.objects.filter(
+        course_id=unicode(course_key),
+        active=True
+    )]
+
+    [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
+        course_id=unicode(course_key),
+        active=True
+    )]
