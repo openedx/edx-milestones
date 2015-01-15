@@ -12,6 +12,7 @@ def serialize_milestone(milestone):
     return {
         'id': milestone.id,
         'name': milestone.name,
+        'display_name': milestone.display_name,
         'namespace': milestone.namespace,
         'description': milestone.description
     }
@@ -24,6 +25,7 @@ def serialize_milestone_with_course(course_milestone):
     return {
         'id': course_milestone.milestone.id,
         'name': course_milestone.milestone.name,
+        'display_name': course_milestone.milestone.display_name,
         'namespace': course_milestone.milestone.namespace,
         'description': course_milestone.milestone.description,
         'course_id': course_milestone.course_id
@@ -37,6 +39,7 @@ def serialize_milestone_with_course_content(course_content_milestone):
     return {
         'id': course_content_milestone.milestone.id,
         'name': course_content_milestone.milestone.name,
+        'display_name': course_content_milestone.milestone.display_name,
         'namespace': course_content_milestone.milestone.namespace,
         'description': course_content_milestone.milestone.description,
         'course_id': course_content_milestone.course_id,
@@ -49,10 +52,7 @@ def serialize_milestones(milestones):
     Milestone serialization
     Converts list of objects to list of dicts
     """
-    response_data = []
-    for milestone in milestones:
-        response_data.append(serialize_milestone(milestone))
-    return response_data
+    return [serialize_milestone(milestone) for milestone in milestones]
 
 
 def deserialize_milestone(milestone_dict):
@@ -61,7 +61,8 @@ def deserialize_milestone(milestone_dict):
     """
     return models.Milestone(
         id=milestone_dict.get('id'),
-        name=milestone_dict.get('name'),
-        namespace=milestone_dict.get('namespace'),
-        description=milestone_dict.get('description')
+        name=milestone_dict.get('name', ''),
+        display_name=milestone_dict.get('display_name', ''),
+        namespace=milestone_dict.get('namespace', ''),
+        description=milestone_dict.get('description', '')
     )
