@@ -29,7 +29,7 @@ from . import models as internal
 from . import serializers
 
 
-# PRIVATE/INTERNAL METHODS
+# PRIVATE/INTERNAL METHODS (public methods located further down)
 def _get_milestone_relationship_type(relationship):
     """
     Retrieves milestone relationship type object from backend datastore
@@ -47,15 +47,130 @@ def _get_milestone_relationship_type(relationship):
         )
 
 
+def _activate_record(record):
+    """
+    Enables database records by setting the 'active' attribute to True
+    The queries in this module filter out inactive records as part of their criteria
+    This effectively allows us to soft-delete records so they are not lost forever
+    """
+    record.active = True
+    record.save()
+
+
 def _inactivate_record(record):
     """
     Disables database records by setting the 'active' attribute to False
     The queries in this module filter out inactive records as part of their criteria
     This effectively allows us to soft-delete records so they are not lost forever
     """
-
     record.active = False
     record.save()
+
+
+def _activate_milestone(milestone):
+    """
+    Activates an inactivated (soft-deleted) milestone as well as any inactive relationships
+    """
+    [_activate_course_milestone_relationship(record) for record
+     in internal.CourseMilestone.objects.filter(milestone_id=milestone.id, active=False)]
+
+    [_activate_course_content_milestone_relationship(record) for record
+     in internal.CourseContentMilestone.objects.filter(milestone_id=milestone.id, active=False)]
+
+    [_activate_user_milestone_relationship(record) for record
+     in internal.UserMilestone.objects.filter(milestone_id=milestone.id, active=False)]
+
+    [_activate_record(record) for record
+     in internal.Milestone.objects.filter(id=milestone.id, active=False)]
+
+
+def _inactivate_milestone(milestone):
+    """
+    Inactivates an activated milestone as well as any active relationships
+    """
+    [_inactivate_course_milestone_relationship(record) for record
+     in internal.CourseMilestone.objects.filter(milestone_id=milestone.id, active=True)]
+
+    [_inactivate_course_content_milestone_relationship(record) for record
+     in internal.CourseContentMilestone.objects.filter(milestone_id=milestone.id, active=True)]
+
+    [_inactivate_user_milestone_relationship(record) for record
+     in internal.UserMilestone.objects.filter(milestone_id=milestone.id, active=True)]
+
+    [_inactivate_record(record) for record
+     in internal.Milestone.objects.filter(id=milestone.id, active=True)]
+
+
+def _activate_course_milestone_relationship(relationship):
+    """
+    Activates an inactive milestone relationship
+    """
+    # If the relationship doesn't exist or the milestone isn't active we'll want to raise an error
+    relationship = internal.CourseMilestone.objects.get(
+        id=relationship.id,
+        active=False,
+        milestone__active=True
+    )
+    _activate_record(relationship)
+
+
+def _inactivate_course_milestone_relationship(relationship):
+    """
+    Inactivates an active milestone relationship
+    """
+    relationship = internal.CourseMilestone.objects.get(
+        id=relationship.id,
+        active=True
+    )
+    _inactivate_record(relationship)
+
+
+def _activate_course_content_milestone_relationship(relationship):
+    """
+    Activates an inactive milestone relationship
+    """
+    # If the relationship doesn't exist or the milestone isn't active we'll want to raise an error
+    relationship = internal.CourseContentMilestone.objects.get(
+        id=relationship.id,
+        active=False,
+        milestone__active=True
+    )
+    _activate_record(relationship)
+
+
+def _inactivate_course_content_milestone_relationship(relationship):
+    """
+    Inactivates an active milestone relationship
+    """
+    relationship = internal.CourseContentMilestone.objects.get(
+        id=relationship.id,
+        active=True
+    )
+    _inactivate_record(relationship)
+
+
+def _activate_user_milestone_relationship(relationship):
+    """
+    Activates an inactive milestone relationship
+    """
+    # If the relationship doesn't exist or the milestone isn't active we'll want to raise an error
+    relationship = internal.UserMilestone.objects.get(
+        id=relationship.id,
+        active=False,
+        milestone__active=True
+    )
+    _activate_record(relationship)
+
+
+def _inactivate_user_milestone_relationship(relationship):
+    """
+    Inactivates an active milestone relationship
+    """
+    relationship = internal.UserMilestone.objects.get(
+        id=relationship.id,
+        active=True
+    )
+    _inactivate_record(relationship)
 
 
 # PUBLIC METHODS
@@ -76,15 +191,22 @@ def create_milestone(milestone):
     if not milestone.get('namespace'):
         exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     milestone_obj = serializers.deserialize_milestone(milestone)
-    milestone, __ = internal.Milestone.objects.get_or_create(  # pylint: disable=invalid-name
-        namespace=milestone_obj.namespace,
-        name=milestone_obj.name,
-        active=True,
-        defaults={
-            'description': milestone_obj.description,
-            'display_name': milestone_obj.display_name,
-        }
-    )
+    try:
+        milestone = internal.Milestone.objects.get(
+            namespace=milestone_obj.namespace,
+            name=milestone_obj.name,
+        )
+        # If the milestone exists, but was inactivated, we can simply turn it back on
+        if not milestone.active:
+            _activate_milestone(milestone_obj)
+    except internal.Milestone.DoesNotExist:
+        milestone = internal.Milestone.objects.create(
+            namespace=milestone_obj.namespace,
+            name=milestone_obj.name,
+            description=milestone_obj.description,
+            display_name=milestone_obj.display_name,
+            active=True
+        )
     return serializers.serialize_milestone(milestone)
 
 
@@ -111,26 +233,7 @@ def delete_milestone(milestone):
     No return currently defined for this operation
     """
     milestone_obj = serializers.deserialize_milestone(milestone)
-
-    [_inactivate_record(record) for record in internal.CourseMilestone.objects.filter(
-        milestone_id=milestone_obj.id,
-        active=True
-    )]
-
-    [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
-        milestone_id=milestone_obj.id,
-        active=True
-    )]
-
-    [_inactivate_record(record) for record in internal.UserMilestone.objects.filter(
-        milestone_id=milestone_obj.id,
-        active=True
-    )]
-
-    [_inactivate_record(record) for record in internal.Milestone.objects.filter(
-        id=milestone_obj.id,
-        active=True
-    )]
+    _inactivate_milestone(milestone_obj)
 
 
 def fetch_milestone(milestone_id):
@@ -184,12 +287,22 @@ def create_course_milestone(course_key, relationship, milestone):
     """
     relationship_type = _get_milestone_relationship_type(relationship)
     milestone_obj = serializers.deserialize_milestone(milestone)
-    internal.CourseMilestone.objects.get_or_create(
-        course_id=unicode(course_key),
-        milestone=milestone_obj,
-        milestone_relationship_type=relationship_type,
-        active=True,
-    )
+    try:
+        relationship = internal.CourseMilestone.objects.get(
+            course_id=unicode(course_key),
+            milestone=milestone_obj,
+            milestone_relationship_type=relationship_type
+        )
+        # If the relationship exists, but was inactivated, we can simply turn it back on
+        if not relationship.active:
+            _activate_course_milestone_relationship(relationship)
+    except internal.CourseMilestone.DoesNotExist:
+        relationship = internal.CourseMilestone.objects.create(
+            course_id=unicode(course_key),
+            milestone=milestone_obj,
+            milestone_relationship_type=relationship_type,
+            active=True
+        )
 
 
 def delete_course_milestone(course_key, milestone):
@@ -198,12 +311,12 @@ def delete_course_milestone(course_key, milestone):
     No response currently defined for this operation
     """
     try:
-        record = internal.CourseMilestone.objects.get(
+        relationship = internal.CourseMilestone.objects.get(
             course_id=unicode(course_key),
             milestone=milestone['id'],
             active=True,
         )
-        _inactivate_record(record)
+        _inactivate_course_milestone_relationship(relationship)
     except internal.CourseMilestone.DoesNotExist:
         # If we're being asked to delete a course-milestone link
         # that does not exist in the database then our work is done
@@ -245,13 +358,24 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
     """
     relationship_type = _get_milestone_relationship_type(relationship)
     milestone_obj = serializers.deserialize_milestone(milestone)
-    internal.CourseContentMilestone.objects.get_or_create(
-        course_id=unicode(course_key),
-        content_id=unicode(content_key),
-        milestone=milestone_obj,
-        milestone_relationship_type=relationship_type,
-        active=True,
-    )
+    try:
+        relationship = internal.CourseContentMilestone.objects.get(
+            course_id=unicode(course_key),
+            content_id=unicode(content_key),
+            milestone=milestone_obj,
+            milestone_relationship_type=relationship_type
+        )
+        # If the relationship exists, but was inactivated, we can simply turn it back on
+        if not relationship.active:
+            _activate_course_content_milestone_relationship(relationship)
+    except internal.CourseContentMilestone.DoesNotExist:
+        relationship = internal.CourseContentMilestone.objects.create(
+            course_id=unicode(course_key),
+            content_id=unicode(content_key),
+            milestone=milestone_obj,
+            milestone_relationship_type=relationship_type,
+            active=True
+        )
 
 
 def delete_course_content_milestone(course_key, content_key, milestone):
@@ -260,13 +384,13 @@ def delete_course_content_milestone(course_key, content_key, milestone):
     No response currently defined for this operation
     """
     try:
-        record = internal.CourseContentMilestone.objects.get(
+        relationship = internal.CourseContentMilestone.objects.get(
             course_id=unicode(course_key),
             content_id=unicode(content_key),
             milestone=milestone['id'],
             active=True,
         )
-        _inactivate_record(record)
+        _inactivate_course_content_milestone_relationship(relationship)
     except internal.CourseContentMilestone.DoesNotExist:
         # If we're being asked to delete a course-content-milestone link
         # that does not exist in the database then our work is done
@@ -342,11 +466,20 @@ def create_user_milestone(user, milestone):
     No response currently defined for this operation
     """
     milestone_obj = serializers.deserialize_milestone(milestone)
-    internal.UserMilestone.objects.get_or_create(
-        user_id=user['id'],
-        milestone=milestone_obj,
-        active=True,
-    )
+    try:
+        relationship = internal.UserMilestone.objects.get(
+            user_id=user['id'],
+            milestone=milestone_obj.id,
+        )
+        # If the relationship exists, but was inactivated, we can simply turn it back on
+        if not relationship.active:
+            _activate_user_milestone_relationship(relationship)
+    except internal.UserMilestone.DoesNotExist:
+        relationship = internal.UserMilestone.objects.create(
+            user_id=user['id'],
+            milestone=milestone_obj,
+            active=True
+        )
 
 
 def delete_user_milestone(user, milestone):

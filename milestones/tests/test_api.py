@@ -38,6 +38,61 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             })
         self.assertGreater(milestone['id'], 0)
 
+    def test_add_milestone_active_exists(self):
+        """ Unit Test: test_add_milestone_active_exists"""
+        milestone_data = {
+            'name': 'local_milestone',
+            'display_name': 'Local Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone Description'
+        }
+        milestone = api.add_milestone(milestone_data)
+        self.assertGreater(milestone['id'], 0)
+        with self.assertNumQueries(1):
+            milestone = api.add_milestone(milestone_data)
+
+    def test_add_milestone_inactive_to_active(self):
+        """ Unit Test: test_add_milestone_inactive_milestone_present"""
+        milestone_data = {
+            'name': 'local_milestone',
+            'display_name': 'Local Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone Description'
+        }
+        milestone = api.add_milestone(milestone_data)
+        self.assertGreater(milestone['id'], 0)
+        api.remove_milestone(milestone['id'])
+
+        with self.assertNumQueries(5):
+            milestone = api.add_milestone(milestone_data)
+
+    def test_add_milestone_inactive_milestone_with_relationships(self):
+        """ Unit Test: test_add_milestone_inactive_milestone_with_relationships"""
+        milestone_data = {
+            'name': 'local_milestone',
+            'display_name': 'Local Milestone',
+            'namespace': unicode(self.test_course_key),
+            'description': 'Local Milestone Description'
+        }
+        milestone = api.add_milestone(milestone_data)
+        api.add_course_milestone(
+            self.test_course_key,
+            self.relationship_types['REQUIRES'],
+            milestone
+        )
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            self.relationship_types['FULFILLS'],
+            milestone
+        )
+        api.add_user_milestone(self.serialized_test_user, milestone)
+        self.assertGreater(milestone['id'], 0)
+        api.remove_milestone(milestone['id'])
+
+        with self.assertNumQueries(5):
+            milestone = api.add_milestone(milestone_data)
+
     def test_add_milestone_invalid_data_throws_exceptions(self):
         """ Unit Test: test_add_milestone_invalid_namespaces_throw_exceptions"""
         with self.assertNumQueries(0):
@@ -186,6 +241,35 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         )
         self.assertEqual(len(fulfiller_milestones), 1)
 
+    def test_add_course_milestone_active_exists(self):
+        """ Unit Test: test_add_course_milestone """
+        api.add_course_milestone(
+            self.test_course_key,
+            self.relationship_types['REQUIRES'],
+            self.test_milestone
+        )
+        with self.assertNumQueries(2):
+            api.add_course_milestone(
+                self.test_course_key,
+                self.relationship_types['REQUIRES'],
+                self.test_milestone
+            )
+
+    def test_add_course_milestone_inactive_to_active(self):
+        """ Unit Test: test_add_course_milestone """
+        api.add_course_milestone(
+            self.test_course_key,
+            self.relationship_types['REQUIRES'],
+            self.test_milestone
+        )
+        api.remove_course_milestone(self.test_course_key, self.test_milestone)
+        with self.assertNumQueries(5):
+            api.add_course_milestone(
+                self.test_course_key,
+                self.relationship_types['REQUIRES'],
+                self.test_milestone
+            )
+
     def test_add_course_milestone_bogus_course_key(self):
         """ Unit Test: test_add_course_milestone_bogus_course_key """
         with self.assertNumQueries(0):
@@ -327,7 +411,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.relationship_types['REQUIRES']
         )
         self.assertEqual(len(requirer_milestones), 1)
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(4):
             api.remove_course_milestone(self.test_course_key, self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key)
         self.assertEqual(len(requirer_milestones), 0)
@@ -367,6 +451,43 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.relationship_types['FULFILLS']
         )
         self.assertEqual(len(fulfiller_milestones), 1)
+
+    def test_add_course_content_milestone_active_exists(self):
+        """ Unit Test: test_add_course_content_milestone """
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            self.relationship_types['REQUIRES'],
+            self.test_milestone
+        )
+        with self.assertNumQueries(2):
+            api.add_course_content_milestone(
+                self.test_course_key,
+                self.test_content_key,
+                self.relationship_types['REQUIRES'],
+                self.test_milestone
+            )
+
+    def test_add_course_content_milestone_inactive_to_active(self):
+        """ Unit Test: test_add_course_content_milestone """
+        api.add_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            self.relationship_types['REQUIRES'],
+            self.test_milestone
+        )
+        api.remove_course_content_milestone(
+            self.test_course_key,
+            self.test_content_key,
+            self.test_milestone
+        )
+        with self.assertNumQueries(5):
+            api.add_course_content_milestone(
+                self.test_course_key,
+                self.test_content_key,
+                self.relationship_types['REQUIRES'],
+                self.test_milestone
+            )
 
     def test_add_course_content_milestone_bogus_content_key(self):
         """ Unit Test: test_add_course_content_milestone_bogus_content_key """
@@ -436,7 +557,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.relationship_types['REQUIRES']
         )
         self.assertEqual(len(requirer_milestones), 1)
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(4):
             api.remove_course_content_milestone(
                 self.test_course_key,
                 self.test_content_key,
@@ -465,6 +586,21 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
     def test_add_user_milestone(self):
         """ Unit Test: test_add_user_milestone """
         with self.assertNumQueries(2):
+            api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+        self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
+
+    def test_add_user_milestone_active_exists(self):
+        """ Unit Test: test_add_user_milestone """
+        api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+        with self.assertNumQueries(1):
+            api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+        self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
+
+    def test_add_user_milestone_inactive_to_active(self):
+        """ Unit Test: test_add_user_milestone """
+        api.add_user_milestone(self.serialized_test_user, self.test_milestone)
+        api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
+        with self.assertNumQueries(4):
             api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
