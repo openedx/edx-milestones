@@ -209,7 +209,7 @@ def get_course_milestones_fulfillment_paths(course_key, user):
     # Build the set of fulfillment paths for the outstanding milestones
     fulfillment_paths = {}
     for milestone in required_milestones:
-        dict_key = '{}.{}'.format(milestone['namespace'], milestone['name'])
+        dict_key = '{}.{}'.format(milestone['namespace'].encode('utf-8'), milestone['name'].encode('utf-8'))
         fulfillment_paths[dict_key] = {}
         milestone_courses = data.fetch_milestone_courses(
             milestone,
