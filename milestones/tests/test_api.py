@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # pylint: disable=invalid-name
 # pylint: disable=too-many-public-methods
 """
@@ -692,6 +693,43 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             api.remove_content_references(self.test_content_key)
         milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key)
         self.assertEqual(len(milestones), 0)
+
+    def test_milestones_fulfillment_paths_contains_special_characters(self):
+        """
+        Unit Test: test_get_course_milestones_fulfillment_paths works correctly when milestone have some special
+        characters.
+        """
+        namespace = unicode(self.test_course_key)
+        name = '�ťÉśt_Àübùr�'
+        local_milestone_1 = api.add_milestone({
+            'display_name': 'Local Milestone 1',
+            'name': name,
+            'namespace': namespace,
+            'description': 'Local Milestone 1 Description'
+        })
+
+        # Specify the milestone requirements
+        api.add_course_milestone(
+            self.test_course_key,
+            self.relationship_types['REQUIRES'],
+            local_milestone_1
+        )
+
+        # Specify the milestone fulfillments (via course and content)
+        api.add_course_milestone(
+            self.test_prerequisite_course_key,
+            self.relationship_types['FULFILLS'],
+            local_milestone_1
+        )
+        with self.assertNumQueries(4):
+            paths = api.get_course_milestones_fulfillment_paths(
+                self.test_course_key,
+                self.serialized_test_user
+            )
+
+        # Set up the key values we'll use to access/assert the response
+        milestone_key_1 = '{}.{}'.format(local_milestone_1['namespace'], local_milestone_1['name'])
+        self.assertEqual(len(paths[milestone_key_1]['courses']), 1)
 
     def test_get_course_milestones_fulfillment_paths(self):  # pylint: disable=too-many-statements
         """
