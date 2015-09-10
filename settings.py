@@ -23,7 +23,6 @@ INSTALLED_APPS = (
 
     'milestones',
     'django_nose',
-    'south',
 )
 
 MIDDLEWARE_CLASSES = {}
