@@ -20,7 +20,7 @@ class MilestonesTestCaseBase(TestCase):
         self.test_course_key = CourseKey.from_string('the/course/key')
         self.test_prerequisite_course_key = CourseKey.from_string('the/prerequisite/key')
         self.test_content_key = UsageKey.from_string('i4x://the/content/key/12345678')
-        self.test_user = User.objects.create(
+        self.test_user = User.objects.create_user(
             first_name='Test',
             last_name='User',
             email='test_user@edx.org',
