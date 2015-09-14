@@ -264,7 +264,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.test_milestone
         )
         api.remove_course_milestone(self.test_course_key, self.test_milestone)
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(4):
             api.add_course_milestone(
                 self.test_course_key,
                 self.relationship_types['REQUIRES'],
@@ -412,7 +412,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.relationship_types['REQUIRES']
         )
         self.assertEqual(len(requirer_milestones), 1)
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             api.remove_course_milestone(self.test_course_key, self.test_milestone)
         requirer_milestones = api.get_course_milestones(self.test_course_key)
         self.assertEqual(len(requirer_milestones), 0)
@@ -482,7 +482,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.test_content_key,
             self.test_milestone
         )
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(4):
             api.add_course_content_milestone(
                 self.test_course_key,
                 self.test_content_key,
@@ -558,7 +558,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             self.relationship_types['REQUIRES']
         )
         self.assertEqual(len(requirer_milestones), 1)
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             api.remove_course_content_milestone(
                 self.test_course_key,
                 self.test_content_key,
@@ -664,7 +664,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
             len(api.get_course_content_milestones(self.test_course_key, self.test_content_key)), 1)
 
         # Remove the course dependency
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(4):
             api.remove_course_references(self.test_course_key)
         self.assertEqual(len(api.get_course_milestones(self.test_course_key)), 0)
 
@@ -689,7 +689,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         self.assertEqual(len(milestones), 1)
 
         # Remove the content dependency
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             api.remove_content_references(self.test_content_key)
         milestones = api.get_course_content_milestones(self.test_course_key, self.test_content_key)
         self.assertEqual(len(milestones), 0)
