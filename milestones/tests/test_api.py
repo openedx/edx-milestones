@@ -196,14 +196,14 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
 
     def test_remove_milestone(self):
         """ Unit Test: test_remove_milestone """
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(5):
             api.remove_milestone(self.test_milestone['id'])
         with self.assertRaises(exceptions.InvalidMilestoneException):
             api.get_milestone(self.test_milestone['id'])
 
     def test_remove_milestone_bogus_milestone(self):
         """ Unit Test: test_remove_milestone_bogus_milestone """
-        with self.assertNumQueries(6):
+        with self.assertNumQueries(5):
             api.remove_milestone(self.test_milestone['id'])
 
         with self.assertRaises(exceptions.InvalidMilestoneException):
@@ -601,7 +601,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         """ Unit Test: test_add_user_milestone """
         api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
@@ -624,7 +624,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseBase):
         """ Unit Test: test_remove_user_milestone """
         api.add_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertTrue(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             api.remove_user_milestone(self.serialized_test_user, self.test_milestone)
         self.assertFalse(api.user_has_milestone(self.serialized_test_user, self.test_milestone))
 
