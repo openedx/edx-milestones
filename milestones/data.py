@@ -346,7 +346,9 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     # have for the specified course
     relationships = fetch_milestone_relationship_types()
     if relationship == relationships['REQUIRES'] and user and user.get('id', 0) > 0:
-        queryset = queryset.exclude(milestone__usermilestone__user_id=user['id'])
+        queryset = queryset.exclude(
+            milestone__usermilestone__in=internal.UserMilestone.objects.filter(user_id=user['id'], active=True)
+        )
 
     return [serializers.serialize_milestone_with_course(milestone) for milestone in queryset]
 
