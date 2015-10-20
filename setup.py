@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='edx-milestones',
-    version='0.1.2',
+    version='0.1.3',
     description='Significant events module for Open edX',
     long_description=open('README.md').read(),
     author='edX',
@@ -19,7 +19,7 @@ setup(
         'Programming Language :: Python',
         'Framework :: Django',
     ],
-    packages=['milestones'],
+    packages=find_packages(exclude=["tests"]),
     dependency_links=[
     ],
     install_requires=[
