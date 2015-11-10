@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='edx-milestones',
-    version='0.1.4',
+    version='0.1.5',
     description='Significant events module for Open edX',
     long_description=open('README.md').read(),
     author='edX',
