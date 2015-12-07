@@ -39,6 +39,16 @@ def _validate_content_key(content_key):
         )
 
 
+def _validate_course_content_milestone_requirements(requirements):
+    """ CourseContentMilestone.requirements field validation helper """
+    if not validators.course_content_milestone_requirements_is_valid(requirements):
+        exceptions.raise_exception(
+            "CourseContentMilestone.requirements",
+            requirements,
+            exceptions.InvalidCourseContentMilestoneRequirementsException
+        )
+
+
 def _validate_milestone_data(milestone):
     """ Validation helper """
     if not validators.milestone_data_is_valid(milestone):
@@ -77,12 +87,19 @@ def get_milestone_relationship_types():
     return data.fetch_milestone_relationship_types()
 
 
-def add_milestone(milestone):
+def add_milestone(milestone, propagate=True):
     """
     Passes a new milestone to the data layer for storage
+
+    Arguments:
+        milestone (dict): The milestone to persist
+        propagate (bool): False to prevent reactivation of soft-deleted milestone relationships
+
+    Returns:
+        dict: The persisted milestone dict
     """
     _validate_milestone_data(milestone)
-    milestone = data.create_milestone(milestone)
+    milestone = data.create_milestone(milestone, propagate)
     return milestone
 
 
@@ -255,38 +272,59 @@ def remove_course_milestone(course_key, milestone):
     return data.delete_course_milestone(course_key=course_key, milestone=milestone)
 
 
-def add_course_content_milestone(course_key, content_key, relationship, milestone):
+def add_course_content_milestone(course_key, content_key, relationship, milestone, requirements=None):
     """
     Adds a course-content-milestone link to the system
-    'relationship': string value (eg: 'requires')
+
+    Arguments:
+        course_key (CourseKey|str): CourseKey of the course containing the content
+        content_key (UsageKey|str): UsageKey of the content
+        relationship (str): The type of relationship that the content shares with the milestone (e.g. 'requires')
+        milestone (dict): The milestone which the given content relates to
+        requirements (dict): Data that is used to determine user fulfillment of the milestone
+
+    Returns:
+        None
     """
     _validate_course_key(course_key)
     _validate_content_key(content_key)
     _validate_milestone_relationship_type(relationship)
     _validate_milestone_data(milestone)
+    _validate_course_content_milestone_requirements(requirements)
     data.create_course_content_milestone(
         course_key=course_key,
         content_key=content_key,
         relationship=relationship,
-        milestone=milestone)
+        milestone=milestone,
+        requirements=requirements
+    )
 
 
-def get_course_content_milestones(course_key, content_key, relationship=None):
+def get_course_content_milestones(course_key=None, content_key=None, relationship=None, user=None):
     """
-    Retrieves the set of milestones for a given course content module
-    'relationship': optional filter on milestone relationship type (string, eg: 'requires')
-    Returns an array of dicts containing milestones
-    """
-    _validate_course_key(course_key)
-    _validate_content_key(content_key)
+    Retrieves the set of milestones related to course content
 
+    Arguments:
+        course_key (CourseKey|str): CourseKey of the course containing the content
+        content_key (UsageKey|str): UsageKey of the content
+        relationship (str): The type of relationship that the content shares with the milestone (e.g. 'requires')
+        user (dict): Dict containing at least an 'id' key mapped to a user id
+
+    Returns:
+        list: List of milestone dicts
+    """
+    if course_key is not None:
+        _validate_course_key(course_key)
+    if content_key is not None:
+        _validate_content_key(content_key)
     if relationship is not None:
         _validate_milestone_relationship_type(relationship)
 
     return data.fetch_course_content_milestones(
         course_key=course_key,
         content_key=content_key,
-        relationship=relationship
+        relationship=relationship,
+        user=user
     )
 
 

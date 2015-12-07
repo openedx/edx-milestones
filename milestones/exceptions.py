@@ -12,6 +12,10 @@ class InvalidContentKeyException(ValidationError):
     """ Course content/module/usage key validation exception class """
 
 
+class InvalidCourseContentMilestoneRequirementsException(ValidationError):
+    """ CourseContentMilestone.requirements validation exception class """
+
+
 class InvalidMilestoneException(ValidationError):
     """ Milestone validation exception class """
 
