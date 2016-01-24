@@ -2,6 +2,8 @@
 Data layer serialization operations.  Converts querysets to simple
 python containers (mainly arrays and dicts).
 """
+import json
+
 from . import models
 
 
@@ -43,7 +45,8 @@ def serialize_milestone_with_course_content(course_content_milestone):
         'namespace': course_content_milestone.milestone.namespace,
         'description': course_content_milestone.milestone.description,
         'course_id': course_content_milestone.course_id,
-        'content_id': course_content_milestone.content_id
+        'content_id': course_content_milestone.content_id,
+        'requirements': deserialize_requirements(course_content_milestone.requirements)
     }
 
 
@@ -66,3 +69,23 @@ def deserialize_milestone(milestone_dict):
         namespace=milestone_dict.get('namespace', ''),
         description=milestone_dict.get('description', '')
     )
+
+
+def serialize_requirements(requirements):
+    """
+    Convert JSON serializable object to string
+    """
+    if requirements is not None:
+        requirements = json.dumps(requirements)
+    return requirements
+
+
+def deserialize_requirements(requirements):
+    """
+    Convert JSON string to object
+    """
+    if requirements is not None:
+        requirements = json.loads(requirements)
+    else:
+        requirements = {}
+    return requirements

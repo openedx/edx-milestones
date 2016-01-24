@@ -5,40 +5,40 @@ edx-milestones (`milestones`) is a Django application which manages significant 
 
 Usage
 -----
-*  Milestones is designed to support the use case for 'pre-requisite courses'.  Rather than simply linking two courses together, the edX team took the opportunity to create a more flexible feature which could cover multiple scenarios going forward.
+*  A Milestone represents an event which can occur for a student while interacting with the Open edX platform.
 
-*  Milestones listens for Django system events (signals), such as 'added a prerequisite course' and modifies its internal state/models accordingly.  Signals can be defined/emitted from any location in Open edX.  Specific event listeners can be found in receivers.py.  In addition, a read-specific query interface is available in api.py for integration into platform views and other apps.
+*  Relationships can be created between courses or individual sections of course content (referred to collectively as course entities going forward) and a Milestone. A relationship can indicate that a course entity either requires or fulfills a given Milestone.
 
-*  Milestones supports the 'pre-requisite course' use case in the following way:
+*  Student milestone fulfillment status can be recorded and queried.
+
+*  An example feature which Milestones supports is Pre-requisite Courses:
     * Course author selects Course 101 in Studio as a pre-requisite of Course 102
         * Studio:
-            * Emits an 'added_course_prerequisite_course' signal
+            * Makes call to Milestones service API
         * Milestones:
-            * Observes the signal
             * Creates a new generic Milestone A for Course 101
             * Indicates that Course 101 fulfills Milestone A
             * Indicates that Course 102 requires Milestone A
     * Student Smith completes Course 101
         * LMS:
-            * Emits a 'course_completed' signal
+            * Makes call to Milestones service API
         * Milestones:
-            * Observes the signal
             * Pulls the list of milestones fulfilled by Course 101 (set includes Milestone A)
             * Indicates that Student Smith has accomplished Milestone A
     * Student Smith attempts to access Course 102
         * LMS:
-            * Compares Course 102 milestone requirements against Student Smith's milestones
+            * Uses Milestones service API to compare Course 102 milestone requirements against Student Smith's milestones
             * Grants Student Smith access to Course 102
 
-Standalone Testing
-------------------
+Standalone Testing and Quality Check
+------------------------------------
 
-        $ ./run_tests
-
+        $ make quality
+        $ make test
 
 Open edX Platform Integration
 -----------------------------
-* Add desired commit hash from github code repository
+* Add desired tag from github code repository
     * edx-platform/requirements/github.txt
     * "Our libraries" section
 * Add 'milestones' to the list of installed apps:

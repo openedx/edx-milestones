@@ -25,11 +25,14 @@ class Milestone(TimeStampedModel):
     name = models.CharField(max_length=255, db_index=True)
     display_name = models.CharField(max_length=255)
     description = models.TextField()
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         """ Meta class for this Django model """
         unique_together = (("namespace", "name"),)
+
+    def __unicode__(self):
+        return unicode(self.namespace)
 
 
 class MilestoneRelationshipType(TimeStampedModel):
@@ -57,6 +60,9 @@ class MilestoneRelationshipType(TimeStampedModel):
     description = models.TextField(blank=True)
     active = models.BooleanField(default=True)
 
+    def __unicode__(self):
+        return unicode(self.name)
+
     @classmethod
     # pylint: disable=invalid-name
     def get_supported_milestone_relationship_types(cls):
@@ -81,11 +87,14 @@ class CourseMilestone(TimeStampedModel):
     course_id = models.CharField(max_length=255, db_index=True)
     milestone = models.ForeignKey(Milestone, db_index=True)
     milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         """ Meta class for this Django model """
         unique_together = (("course_id", "milestone"),)
+
+    def __unicode__(self):
+        return unicode("%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone))
 
 
 class CourseContentMilestone(TimeStampedModel):
@@ -103,11 +112,20 @@ class CourseContentMilestone(TimeStampedModel):
     content_id = models.CharField(max_length=255, db_index=True)
     milestone = models.ForeignKey(Milestone, db_index=True)
     milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
-    active = models.BooleanField(default=True)
+    requirements = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Stores JSON data required to determine milestone fulfillment"
+    )
+    active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         """ Meta class for this Django model """
         unique_together = (("course_id", "content_id", "milestone"),)
+
+    def __unicode__(self):
+        return unicode("%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone))
 
 
 class UserMilestone(TimeStampedModel):
@@ -129,8 +147,11 @@ class UserMilestone(TimeStampedModel):
     milestone = models.ForeignKey(Milestone, db_index=True)
     source = models.TextField(blank=True)
     collected = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         """ Meta class for this Django model """
         unique_together = ("user_id", "milestone")
+
+    def __unicode__(self):
+        return unicode("%s:%s" % (self.user_id, self.milestone))

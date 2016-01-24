@@ -1,6 +1,8 @@
 """
 Validators confirm the integrity of inbound information prior to a data.py handoff
 """
+import json
+
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
@@ -29,6 +31,23 @@ def content_key_is_valid(content_key):
     try:
         UsageKey.from_string(unicode(content_key))
     except InvalidKeyError:
+        return False
+    return True
+
+
+def course_content_milestone_requirements_is_valid(requirements):
+    """
+    CourseContentMilestone.requirements should be a valid JSON string
+
+    Args:
+        requirements: JSON serializable object containing requirements data
+
+    Returns:
+        bool: True if valid, otherwise False
+    """
+    try:
+        json.dumps(requirements)
+    except TypeError:
         return False
     return True
 
