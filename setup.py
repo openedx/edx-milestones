@@ -23,10 +23,7 @@ setup(
     install_requires=[
         "django>=1.8,<1.9",
         "django-model-utils",
-        "opaque-keys",
-    ],
-    dependency_links=[
-        "https://github.com/edx/opaque-keys/tarball/cba8e23f53ff3ce9d1f45871986c8974576185c0#egg=opaque-keys",
+        "edx-opaque-keys>=0.2.1,<1.0.0",
     ],
     tests_require=[
         "coverage==3.7.1",
