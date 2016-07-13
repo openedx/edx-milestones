@@ -26,24 +26,20 @@ class MilestonesService(object):
             cls._instance = super(MilestonesService, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, module):
         """
         Class initializer, which just inspects the libraries and exposes the same functions
+        listed in REQUESTED_FUNCTIONS
         """
-        from util import milestones_helpers as milestones_api
-        self._bind_to_module_functions(milestones_api)
+        self._bind_to_module_functions(module)
 
     def _bind_to_module_functions(self, module):
         """
         bind module functions. Since we use underscores to mean private methods, let's exclude those.
         """
-        # for attr_name in dir(module):
-        #     attr = getattr(module, attr_name, None)
-        #     if (isinstance(attr, types.FunctionType) and not attr_name.startswith('_') and attr_name in self.REQUESTED_FUNCTIONS):
-        #         if not hasattr(self, attr_name):
-        #             setattr(self, attr_name, attr)
-
         for attr_name in self.REQUESTED_FUNCTIONS:
-            attr = module.get_service(attr_name)
-            if not hasattr(self, attr_name):
-                setattr(self, attr_name, attr)
+            attr = getattr(module, attr_name, None)
+            if isinstance(attr, types.FunctionType) and not attr_name.startswith('_'):
+                if not hasattr(self, attr_name):
+                    setattr(self, attr_name, attr)
+                    

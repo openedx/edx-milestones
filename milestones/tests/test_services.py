@@ -8,7 +8,7 @@ import types
 from milestones.services import (
     MilestonesService
 )
-from util import milestones_helpers as milestones_api
+from milestones import api as milestones_api
 
 
 class TestMilestonesService(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestMilestonesService(unittest.TestCase):
         See if the MilestonesService exposes the expected methods
         """
 
-        service = MilestonesService()
+        service = MilestonesService(milestones_api)
 
         for attr_name in dir(milestones_api):
             attr = getattr(milestones_api, attr_name, None)
@@ -34,6 +34,6 @@ class TestMilestonesService(unittest.TestCase):
         """
         Test to make sure the MilestonesService is a singleton.
         """
-        service1 = MilestonesService()
-        service2 = MilestonesService()
+        service1 = MilestonesService(milestones_api)
+        service2 = MilestonesService(milestones_api)
         self.assertIs(service1, service2)
