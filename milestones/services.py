@@ -42,4 +42,3 @@ class MilestonesService(object):
             if isinstance(attr, types.FunctionType) and not attr_name.startswith('_'):
                 if not hasattr(self, attr_name):
                     setattr(self, attr_name, attr)
-                    
