@@ -11,7 +11,7 @@ from milestones.services import (
 from milestones import api as milestones_api
 
 
-class TestMilestonesService(unittest.TestCase):  # pylint: disable-msg=R0904
+class TestMilestonesService(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
     Tests for MilestonesService
     """

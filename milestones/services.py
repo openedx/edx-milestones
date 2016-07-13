@@ -5,7 +5,7 @@ A wrapper class around all methods exposed in api.py
 import types
 
 
-class MilestonesService(object):  # pylint: disable-msg=R0903
+class MilestonesService(object):  # pylint: disable=too-few-public-methods
     """
     An xBlock service for xBlocks to talk to the Milestones subsystem.*
 
