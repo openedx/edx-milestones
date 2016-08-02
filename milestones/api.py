@@ -59,16 +59,6 @@ def _validate_milestone_data(milestone):
         )
 
 
-def _validate_milestone_relationship_type(name):
-    """ Validation helper """
-    if not validators.milestone_relationship_type_is_valid(name):
-        exceptions.raise_exception(
-            "MilestoneRelationshipType",
-            name,
-            exceptions.InvalidMilestoneRelationshipTypeException
-        )
-
-
 def _validate_user(user):
     """ Validation helper """
     if not validators.user_is_valid(user):
@@ -145,7 +135,6 @@ def add_course_milestone(course_key, relationship, milestone):
     'relationship': string value (eg: 'requires')
     """
     _validate_course_key(course_key)
-    _validate_milestone_relationship_type(relationship)
     _validate_milestone_data(milestone)
     data.create_course_milestone(
         course_key=course_key,
@@ -162,9 +151,12 @@ def get_course_milestones(course_key, relationship=None):
     """
     _validate_course_key(course_key)
 
-    if relationship is not None:
-        _validate_milestone_relationship_type(relationship)
-    return data.fetch_courses_milestones(course_keys=[course_key], relationship=relationship)
+    try:
+        milestones = data.fetch_courses_milestones(course_keys=[course_key], relationship=relationship)
+    except exceptions.InvalidMilestoneRelationshipTypeException:
+        milestones = []
+
+    return milestones
 
 
 def get_course_required_milestones(course_key, user):
@@ -253,14 +245,16 @@ def get_courses_milestones(course_keys, relationship=None, user=None):
     Returns an array of dicts containing milestones
     """
     [_validate_course_key(course_key) for course_key in course_keys]  # pylint: disable=expression-not-assigned
+    try:
+        milestones = data.fetch_courses_milestones(
+            course_keys=course_keys,
+            relationship=relationship,
+            user=user
+        )
+    except exceptions.InvalidMilestoneRelationshipTypeException:
+        milestones = []
 
-    if relationship is not None:
-        _validate_milestone_relationship_type(relationship)
-
-    return data.fetch_courses_milestones(
-        course_keys=course_keys,
-        relationship=relationship,
-        user=user)
+    return milestones
 
 
 def remove_course_milestone(course_key, milestone):
@@ -288,7 +282,6 @@ def add_course_content_milestone(course_key, content_key, relationship, mileston
     """
     _validate_course_key(course_key)
     _validate_content_key(content_key)
-    _validate_milestone_relationship_type(relationship)
     _validate_milestone_data(milestone)
     _validate_course_content_milestone_requirements(requirements)
     data.create_course_content_milestone(
@@ -317,15 +310,17 @@ def get_course_content_milestones(course_key=None, content_key=None, relationshi
         _validate_course_key(course_key)
     if content_key is not None:
         _validate_content_key(content_key)
-    if relationship is not None:
-        _validate_milestone_relationship_type(relationship)
+    try:
+        milestones = data.fetch_course_content_milestones(
+            course_key=course_key,
+            content_key=content_key,
+            relationship=relationship,
+            user=user
+        )
+    except exceptions.InvalidMilestoneRelationshipTypeException:
+        milestones = []
 
-    return data.fetch_course_content_milestones(
-        course_key=course_key,
-        content_key=content_key,
-        relationship=relationship,
-        user=user
-    )
+    return milestones
 
 
 def remove_course_content_milestone(course_key, content_key, milestone):
