@@ -4,9 +4,10 @@ install-test:
 	pip install -q -r test_requirements.txt
 
 install: install-test
+	pip install -q -r requirements.txt
 
 quality:
-	./bin/quality.sh
+	tox -e quality
 
-test:
-	./bin/test.sh
+test: ## run tests on every supported Python version
+	tox

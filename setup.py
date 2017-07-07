@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='edx-milestones',
-    version='0.1.10',
+    version='0.1.11',
     description='Significant events module for Open edX',
     long_description=open('README.md').read(),
     author='edX',
@@ -21,7 +21,7 @@ setup(
     ],
     packages=find_packages(exclude=["tests"]),
     install_requires=[
-        "django>=1.8,<1.9",
+        "django>=1.8,<2.0",
         "django-model-utils",
         "edx-opaque-keys>=0.2.1,<1.0.0",
     ],

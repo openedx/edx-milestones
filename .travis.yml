@@ -1,12 +1,19 @@
 language: python
-python: "2.7"
+python:
+  - 2.7
+env:
+  - TOXENV=django18
+  - TOXENV=django111
+matrix:
+  include:
+    - python: 2.7
+      env: TOXENV=quality
 before_install:
   - export DJANGO_SETTINGS_MODULE=settings
 install:
   - "make install"
 sudo: false
 script:
-  - make quality
   - make test
 branches:
     only:
