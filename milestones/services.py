@@ -18,6 +18,7 @@ class MilestonesService(object):  # pylint: disable=too-few-public-methods
 
     REQUESTED_FUNCTIONS = [
         'get_course_content_milestones',
+        'user_has_milestone'
     ]
 
     def __new__(cls, *args, **kwargs):
