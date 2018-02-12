@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
+from milestones import __version__ as VERSION
 
 setup(
     name='edx-milestones',
-    version='0.1.11',
+    version=VERSION,
     description='Significant events module for Open edX',
     long_description=open('README.md').read(),
     author='edX',
