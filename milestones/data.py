@@ -24,9 +24,11 @@ if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
 else:
     import milestones.resources as remote
 """
+from __future__ import absolute_import
 from . import exceptions
 from . import models as internal
 from . import serializers
+import six
 
 
 # PRIVATE/INTERNAL METHODS (public methods located further down)
@@ -194,7 +196,7 @@ def fetch_milestones(milestone):
         ))
     if milestone_obj.namespace:
         return serializers.serialize_milestones(internal.Milestone.objects.filter(
-            namespace=unicode(milestone_obj.namespace),
+            namespace=six.text_type(milestone_obj.namespace),
             active=True
         ))
 
@@ -218,7 +220,7 @@ def create_course_milestone(course_key, relationship, milestone):
     milestone_obj = serializers.deserialize_milestone(milestone)
     try:
         relationship = internal.CourseMilestone.objects.get(
-            course_id=unicode(course_key),
+            course_id=six.text_type(course_key),
             milestone=milestone_obj,
             milestone_relationship_type=relationship_type
         )
@@ -227,7 +229,7 @@ def create_course_milestone(course_key, relationship, milestone):
             _activate_record(relationship)
     except internal.CourseMilestone.DoesNotExist:
         relationship = internal.CourseMilestone.objects.create(
-            course_id=unicode(course_key),
+            course_id=six.text_type(course_key),
             milestone=milestone_obj,
             milestone_relationship_type=relationship_type,
             active=True
@@ -241,7 +243,7 @@ def delete_course_milestone(course_key, milestone):
     """
     try:
         relationship = internal.CourseMilestone.objects.get(
-            course_id=unicode(course_key),
+            course_id=six.text_type(course_key),
             milestone=milestone['id'],
             active=True,
         )
@@ -292,8 +294,8 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
     requirements = serializers.serialize_requirements(requirements)
     try:
         relationship = internal.CourseContentMilestone.objects.get(
-            course_id=unicode(course_key),
-            content_id=unicode(content_key),
+            course_id=six.text_type(course_key),
+            content_id=six.text_type(content_key),
             milestone=milestone_obj,
             milestone_relationship_type=relationship_type
         )
@@ -307,8 +309,8 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
             relationship.save()
     except internal.CourseContentMilestone.DoesNotExist:
         relationship = internal.CourseContentMilestone.objects.create(
-            course_id=unicode(course_key),
-            content_id=unicode(content_key),
+            course_id=six.text_type(course_key),
+            content_id=six.text_type(content_key),
             milestone=milestone_obj,
             milestone_relationship_type=relationship_type,
             requirements=requirements,
@@ -323,8 +325,8 @@ def delete_course_content_milestone(course_key, content_key, milestone):
     """
     try:
         relationship = internal.CourseContentMilestone.objects.get(
-            course_id=unicode(course_key),
-            content_id=unicode(content_key),
+            course_id=six.text_type(course_key),
+            content_id=six.text_type(content_key),
             milestone=milestone['id'],
             active=True,
         )
@@ -346,10 +348,10 @@ def fetch_course_content_milestones(content_key=None, course_key=None, relations
     ).select_related('milestone')
 
     if course_key is not None:
-        queryset = queryset.filter(course_id=unicode(course_key))
+        queryset = queryset.filter(course_id=six.text_type(course_key))
 
     if content_key is not None:
-        queryset = queryset.filter(content_id=unicode(content_key))
+        queryset = queryset.filter(content_id=six.text_type(content_key))
 
     if relationship is not None:
         mrt = _get_milestone_relationship_type(relationship)
@@ -472,7 +474,7 @@ def delete_content_references(content_key):
     Supports the 'delete entrance exam' Studio use case, when Milestones is enabled
     """
     [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
-        content_id=unicode(content_key),
+        content_id=six.text_type(content_key),
         active=True
     )]
 
@@ -482,11 +484,11 @@ def delete_course_references(course_key):
     Inactivates references to course keys within this app (ref: receivers.py and api.py)
     """
     [_inactivate_record(record) for record in internal.CourseMilestone.objects.filter(
-        course_id=unicode(course_key),
+        course_id=six.text_type(course_key),
         active=True
     )]
 
     [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
-        course_id=unicode(course_key),
+        course_id=six.text_type(course_key),
         active=True
     )]
