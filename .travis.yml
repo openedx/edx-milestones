@@ -8,6 +8,8 @@ matrix:
   include:
   - python: 2.7
     env: TOXENV=quality
+  - python: 3.6
+    env: TOXENV=py36
 before_install:
 - export DJANGO_SETTINGS_MODULE=settings
 install:
