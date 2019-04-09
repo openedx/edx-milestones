@@ -5,10 +5,12 @@ Milestones Data Module Test Cases
 
 Note: 'Unit Test: ' labels are output to the console during test runs
 """
+from __future__ import absolute_import
 import milestones.api as api
 import milestones.data as data
 import milestones.exceptions as exceptions
 import milestones.tests.utils as utils
+import six
 
 
 class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
@@ -29,14 +31,14 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description',
         })
         api.add_course_milestone(self.test_course_key, self.relationship_types['REQUIRES'], milestone1)
         milestone2 = api.add_milestone({
             'display_name': 'Test Milestone 2',
             'name': 'test_milestone_2',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description 2',
         })
         api.add_course_milestone(self.test_course_key, self.relationship_types['FULFILLS'], milestone2)
@@ -52,7 +54,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description',
         })
         api.add_course_content_milestone(
@@ -64,7 +66,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
         milestone2 = api.add_milestone({
             'display_name': 'Test Milestone 2',
             'name': 'test_milestone2',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description 2',
         })
         api.add_course_content_milestone(
@@ -94,7 +96,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
 
     def test_fetch_course_content_milestones_null_keys(self):
         """ Unit Test: test_fetch_course_content_milestones_null_keys"""
-        namespace = '{}.entrance_exams'.format(unicode(self.test_course_key))
+        namespace = '{}.entrance_exams'.format(six.text_type(self.test_course_key))
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',
@@ -129,7 +131,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description',
         })
         api.add_course_milestone(self.test_course_key, 'fulfills', milestone1)
@@ -140,7 +142,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description',
         })
         api.add_course_content_milestone(
@@ -156,7 +158,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',
-            'namespace': unicode(self.test_course_key),
+            'namespace': six.text_type(self.test_course_key),
             'description': 'Test Milestone Description',
         })
         api.add_user_milestone(self.serialized_test_user, milestone1)

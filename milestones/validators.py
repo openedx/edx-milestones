@@ -1,12 +1,14 @@
 """
 Validators confirm the integrity of inbound information prior to a data.py handoff
 """
+from __future__ import absolute_import
 import json
 
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from .data import fetch_milestone_relationship_types
+import six
 
 
 def course_key_is_valid(course_key):
@@ -16,7 +18,7 @@ def course_key_is_valid(course_key):
     if course_key is None:
         return False
     try:
-        CourseKey.from_string(unicode(course_key))
+        CourseKey.from_string(six.text_type(course_key))
     except InvalidKeyError:
         return False
     return True
@@ -29,7 +31,7 @@ def content_key_is_valid(content_key):
     if content_key is None:
         return False
     try:
-        UsageKey.from_string(unicode(content_key))
+        UsageKey.from_string(six.text_type(content_key))
     except InvalidKeyError:
         return False
     return True
@@ -71,7 +73,7 @@ def milestone_relationship_type_is_valid(name):
     """
     Milestone relationship type object validation
     """
-    return name in fetch_milestone_relationship_types().values()
+    return name in list(fetch_milestone_relationship_types().values())
 
 
 def user_is_valid(user):
