@@ -8,6 +8,8 @@ offers two APIs -- api.py for direct Python integration and receivers.py,
 which leverages Django's signal framework.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from django.db import models
 from model_utils.models import TimeStampedModel
 
@@ -32,7 +34,7 @@ class Milestone(TimeStampedModel):
         unique_together = (("namespace", "name"),)
 
     def __unicode__(self):
-        return unicode(self.namespace)
+        return str(self.namespace)
 
 
 class MilestoneRelationshipType(TimeStampedModel):
@@ -61,7 +63,7 @@ class MilestoneRelationshipType(TimeStampedModel):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
     @classmethod
     # pylint: disable=invalid-name
@@ -94,7 +96,7 @@ class CourseMilestone(TimeStampedModel):
         unique_together = (("course_id", "milestone"),)
 
     def __unicode__(self):
-        return unicode("%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone))
+        return str("%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone))
 
 
 class CourseContentMilestone(TimeStampedModel):
@@ -125,7 +127,7 @@ class CourseContentMilestone(TimeStampedModel):
         unique_together = (("course_id", "content_id", "milestone"),)
 
     def __unicode__(self):
-        return unicode("%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone))
+        return str("%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone))
 
 
 class UserMilestone(TimeStampedModel):
@@ -154,4 +156,4 @@ class UserMilestone(TimeStampedModel):
         unique_together = ("user_id", "milestone")
 
     def __unicode__(self):
-        return unicode("%s:%s" % (self.user_id, self.milestone))
+        return str("%s:%s" % (self.user_id, self.milestone))

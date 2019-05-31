@@ -25,6 +25,7 @@ else:
     import milestones.resources as remote
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import exceptions
 from . import models as internal
 from . import serializers

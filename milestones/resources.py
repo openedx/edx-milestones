@@ -12,3 +12,5 @@ state, which is handled in models.py
 This module should only be called directly by data.py, in order to
 maintain the intended data layer abstractions/contracts.
 """
+
+from __future__ import unicode_literals

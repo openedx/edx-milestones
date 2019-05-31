@@ -2,6 +2,7 @@
 Validators confirm the integrity of inbound information prior to a data.py handoff
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 
 from opaque_keys import InvalidKeyError

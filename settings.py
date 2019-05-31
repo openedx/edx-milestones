@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 DEBUG=True
 TEST_MODE=True
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

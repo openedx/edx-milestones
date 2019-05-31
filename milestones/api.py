@@ -12,6 +12,8 @@ consider the process for requiring the Milestone.
 
 Note the terminology difference at this layer vs. Data -- add/edit/get/remove
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from . import data
 from . import exceptions
 from . import validators
