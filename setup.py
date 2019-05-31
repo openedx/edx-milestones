@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from setuptools import setup, find_packages
 from milestones import __version__ as VERSION
 
@@ -27,7 +29,7 @@ setup(
         "edx-opaque-keys>=0.2.1,<1.0.0",
     ],
     tests_require=[
-        "coverage==3.7.1",
+        "coverage==4.5.3",
         "nose==1.3.3",
         "httpretty==0.8.0",
         "pep8==1.5.7",
