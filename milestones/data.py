@@ -26,10 +26,12 @@ else:
 """
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
+import six
+
 from . import exceptions
 from . import models as internal
 from . import serializers
-import six
 
 
 # PRIVATE/INTERNAL METHODS (public methods located further down)
@@ -177,7 +179,7 @@ def fetch_milestone(milestone_id):
         exceptions.raise_exception("Milestone", {'id': milestone_id}, exceptions.InvalidMilestoneException)
     milestone = {'id': milestone_id}
     milestones = fetch_milestones(milestone)
-    if not len(milestones):
+    if not milestones:
         exceptions.raise_exception("Milestone", milestone, exceptions.InvalidMilestoneException)
     return milestones[0]
 
