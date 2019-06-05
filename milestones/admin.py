@@ -1,8 +1,7 @@
 """
 Admin module for milestones app
 """
-from __future__ import absolute_import
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 from django.contrib import admin
 
 from milestones.models import (

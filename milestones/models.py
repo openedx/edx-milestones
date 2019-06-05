@@ -8,12 +8,13 @@ offers two APIs -- api.py for direct Python integration and receivers.py,
 which leverages Django's signal framework.
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from model_utils.models import TimeStampedModel
 
 
+@python_2_unicode_compatible
 class Milestone(TimeStampedModel):
     """
     A Milestone is a representation of an accomplishment which can be
@@ -33,10 +34,11 @@ class Milestone(TimeStampedModel):
         """ Meta class for this Django model """
         unique_together = (("namespace", "name"),)
 
-    def __unicode__(self):
-        return str(self.namespace)
+    def __str__(self):
+        return self.namespace
 
 
+@python_2_unicode_compatible
 class MilestoneRelationshipType(TimeStampedModel):
     """
     A MilestoneRelationshipType represents a category of link available
@@ -62,8 +64,8 @@ class MilestoneRelationshipType(TimeStampedModel):
     description = models.TextField(blank=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
-        return str(self.name)
+    def __str__(self):
+        return self.name
 
     @classmethod
     # pylint: disable=invalid-name
@@ -76,6 +78,7 @@ class MilestoneRelationshipType(TimeStampedModel):
         return RELATIONSHIP_TYPE_CHOICES
 
 
+@python_2_unicode_compatible
 class CourseMilestone(TimeStampedModel):
     """
     A CourseMilestone represents the link between a Course and a
@@ -95,10 +98,11 @@ class CourseMilestone(TimeStampedModel):
         """ Meta class for this Django model """
         unique_together = (("course_id", "milestone"),)
 
-    def __unicode__(self):
-        return str("%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone))
+    def __str__(self):
+        return "%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone)
 
 
+@python_2_unicode_compatible
 class CourseContentMilestone(TimeStampedModel):
     """
     A CourseContentMilestone represents the link between a specific
@@ -126,10 +130,11 @@ class CourseContentMilestone(TimeStampedModel):
         """ Meta class for this Django model """
         unique_together = (("course_id", "content_id", "milestone"),)
 
-    def __unicode__(self):
-        return str("%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone))
+    def __str__(self):
+        return "%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone)
 
 
+@python_2_unicode_compatible
 class UserMilestone(TimeStampedModel):
     """
     A UserMilestone represents an stage reached or event experienced
@@ -155,5 +160,5 @@ class UserMilestone(TimeStampedModel):
         """ Meta class for this Django model """
         unique_together = ("user_id", "milestone")
 
-    def __unicode__(self):
-        return str("%s:%s" % (self.user_id, self.milestone))
+    def __str__(self):
+        return "%s:%s" % (self.user_id, self.milestone)
