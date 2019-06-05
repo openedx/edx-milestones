@@ -27,6 +27,7 @@ setup(
         "django>=1.8,<2.0",
         "django-model-utils",
         "edx-opaque-keys>=0.2.1,<1.0.0",
+        "six",
     ],
     tests_require=[
         "coverage==4.5.3",
