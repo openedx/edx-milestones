@@ -9,6 +9,7 @@ setup(
     version=VERSION,
     description='Significant events module for Open edX',
     long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
     author='edX',
     url='https://github.com/edx/edx-milestones',
     license='AGPL',

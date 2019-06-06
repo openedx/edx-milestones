@@ -17,6 +17,7 @@ before_install:
 
 install:
 - make install
+- pip freeze --all
 
 script:
 - make test

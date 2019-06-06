@@ -11,3 +11,4 @@ pep257==0.3.2
 mock==1.0.1
 testfixtures==4.0.0
 ddt==0.8.0
+setuptools>=38.6.0
