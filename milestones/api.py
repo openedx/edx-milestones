@@ -12,6 +12,7 @@ consider the process for requiring the Milestone.
 
 Note the terminology difference at this layer vs. Data -- add/edit/get/remove
 """
+from __future__ import absolute_import, unicode_literals
 from . import data
 from . import exceptions
 from . import validators
@@ -218,7 +219,7 @@ def get_course_milestones_fulfillment_paths(course_key, user):
     # Build the set of fulfillment paths for the outstanding milestones
     fulfillment_paths = {}
     for milestone in required_milestones:
-        dict_key = '{}.{}'.format(milestone['namespace'].encode('utf-8'), milestone['name'].encode('utf-8'))
+        dict_key = '{}.{}'.format(milestone['namespace'], milestone['name'])
         fulfillment_paths[dict_key] = {}
         milestone_courses = data.fetch_milestone_courses(
             milestone,

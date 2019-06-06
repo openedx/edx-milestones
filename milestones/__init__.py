@@ -1,4 +1,5 @@
 """
 Milestones app initialization module
 """
-__version__ = '0.1.13'
+from __future__ import unicode_literals
+__version__ = '0.2.0'
