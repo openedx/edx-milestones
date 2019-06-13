@@ -16,13 +16,13 @@ before_install:
 - export DJANGO_SETTINGS_MODULE=settings
 
 install:
-- make install
+- make requirements
 - pip freeze --all
 
 script:
 - make test
 
-after_success: coveralls
+after_success: codecov
 
 deploy:
   provider: pypi

@@ -1,0 +1,7 @@
+# Core requirements for using this application
+-c constraints.txt
+
+Django>=1.11,<2.0                          # Web application framework
+django-model-utils                         # Provides TimeStampedModel abstract base class
+edx-opaque-keys>=0.2.1                     # Create and introspect course and xblock identities
+six                                        # Utilities for supporting Python 2 & 3 in the same codebase

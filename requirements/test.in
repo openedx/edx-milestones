@@ -1,0 +1,9 @@
+# Requirements for test runs.
+-c constraints.txt
+
+-r base.txt               # Core dependencies for this package
+
+code-annotations          # Provides commands used by the pii_check make target
+coverage
+django_nose>=1.4.1
+nose
