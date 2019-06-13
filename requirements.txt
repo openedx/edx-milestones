@@ -1,6 +1,0 @@
-# Django/Framework Packages
-django>=1.8,<2.0
-django-model-utils
-
-# edX Packages
--e git+https://github.com/edx/opaque-keys.git@cba8e23f53ff3ce9d1f45871986c8974576185c0#egg=opaque-keys
