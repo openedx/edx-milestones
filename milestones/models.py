@@ -122,7 +122,7 @@ class CourseContentMilestone(TimeStampedModel):
         max_length=255,
         blank=True,
         null=True,
-        help_text="Stores JSON data required to determine milestone fulfillment"
+        help_text=u"Stores JSON data required to determine milestone fulfillment"
     )
     active = models.BooleanField(default=True, db_index=True)
 
