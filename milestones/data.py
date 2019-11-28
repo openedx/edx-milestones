@@ -1,4 +1,5 @@
 # pylint: disable=no-member,expression-not-assigned
+# pylint: disable=inconsistent-return-statements
 """
 Application data management/abstraction layer.  Responsible for:
 
@@ -230,7 +231,7 @@ def create_course_milestone(course_key, relationship, milestone):
         if not relationship.active:
             _activate_record(relationship)
     except internal.CourseMilestone.DoesNotExist:
-        relationship = internal.CourseMilestone.objects.create(
+        internal.CourseMilestone.objects.create(
             course_id=six.text_type(course_key),
             milestone=milestone_obj,
             milestone_relationship_type=relationship_type,
@@ -310,7 +311,7 @@ def create_course_content_milestone(course_key, content_key, relationship, miles
             relationship.requirements = requirements
             relationship.save()
     except internal.CourseContentMilestone.DoesNotExist:
-        relationship = internal.CourseContentMilestone.objects.create(
+        internal.CourseContentMilestone.objects.create(
             course_id=six.text_type(course_key),
             content_id=six.text_type(content_key),
             milestone=milestone_obj,

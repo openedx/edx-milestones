@@ -90,8 +90,9 @@ class CourseMilestone(TimeStampedModel):
     the Milestone, such as "requires".
     """
     course_id = models.CharField(max_length=255, db_index=True)
-    milestone = models.ForeignKey(Milestone, db_index=True)
-    milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
+    milestone = models.ForeignKey(Milestone, db_index=True, on_delete=models.CASCADE)
+    milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True,
+                                                    on_delete=models.CASCADE)
     active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
@@ -116,8 +117,9 @@ class CourseContentMilestone(TimeStampedModel):
     """
     course_id = models.CharField(max_length=255, db_index=True)
     content_id = models.CharField(max_length=255, db_index=True)
-    milestone = models.ForeignKey(Milestone, db_index=True)
-    milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True)
+    milestone = models.ForeignKey(Milestone, db_index=True, on_delete=models.CASCADE)
+    milestone_relationship_type = models.ForeignKey(MilestoneRelationshipType, db_index=True,
+                                                    on_delete=models.CASCADE)
     requirements = models.CharField(
         max_length=255,
         blank=True,
@@ -151,7 +153,7 @@ class UserMilestone(TimeStampedModel):
     collection of the milestone by this user.
     """
     user_id = models.IntegerField(db_index=True)
-    milestone = models.ForeignKey(Milestone, db_index=True)
+    milestone = models.ForeignKey(Milestone, db_index=True, on_delete=models.CASCADE)
     source = models.TextField(blank=True)
     collected = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True, db_index=True)

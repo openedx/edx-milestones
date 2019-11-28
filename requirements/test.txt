@@ -5,19 +5,19 @@
 #    make upgrade
 #
 click==7.0                # via code-annotations
-code-annotations==0.3.1
-coverage==4.5.3
-django-model-utils==3.1.2
+code-annotations==0.3.2
+coverage==4.5.4
+django-model-utils==3.2.0
 django-nose==1.4.6
-edx-opaque-keys==1.0.1
-jinja2==2.10.1            # via code-annotations
+edx-opaque-keys==2.0.1
+jinja2==2.10.3            # via code-annotations
 markupsafe==1.1.1         # via jinja2
 nose==1.3.7
-pbr==5.2.1
-pymongo==3.8.0
-python-slugify==3.0.2     # via code-annotations
-pytz==2019.1
-pyyaml==5.1.1             # via code-annotations
-six==1.12.0
-stevedore==1.30.1
-text-unidecode==1.2       # via python-slugify
+pbr==5.4.4
+pymongo==3.9.0
+python-slugify==4.0.0     # via code-annotations
+pytz==2019.3
+pyyaml==5.1.2             # via code-annotations
+six==1.13.0
+stevedore==1.31.0
+text-unidecode==1.3       # via python-slugify
