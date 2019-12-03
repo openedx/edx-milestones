@@ -1,26 +1,32 @@
 language: python
 
 python:
-- 2.7
-- 3.6
+  - 2.7
+  - 3.5
 
 env:
-- TOXENV=django111
+  - TOXENV=django111
 
 matrix:
   include:
-  - python: 3.6
+  - python: 3.5
     env: TOXENV=quality
+  - python: 3.5
+    env: TOXENV=django20
+  - python: 3.5
+    env: TOXENV=django21
+  - python: 3.5
+    env: TOXENV=django22
 
 before_install:
-- export DJANGO_SETTINGS_MODULE=settings
+  - export DJANGO_SETTINGS_MODULE=settings
 
 install:
-- make requirements
-- pip freeze --all
+  - make requirements
+  - pip freeze --all
 
 script:
-- make test
+  - make test
 
 after_success: codecov
 
@@ -30,7 +36,7 @@ deploy:
   distributions: sdist bdist_wheel
   on:
     tags: true
-    python: 3.6
+    python: 3.5
     condition: '$TOXENV = django111'
   password:
     secure: oVeS9OrvR5XvJMg86eO004xk9KFh9IbUxWqyWYYFZf1drtrzG2Bm7+F0BgF1hY2l+qyHXinPCCeBmV9CEfav80se1r8K0JFu9MwBHQkvaeBAJV+ItQ2ZumtgNNONoL5VZHIRbEYwl/lbZCWaXpmDLkJSlRVYCECP2bH+RcZkbQM=

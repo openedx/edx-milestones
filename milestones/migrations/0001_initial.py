@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 ('source', models.TextField(blank=True)),
                 ('collected', models.DateTimeField(null=True, blank=True)),
                 ('active', models.BooleanField(default=True)),
-                ('milestone', models.ForeignKey(to='milestones.Milestone')),
+                ('milestone', models.ForeignKey(to='milestones.Milestone', on_delete=django.db.models.CASCADE)),
             ],
         ),
         migrations.AlterUniqueTogether(
@@ -81,22 +81,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='coursemilestone',
             name='milestone',
-            field=models.ForeignKey(to='milestones.Milestone'),
+            field=models.ForeignKey(to='milestones.Milestone', on_delete=django.db.models.CASCADE),
         ),
         migrations.AddField(
             model_name='coursemilestone',
             name='milestone_relationship_type',
-            field=models.ForeignKey(to='milestones.MilestoneRelationshipType'),
+            field=models.ForeignKey(to='milestones.MilestoneRelationshipType', on_delete=django.db.models.CASCADE),
         ),
         migrations.AddField(
             model_name='coursecontentmilestone',
             name='milestone',
-            field=models.ForeignKey(to='milestones.Milestone'),
+            field=models.ForeignKey(to='milestones.Milestone', on_delete=django.db.models.CASCADE),
         ),
         migrations.AddField(
             model_name='coursecontentmilestone',
             name='milestone_relationship_type',
-            field=models.ForeignKey(to='milestones.MilestoneRelationshipType'),
+            field=models.ForeignKey(to='milestones.MilestoneRelationshipType', on_delete=django.db.models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='usermilestone',

@@ -4,11 +4,11 @@
 #
 #    make upgrade
 #
-django-model-utils==3.1.2
-django==1.11.21
-edx-opaque-keys==1.0.1
-pbr==5.2.1                # via stevedore
-pymongo==3.8.0            # via edx-opaque-keys
-pytz==2019.1              # via django
-six==1.12.0
-stevedore==1.30.1         # via edx-opaque-keys
+django-model-utils==3.2.0
+django==1.11.26
+edx-opaque-keys==2.0.1
+pbr==5.4.4                # via stevedore
+pymongo==3.9.0            # via edx-opaque-keys
+pytz==2019.3              # via django
+six==1.13.0
+stevedore==1.31.0         # via edx-opaque-keys

@@ -6,12 +6,12 @@ Milestones API Module Test Cases
 """
 from __future__ import absolute_import, unicode_literals
 
+import six
 from opaque_keys.edx.keys import UsageKey
 
 import milestones.api as api
 import milestones.exceptions as exceptions
 import milestones.tests.utils as utils
-import six
 
 
 class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestCaseBase):
