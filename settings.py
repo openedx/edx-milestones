@@ -7,7 +7,6 @@ Django applications, so these settings will not be used.
 from __future__ import unicode_literals
 DEBUG = True
 TEST_MODE = True
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TRANSACTIONS_MANAGED = {}
 USE_TZ = False
 TIME_ZONE = {}
@@ -26,9 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-
-    'milestones',
-    'django_nose',
+    'milestones'
 )
 
 MIDDLEWARE_CLASSES = {}
