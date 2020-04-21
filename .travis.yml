@@ -8,10 +8,6 @@ env:
   - TOXENV=django22
   - TOXENV=quality
 
-matrix:
-  allow_failures:
-    - python: 3.8
-
 before_install:
   - export DJANGO_SETTINGS_MODULE=settings
 
