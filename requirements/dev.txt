@@ -19,7 +19,7 @@ codecov==2.0.22           # via -r requirements/travis.txt
 coverage==5.1             # via -r requirements/quality.txt, -r requirements/travis.txt, codecov, pytest-cov
 distlib==0.3.0            # via -r requirements/quality.txt, -r requirements/travis.txt, caniusepython3, virtualenv
 django-model-utils==4.0.0  # via -r requirements/quality.txt
-django==2.2.12            # via -r requirements/quality.txt, code-annotations, django-model-utils
+django==2.2.12            # via -c requirements/constraints.txt, -r requirements/quality.txt, code-annotations, django-model-utils
 edx-lint==1.4.1           # via -r requirements/quality.txt
 edx-opaque-keys==2.0.2    # via -r requirements/quality.txt
 filelock==3.0.12          # via -r requirements/travis.txt, tox, virtualenv
@@ -35,7 +35,7 @@ more-itertools==8.2.0     # via -r requirements/quality.txt, pytest
 packaging==20.3           # via -r requirements/quality.txt, -r requirements/travis.txt, caniusepython3, pytest, tox
 pathlib2==2.3.5           # via -r requirements/quality.txt, pytest
 pbr==5.4.5                # via -r requirements/quality.txt, stevedore
-pip-tools==5.0.0          # via -r requirements/pip-tools.txt
+pip-tools==4.5.1          # via -c requirements/constraints.txt, -r requirements/pip-tools.txt
 pluggy==0.13.1            # via -r requirements/quality.txt, -r requirements/travis.txt, pytest, tox
 py==1.8.1                 # via -r requirements/quality.txt, -r requirements/travis.txt, pytest, tox
 pycodestyle==2.5.0        # via -r requirements/quality.txt
@@ -69,5 +69,4 @@ wrapt==1.11.2             # via -r requirements/quality.txt, astroid
 zipp==1.2.0               # via -r requirements/quality.txt, -r requirements/travis.txt, importlib-metadata, importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
 # setuptools

@@ -17,7 +17,7 @@ code-annotations==0.3.3   # via -r requirements/test.txt
 coverage==5.1             # via -r requirements/test.txt, pytest-cov
 distlib==0.3.0            # via caniusepython3
 django-model-utils==4.0.0  # via -r requirements/test.txt
-django==2.2.12            # via -r requirements/test.txt, code-annotations, django-model-utils
+django==2.2.12            # via -c requirements/constraints.txt, -r requirements/test.txt, code-annotations, django-model-utils
 edx-lint==1.4.1           # via -r requirements/quality.in
 edx-opaque-keys==2.0.2    # via -r requirements/test.txt
 idna==2.9                 # via requests
