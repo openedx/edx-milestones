@@ -8,7 +8,7 @@ import types
 from milestones import api as milestones_api
 
 
-class MilestonesService(object):  # pylint: disable=too-few-public-methods
+class MilestonesService:  # pylint: disable=too-few-public-methods
     """
     An xBlock service for xBlocks to talk to the Milestones subsystem.
 

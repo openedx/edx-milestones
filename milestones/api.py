@@ -363,7 +363,7 @@ def user_has_milestone(user, milestone):
     """
     _validate_user(user)
     _validate_milestone_data(milestone)
-    return True if data.fetch_user_milestones(user, milestone) else False
+    return bool(data.fetch_user_milestones(user, milestone))
 
 
 def remove_user_milestone(user, milestone):
