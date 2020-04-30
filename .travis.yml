@@ -9,10 +9,10 @@ env:
   - TOXENV=quality
 
 before_install:
+  - pip install pip==20.0.2
   - export DJANGO_SETTINGS_MODULE=settings
 
 install:
-  - pip install pip==20.0.2
   - make requirements
   - pip freeze --all
 
