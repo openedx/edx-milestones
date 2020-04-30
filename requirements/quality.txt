@@ -12,12 +12,12 @@ caniusepython3==7.2.0     # via -r requirements/quality.in
 certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
 click-log==0.3.2          # via edx-lint
-click==7.1.1              # via -r requirements/test.txt, click-log, code-annotations, edx-lint
+click==7.1.2              # via -r requirements/test.txt, click-log, code-annotations, edx-lint
 code-annotations==0.3.3   # via -r requirements/test.txt
 coverage==5.1             # via -r requirements/test.txt, pytest-cov
 distlib==0.3.0            # via caniusepython3
 django-model-utils==4.0.0  # via -r requirements/test.txt
-django==2.2.12            # via -c requirements/constraints.txt, -r requirements/test.txt, code-annotations, django-model-utils
+django==2.2.12            # via -r requirements/test.txt, code-annotations, django-model-utils
 edx-lint==1.4.1           # via -r requirements/quality.in
 edx-opaque-keys==2.0.2    # via -r requirements/test.txt
 idna==2.9                 # via requests
@@ -45,7 +45,7 @@ pytest-cov==2.8.1         # via -r requirements/test.txt
 pytest-django==3.9.0      # via -r requirements/test.txt
 pytest==5.4.1             # via -r requirements/test.txt, pytest-cov, pytest-django
 python-slugify==4.0.0     # via -r requirements/test.txt, code-annotations
-pytz==2019.3              # via -r requirements/test.txt, django
+pytz==2020.1              # via -r requirements/test.txt, django
 pyyaml==5.3.1             # via -r requirements/test.txt, code-annotations
 requests==2.23.0          # via caniusepython3
 six==1.14.0               # via -r requirements/test.txt, astroid, edx-lint, edx-opaque-keys, packaging, pathlib2, stevedore

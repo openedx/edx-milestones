@@ -5,11 +5,11 @@
 #    make upgrade
 #
 django-model-utils==4.0.0  # via -r requirements/base.in
-django==2.2.12            # via -c requirements/constraints.txt, -r requirements/base.in, django-model-utils
+django==2.2.12            # via -r requirements/base.in, django-model-utils
 edx-opaque-keys==2.0.2    # via -r requirements/base.in
 pbr==5.4.5                # via stevedore
 pymongo==3.10.1           # via edx-opaque-keys
-pytz==2019.3              # via django
+pytz==2020.1              # via django
 six==1.14.0               # via -r requirements/base.in, edx-opaque-keys, stevedore
 sqlparse==0.3.1           # via django
 stevedore==1.32.0         # via edx-opaque-keys
