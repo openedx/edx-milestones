@@ -9,15 +9,13 @@ env:
   - TOXENV=quality
 
 before_install:
-  - pip install pip==20.0.2
   - export DJANGO_SETTINGS_MODULE=settings
 
 install:
-  - make requirements
-  - pip freeze --all
+  - pip install -r requirements/travis.txt
 
 script:
-  - make test
+  - tox
 
 after_success: codecov
 
