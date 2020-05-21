@@ -6,7 +6,7 @@
 #
 django-model-utils==4.0.0  # via -r requirements/base.in
 django==2.2.12            # via -r requirements/base.in, django-model-utils
-edx-opaque-keys==2.0.2    # via -r requirements/base.in
+edx-opaque-keys==2.1.0    # via -r requirements/base.in
 pbr==5.4.5                # via stevedore
 pymongo==3.10.1           # via edx-opaque-keys
 pytz==2020.1              # via django
