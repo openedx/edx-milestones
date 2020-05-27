@@ -7,3 +7,6 @@
 # link to other information that will help people in the future to remove the
 # pin when possible.  Writing an issue against the offending project and
 # linking to it here is good.
+
+# constrained until https://github.com/signalpillar/tox-battery/pull/26 is merged
+tox-battery==0.5.2
