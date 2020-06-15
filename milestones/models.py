@@ -7,7 +7,7 @@ offers two APIs -- api.py for direct Python integration and receivers.py,
 which leverages Django's signal framework.
 """
 
-from __future__ import absolute_import, unicode_literals
+
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from model_utils.models import TimeStampedModel

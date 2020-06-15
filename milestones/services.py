@@ -2,7 +2,7 @@
 A wrapper class around requested methods exposed in api.py
 """
 
-from __future__ import absolute_import, unicode_literals
+
 import types
 
 from milestones import api as milestones_api

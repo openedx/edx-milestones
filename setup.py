@@ -2,9 +2,6 @@
 """
 Package metadata for edx-milestones.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import re
 import os
 import sys
@@ -57,7 +54,6 @@ if sys.argv[-1] == 'tag':
     os.system(u"git tag -a v%s -m 'version %s'" % (VERSION, VERSION))
     os.system("git push --tags")
     sys.exit()
-
 
 setup(
     name='edx-milestones',

@@ -5,7 +5,7 @@ Milestones Data Module Test Cases
 
 Note: 'Unit Test: ' labels are output to the console during test runs
 """
-from __future__ import absolute_import, unicode_literals
+
 
 import six
 
