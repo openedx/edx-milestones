@@ -25,7 +25,7 @@ if getattr(settings, 'TEST_MODE', False) or os.getenv('TRAVIS_MODE', False):
 else:
     import milestones.resources as remote
 """
-from __future__ import absolute_import, unicode_literals
+
 
 import six
 

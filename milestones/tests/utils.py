@@ -2,7 +2,7 @@
 """
 Utility module for Milestones test cases
 """
-from __future__ import absolute_import, unicode_literals
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from opaque_keys.edx.keys import CourseKey, UsageKey

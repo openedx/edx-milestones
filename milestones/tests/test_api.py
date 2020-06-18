@@ -4,7 +4,7 @@
 """
 Milestones API Module Test Cases
 """
-from __future__ import absolute_import, unicode_literals
+
 
 import six
 from opaque_keys.edx.keys import UsageKey
