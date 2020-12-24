@@ -51,7 +51,7 @@ def is_requirement(line):
 
 if sys.argv[-1] == 'tag':
     print("Tagging the version on github:")
-    os.system(u"git tag -a v%s -m 'version %s'" % (VERSION, VERSION))
+    os.system("git tag -a v%s -m 'version %s'" % (VERSION, VERSION))
     os.system("git push --tags")
     sys.exit()
 

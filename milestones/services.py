@@ -26,7 +26,7 @@ class MilestonesService:  # pylint: disable=too-few-public-methods
         This is the class factory to make sure this is a Singleton
         """
         if not cls._instance:
-            cls._instance = super(MilestonesService, cls).__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
 
     def __init__(self):

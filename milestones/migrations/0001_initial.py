@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django.db import models, migrations
 import django.utils.timezone
 import model_utils.fields
@@ -76,7 +72,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='milestone',
-            unique_together=set([('namespace', 'name')]),
+            unique_together={('namespace', 'name')},
         ),
         migrations.AddField(
             model_name='coursemilestone',
@@ -100,14 +96,14 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='usermilestone',
-            unique_together=set([('user_id', 'milestone')]),
+            unique_together={('user_id', 'milestone')},
         ),
         migrations.AlterUniqueTogether(
             name='coursemilestone',
-            unique_together=set([('course_id', 'milestone')]),
+            unique_together={('course_id', 'milestone')},
         ),
         migrations.AlterUniqueTogether(
             name='coursecontentmilestone',
-            unique_together=set([('course_id', 'content_id', 'milestone')]),
+            unique_together={('course_id', 'content_id', 'milestone')},
         ),
     ]
