@@ -6,7 +6,6 @@ Milestones API Module Test Cases
 """
 
 
-import six
 from opaque_keys.edx.keys import UsageKey
 
 import milestones.api as api
@@ -22,11 +21,11 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         """
         Milestones API Test Case scaffolding
         """
-        super(MilestonesApiTestCase, self).setUp()
+        super().setUp()
         self.test_milestone = api.add_milestone({
             'name': 'test_milestone',
             'display_name': 'Test Milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Test Milestone Description',
         })
         self.relationship_types = api.get_milestone_relationship_types()
@@ -37,7 +36,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
             milestone = api.add_milestone({
                 'name': 'local_milestone',
                 'display_name': 'Local Milestone',
-                'namespace': six.text_type(self.test_course_key),
+                'namespace': str(self.test_course_key),
                 'description': 'Local Milestone Description'
             })
         self.assertGreater(milestone['id'], 0)
@@ -47,7 +46,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         milestone_data = {
             'name': 'local_milestone',
             'display_name': 'Local Milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Local Milestone Description'
         }
         milestone = api.add_milestone(milestone_data)
@@ -60,7 +59,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         milestone_data = {
             'name': 'local_milestone',
             'display_name': 'Local Milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Local Milestone Description'
         }
         milestone = api.add_milestone(milestone_data)
@@ -75,7 +74,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         milestone_data = {
             'name': 'local_milestone',
             'display_name': 'Local Milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Local Milestone Description'
         }
         milestone = api.add_milestone(milestone_data)
@@ -102,7 +101,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         milestone_data = {
             'name': 'local_milestone',
             'display_name': 'Local Milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Local Milestone Description'
         }
         milestone = api.add_milestone(milestone_data)
@@ -423,7 +422,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         local_milestone = api.add_milestone({
             'display_name': 'Local Milestone',
             'name': 'local_milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Local Milestone Description'
         })
         api.add_course_milestone(
@@ -459,7 +458,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         local_milestone = api.add_milestone({
             'display_name': 'Local Milestone',
             'name': 'local_milestone',
-            'namespace': six.text_type(self.test_course_key),
+            'namespace': str(self.test_course_key),
             'description': 'Local Milestone Description'
         })
         api.add_course_milestone(
@@ -943,7 +942,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         Unit Test: test_get_course_milestones_fulfillment_paths works correctly when milestone have some special
         characters.
         """
-        namespace = six.text_type(self.test_course_key)
+        namespace = str(self.test_course_key)
         name = '�ťÉśt_Àübùr�'
         local_milestone_1 = api.add_milestone({
             'display_name': 'Local Milestone 1',
@@ -980,7 +979,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
         Unit Test: test_get_course_milestones_fulfillment_paths
         """
         # Create three milestones in order tto cover all logical branches
-        namespace = six.text_type(self.test_course_key)
+        namespace = str(self.test_course_key)
         local_milestone_1 = api.add_milestone({
             'display_name': 'Local Milestone 1',
             'name': 'local_milestone_1',

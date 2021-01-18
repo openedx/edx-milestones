@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
-
 from django.db import migrations, models
 
 
@@ -15,6 +11,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='coursecontentmilestone',
             name='requirements',
-            field=models.CharField(help_text=u'Stores JSON data required to determine milestone fulfillment', max_length=255, null=True, blank=True),
+            field=models.CharField(help_text='Stores JSON data required to determine milestone fulfillment', max_length=255, null=True, blank=True),
         ),
     ]

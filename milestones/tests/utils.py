@@ -18,7 +18,7 @@ class MilestonesTestCaseBase(TestCase):
         """
         Helper method for test case scaffolding
         """
-        super(MilestonesTestCaseBase, self).setUp()
+        super().setUp()
         self.test_course_key = CourseKey.from_string('the/course/key')
         self.test_alternate_course_key = CourseKey.from_string('the/alternate_course/key')
         self.test_prerequisite_course_key = CourseKey.from_string('the/prerequisite/key')
@@ -39,6 +39,6 @@ class MilestonesTestCaseMixin(TestCase):
     TestCase mixin for loading initial milestones data
     """
     def setUp(self):
-        super(MilestonesTestCaseMixin, self).setUp()
+        super().setUp()
         MilestoneRelationshipType.objects.get_or_create(name='requires')
         MilestoneRelationshipType.objects.get_or_create(name='fulfills')

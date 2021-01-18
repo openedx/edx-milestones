@@ -4,7 +4,6 @@ Validators confirm the integrity of inbound information prior to a data.py hando
 
 
 import json
-import six
 
 from opaque_keys import InvalidKeyError
 from opaque_keys.edx.keys import CourseKey, UsageKey
@@ -19,7 +18,7 @@ def course_key_is_valid(course_key):
     if course_key is None:
         return False
     try:
-        CourseKey.from_string(six.text_type(course_key))
+        CourseKey.from_string(str(course_key))
     except InvalidKeyError:
         return False
     return True
@@ -32,7 +31,7 @@ def content_key_is_valid(content_key):
     if content_key is None:
         return False
     try:
-        UsageKey.from_string(six.text_type(content_key))
+        UsageKey.from_string(str(content_key))
     except InvalidKeyError:
         return False
     return True

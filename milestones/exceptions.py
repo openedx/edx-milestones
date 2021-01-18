@@ -32,5 +32,5 @@ class InvalidUserException(ValidationError):
 def raise_exception(entity_type, entity, exception):
     """ Exception helper """
     raise exception(
-        'The {} you have provided is not valid: {}'.format(entity_type, entity)
+        f'The {entity_type} you have provided is not valid: {entity}'
     )

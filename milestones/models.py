@@ -9,11 +9,9 @@ which leverages Django's signal framework.
 
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from model_utils.models import TimeStampedModel
 
 
-@python_2_unicode_compatible
 class Milestone(TimeStampedModel):
     """
     A Milestone is a representation of an accomplishment which can be
@@ -34,10 +32,9 @@ class Milestone(TimeStampedModel):
         unique_together = (("namespace", "name"),)
 
     def __str__(self):
-        return self.namespace
+        return str(self.namespace)
 
 
-@python_2_unicode_compatible
 class MilestoneRelationshipType(TimeStampedModel):
     """
     A MilestoneRelationshipType represents a category of link available
@@ -64,7 +61,7 @@ class MilestoneRelationshipType(TimeStampedModel):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     @classmethod
     # pylint: disable=invalid-name
@@ -77,7 +74,6 @@ class MilestoneRelationshipType(TimeStampedModel):
         return RELATIONSHIP_TYPE_CHOICES
 
 
-@python_2_unicode_compatible
 class CourseMilestone(TimeStampedModel):
     """
     A CourseMilestone represents the link between a Course and a
@@ -102,7 +98,6 @@ class CourseMilestone(TimeStampedModel):
         return "%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone)
 
 
-@python_2_unicode_compatible
 class CourseContentMilestone(TimeStampedModel):
     """
     A CourseContentMilestone represents the link between a specific
@@ -123,7 +118,7 @@ class CourseContentMilestone(TimeStampedModel):
         max_length=255,
         blank=True,
         null=True,
-        help_text=u"Stores JSON data required to determine milestone fulfillment"
+        help_text="Stores JSON data required to determine milestone fulfillment"
     )
     active = models.BooleanField(default=True, db_index=True)
 
@@ -135,7 +130,6 @@ class CourseContentMilestone(TimeStampedModel):
         return "%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone)
 
 
-@python_2_unicode_compatible
 class UserMilestone(TimeStampedModel):
     """
     A UserMilestone represents an stage reached or event experienced
