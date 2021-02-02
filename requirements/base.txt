@@ -5,11 +5,11 @@
 #    make upgrade
 #
 django-model-utils==4.1.1  # via -r requirements/base.in
-django==2.2.17            # via -r requirements/base.in, django-model-utils
-edx-opaque-keys==2.1.1    # via -r requirements/base.in
+django==2.2.18            # via -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt, -r requirements/base.in, django-model-utils
+edx-opaque-keys==2.2.0    # via -r requirements/base.in
 pbr==5.5.1                # via stevedore
 pymongo==3.11.2           # via edx-opaque-keys
-pytz==2020.4              # via django
-six==1.15.0               # via -r requirements/base.in, edx-opaque-keys
+pytz==2021.1              # via django
+six==1.15.0               # via -r requirements/base.in
 sqlparse==0.4.1           # via django
 stevedore==3.3.0          # via edx-opaque-keys
