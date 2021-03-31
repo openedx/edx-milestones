@@ -38,34 +38,30 @@ Standalone Testing and Quality Check
 
 Open edX Platform Integration
 -----------------------------
-* Add desired tag from github code repository
-    * edx-platform/requirements/github.txt
-    * "Our libraries" section
-* Add 'milestones' to the list of installed apps:
-    * common.py
-    * Feature flag convention is preferred
-* In edx-platform devstack:
-    * pip install -r requirements
-    * paver test_system -s lms
+* This package is included in the [base](https://github.com/edx/edx-platform/blob/master/requirements/edx/base.in#L85) requirements of [edx-platform](https://github.com/edx/edx-platform/)
+* `milestones` is included in the list of installed apps for edx-platform:
+* These documents outline the feature flags required to enable the features that use edx-milestones.
+  * [Course Run prerequisites](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/configuration/enable_prerequisites.html#enable-course-prerequisites)
+  * [Subsection prerequisites](https://edx-partner-course-staff.readthedocs.io/en/latest/developing_course/controlling_content_visibility.html#prerequisite-course-subsections)
 
 
 How to Contribute
 -----------------
-Contributions are very welcome, but please note that edx-milestones is currently an
-early stage work-in-progress and is changing frequently at this time.
-
-See our
+Contributions are very welcome please see our
 [CONTRIBUTING](https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst)
 file for more information -- it also contains guidelines for how to maintain
 high code quality, which will make your contribution more likely to be accepted.
 
+Getting Help
+------------
+If you're having trouble, we have discussion forums at
+https://discuss.openedx.org where you can connect with others in the community.
+
+Our real-time conversations are on Slack. You can request a [Slack
+invitation](https://openedx-slack-invite.herokuapp.com/), then join our [community Slack team](http://openedx.slack.com/).
+
+For more information about these options, see the [Getting Help](https://openedx.org/getting-help) page.
 
 Reporting Security Issues
 -------------------------
 Please do not report security issues in public. Please email security@edx.org.
-
-
-Mailing List and IRC Channel
-----------------------------
-You can discuss this code on the [edx-code Google Group](https://groups.google.com/forum/#!forum/edx-code) or in the
-`edx-code` IRC channel on Freenode.
