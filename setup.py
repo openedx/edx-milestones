@@ -15,7 +15,8 @@ def get_version(*file_paths):
     Extract the version string from the file at the given relative path fragments.
     """
     filename = os.path.join(os.path.dirname(__file__), *file_paths)
-    version_file = open(filename).read()
+    with open(filename, encoding='utf-8') as _fp:
+        version_file = _fp.read()
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
                               version_file, re.M)
     if version_match:
@@ -33,7 +34,8 @@ def load_requirements(*requirements_paths):
     requirements = set()
     for path in requirements_paths:
         requirements.update(
-            line.split('#')[0].strip() for line in open(path).readlines()
+            line.split('#')[0].strip()
+            for line in open(path, encoding='utf-8').readlines()  # pylint: disable=consider-using-with
             if is_requirement(line.strip())
         )
     return list(requirements)
@@ -59,7 +61,7 @@ setup(
     name='edx-milestones',
     version=VERSION,
     description='Significant events module for Open edX',
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),  # pylint: disable=consider-using-with
     long_description_content_type="text/markdown",
     author='edX',
     url='https://github.com/edx/edx-milestones',
