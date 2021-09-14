@@ -1,4 +1,4 @@
-edx-milestones [![Build Status](https://travis-ci.com/edx/edx-milestones.svg?branch=master)](https://travis-ci.com/edx/edx-milestones) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-milestones.svg)](https://coveralls.io/r/edx/edx-milestones?branch=master)
+edx-milestones [![Build Status](https://github.com/edx/edx-milestones/workflows/Python%20CI/badge.svg?branch=master)](https://github.com/edx/edx-milestones/actions?query=workflow%3A%22Python+CI%22) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-milestones.svg)](https://coveralls.io/r/edx/edx-milestones?branch=master)
 ===================
 
 edx-milestones (`milestones`) is a Django application which manages significant Course and/or Student events in the Open edX platform.
