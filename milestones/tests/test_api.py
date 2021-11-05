@@ -8,9 +8,8 @@ Milestones API Module Test Cases
 
 from opaque_keys.edx.keys import UsageKey
 
-import milestones.api as api
-import milestones.exceptions as exceptions
-import milestones.tests.utils as utils
+from milestones import api, exceptions
+from milestones.tests import utils
 
 
 class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestCaseBase):

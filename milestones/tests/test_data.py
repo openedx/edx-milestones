@@ -7,10 +7,8 @@ Note: 'Unit Test: ' labels are output to the console during test runs
 """
 
 
-import milestones.api as api
-import milestones.data as data
-import milestones.exceptions as exceptions
-import milestones.tests.utils as utils
+from milestones import api, data, exceptions
+from milestones.tests import utils
 
 
 class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
