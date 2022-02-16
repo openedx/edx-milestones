@@ -13,12 +13,10 @@ consider the process for requiring the Milestone.
 Note the terminology difference at this layer vs. Data -- add/edit/get/remove
 """
 
-from . import data
-from . import exceptions
-from . import validators
-
+from . import data, exceptions, validators
 
 # PRIVATE/INTERNAL FUNCTIONS
+
 
 def _validate_course_key(course_key):
     """ Validation helper """
@@ -219,7 +217,7 @@ def get_course_milestones_fulfillment_paths(course_key, user):
     # Build the set of fulfillment paths for the outstanding milestones
     fulfillment_paths = {}
     for milestone in required_milestones:
-        dict_key = '{}.{}'.format(milestone['namespace'], milestone['name'])
+        dict_key = f"{milestone['namespace']}.{milestone['name']}"
         fulfillment_paths[dict_key] = {}
         milestone_courses = data.fetch_milestone_courses(
             milestone,

@@ -4,13 +4,17 @@
 #
 #    make upgrade
 #
-attrs==21.2.0
+asgiref==3.5.0
+    # via
+    #   -r requirements/base.txt
+    #   django
+attrs==21.4.0
     # via pytest
-click==8.0.1
+click==8.0.3
     # via code-annotations
-code-annotations==1.2.0
+code-annotations==1.3.0
     # via -r requirements/test.in
-coverage==5.5
+coverage[toml]==6.3.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
@@ -18,63 +22,63 @@ coverage==5.5
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.txt
     #   django-model-utils
-django-model-utils==4.1.1
+django-model-utils==4.2.0
     # via -r requirements/base.txt
-edx-opaque-keys==2.2.2
+edx-opaque-keys==2.3.0
     # via -r requirements/base.txt
 iniconfig==1.1.1
     # via pytest
-jinja2==3.0.1
+jinja2==3.0.3
     # via code-annotations
 markupsafe==2.0.1
     # via jinja2
-packaging==21.0
+packaging==21.3
     # via pytest
-pbr==5.6.0
+pbr==5.8.1
     # via
     #   -r requirements/base.txt
     #   stevedore
 pluggy==1.0.0
     # via pytest
-py==1.10.0
+py==1.11.0
     # via pytest
-pymongo==3.12.0
+pymongo==3.12.3
     # via
     #   -r requirements/base.txt
     #   edx-opaque-keys
-pyparsing==2.4.7
+pyparsing==3.0.7
     # via packaging
-pytest==6.2.5
+pytest==7.0.1
     # via
     #   -r requirements/test.in
     #   pytest-cov
     #   pytest-django
-pytest-cov==2.12.1
+pytest-cov==3.0.0
     # via -r requirements/test.in
-pytest-django==4.4.0
+pytest-django==4.5.2
     # via -r requirements/test.in
 python-slugify==5.0.2
     # via code-annotations
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/base.txt
     #   django
-pyyaml==5.4.1
+pyyaml==6.0
     # via code-annotations
 six==1.16.0
     # via -r requirements/base.txt
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via
     #   -r requirements/base.txt
     #   django
-stevedore==3.4.0
+stevedore==3.5.0
     # via
     #   -r requirements/base.txt
     #   code-annotations
     #   edx-opaque-keys
 text-unidecode==1.3
     # via python-slugify
-toml==0.10.2
+tomli==2.0.1
     # via
+    #   coverage
     #   pytest
-    #   pytest-cov

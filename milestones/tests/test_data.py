@@ -94,7 +94,7 @@ class MilestonesDataTestCase(utils.MilestonesTestCaseBase):
 
     def test_fetch_course_content_milestones_null_keys(self):
         """ Unit Test: test_fetch_course_content_milestones_null_keys"""
-        namespace = '{}.entrance_exams'.format(str(self.test_course_key))
+        namespace = f"{str(self.test_course_key)}.entrance_exams"
         milestone1 = api.add_milestone({
             'display_name': 'Test Milestone',
             'name': 'test_milestone',

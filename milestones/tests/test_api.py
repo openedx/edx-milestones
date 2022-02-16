@@ -970,7 +970,7 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
             )
 
         # Set up the key values we'll use to access/assert the response
-        milestone_key_1 = '{}.{}'.format(local_milestone_1['namespace'], local_milestone_1['name'])
+        milestone_key_1 = f"{local_milestone_1['namespace']}.{local_milestone_1['name']}"
         self.assertEqual(len(paths[milestone_key_1]['courses']), 1)
 
     def test_get_course_milestones_fulfillment_paths(self):  # pylint: disable=too-many-statements
@@ -1060,9 +1060,9 @@ class MilestonesApiTestCase(utils.MilestonesTestCaseMixin, utils.MilestonesTestC
             )
 
         # Set up the key values we'll use to access/assert the response
-        milestone_key_1 = '{}.{}'.format(local_milestone_1['namespace'], local_milestone_1['name'])
-        milestone_key_2 = '{}.{}'.format(local_milestone_2['namespace'], local_milestone_2['name'])
-        milestone_key_3 = '{}.{}'.format(local_milestone_3['namespace'], local_milestone_3['name'])
+        milestone_key_1 = f"{local_milestone_1['namespace']}.{local_milestone_1['name']}"
+        milestone_key_2 = f"{local_milestone_2['namespace']}.{local_milestone_2['name']}"
+        milestone_key_3 = f"{local_milestone_3['namespace']}.{local_milestone_3['name']}"
 
         # First round of assertions
         self.assertEqual(len(paths[milestone_key_1]['courses']), 1)

@@ -4,15 +4,19 @@
 #
 #    make upgrade
 #
-astroid==2.7.3
+asgiref==3.5.0
+    # via
+    #   -r requirements/test.txt
+    #   django
+astroid==2.9.3
     # via
     #   pylint
     #   pylint-celery
-attrs==21.2.0
+attrs==21.4.0
     # via
     #   -r requirements/test.txt
     #   pytest
-click==8.0.1
+click==8.0.3
     # via
     #   -r requirements/test.txt
     #   click-log
@@ -20,38 +24,38 @@ click==8.0.1
     #   edx-lint
 click-log==0.3.2
     # via edx-lint
-code-annotations==1.2.0
+code-annotations==1.3.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-coverage==5.5
+coverage[toml]==6.3.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
-django==2.2.24
+django==3.2.12
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/test.txt
     #   django-model-utils
-django-model-utils==4.1.1
+django-model-utils==4.2.0
     # via -r requirements/test.txt
-edx-lint==5.1.0
+edx-lint==5.2.1
     # via -r requirements/quality.in
-edx-opaque-keys==2.2.2
+edx-opaque-keys==2.3.0
     # via -r requirements/test.txt
 iniconfig==1.1.1
     # via
     #   -r requirements/test.txt
     #   pytest
-isort==5.9.3
+isort==5.10.1
     # via
     #   -r requirements/quality.in
     #   pylint
-jinja2==3.0.1
+jinja2==3.0.3
     # via
     #   -r requirements/test.txt
     #   code-annotations
-lazy-object-proxy==1.6.0
+lazy-object-proxy==1.7.1
     # via astroid
 markupsafe==2.0.1
     # via
@@ -59,29 +63,29 @@ markupsafe==2.0.1
     #   jinja2
 mccabe==0.6.1
     # via pylint
-packaging==21.0
+packaging==21.3
     # via
     #   -r requirements/test.txt
     #   pytest
-pbr==5.6.0
+pbr==5.8.1
     # via
     #   -r requirements/test.txt
     #   stevedore
-platformdirs==2.3.0
+platformdirs==2.5.0
     # via pylint
 pluggy==1.0.0
     # via
     #   -r requirements/test.txt
     #   pytest
-py==1.10.0
+py==1.11.0
     # via
     #   -r requirements/test.txt
     #   pytest
-pycodestyle==2.7.0
+pycodestyle==2.8.0
     # via -r requirements/quality.in
 pydocstyle==6.1.1
     # via -r requirements/quality.in
-pylint==2.10.2
+pylint==2.12.2
     # via
     #   edx-lint
     #   pylint-celery
@@ -89,38 +93,38 @@ pylint==2.10.2
     #   pylint-plugin-utils
 pylint-celery==0.3
     # via edx-lint
-pylint-django==2.4.4
+pylint-django==2.5.0
     # via edx-lint
-pylint-plugin-utils==0.6
+pylint-plugin-utils==0.7
     # via
     #   pylint-celery
     #   pylint-django
-pymongo==3.12.0
+pymongo==3.12.3
     # via
     #   -r requirements/test.txt
     #   edx-opaque-keys
-pyparsing==2.4.7
+pyparsing==3.0.7
     # via
     #   -r requirements/test.txt
     #   packaging
-pytest==6.2.5
+pytest==7.0.1
     # via
     #   -r requirements/test.txt
     #   pytest-cov
     #   pytest-django
-pytest-cov==2.12.1
+pytest-cov==3.0.0
     # via -r requirements/test.txt
-pytest-django==4.4.0
+pytest-django==4.5.2
     # via -r requirements/test.txt
 python-slugify==5.0.2
     # via
     #   -r requirements/test.txt
     #   code-annotations
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements/test.txt
     #   django
-pyyaml==5.4.1
+pyyaml==6.0
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -128,13 +132,13 @@ six==1.16.0
     # via
     #   -r requirements/test.txt
     #   edx-lint
-snowballstemmer==2.1.0
+snowballstemmer==2.2.0
     # via pydocstyle
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via
     #   -r requirements/test.txt
     #   django
-stevedore==3.4.0
+stevedore==3.5.0
     # via
     #   -r requirements/test.txt
     #   code-annotations
@@ -144,12 +148,17 @@ text-unidecode==1.3
     #   -r requirements/test.txt
     #   python-slugify
 toml==0.10.2
+    # via pylint
+tomli==2.0.1
     # via
     #   -r requirements/test.txt
-    #   pylint
+    #   coverage
     #   pytest
-    #   pytest-cov
-wrapt==1.12.1
+typing-extensions==4.1.1
+    # via
+    #   astroid
+    #   pylint
+wrapt==1.13.3
     # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
