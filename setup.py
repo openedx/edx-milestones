@@ -2,11 +2,12 @@
 """
 Package metadata for edx-milestones.
 """
-import re
 import os
+import re
 import sys
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 from milestones import __version__ as VERSION
 
 
@@ -53,7 +54,7 @@ def is_requirement(line):
 
 if sys.argv[-1] == 'tag':
     print("Tagging the version on github:")
-    os.system("git tag -a v%s -m 'version %s'" % (VERSION, VERSION))
+    os.system("git tag -a v{VERSION} -m 'version {VERSION}'")
     os.system("git push --tags")
     sys.exit()
 
@@ -74,13 +75,10 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.8',
         'Framework :: Django',
-        'Framework :: Django :: 2.2',
-        'Framework :: Django :: 3.0',
-        'Framework :: Django :: 3.1',
         'Framework :: Django :: 3.2',
+        'Framework :: Django :: 4.0',
     ],
     packages=find_packages(exclude=["tests"]),
     install_requires=load_requirements('requirements/base.in'),

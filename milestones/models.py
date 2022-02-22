@@ -95,7 +95,7 @@ class CourseMilestone(TimeStampedModel):
         unique_together = (("course_id", "milestone"),)
 
     def __str__(self):
-        return "%s:%s:%s" % (self.course_id, self.milestone_relationship_type, self.milestone)
+        return f"{self.course_id}:{self.milestone_relationship_type}:{self.milestone}"
 
 
 class CourseContentMilestone(TimeStampedModel):
@@ -127,7 +127,7 @@ class CourseContentMilestone(TimeStampedModel):
         unique_together = (("course_id", "content_id", "milestone"),)
 
     def __str__(self):
-        return "%s:%s:%s" % (self.content_id, self.milestone_relationship_type, self.milestone)
+        return f"{self.content_id}:{self.milestone_relationship_type}:{self.milestone}"
 
 
 class UserMilestone(TimeStampedModel):
@@ -156,4 +156,4 @@ class UserMilestone(TimeStampedModel):
         unique_together = ("user_id", "milestone")
 
     def __str__(self):
-        return "%s:%s" % (self.user_id, self.milestone)
+        return f"{self.user_id}:{self.milestone}"
