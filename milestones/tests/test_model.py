@@ -19,5 +19,5 @@ class MilestonesTestCaseMixin(TestCase):
         milestone_relation_ship = MilestoneRelationshipType.objects.create(name='milestone_relation_ship')
         milestone = Milestone.objects.create(namespace='milestone')
 
-        self.assertEqual(milestone_relation_ship.__str__(), 'milestone_relation_ship')
-        self.assertEqual(milestone.__str__(), 'milestone')
+        self.assertEqual(str(milestone_relation_ship), 'milestone_relation_ship')
+        self.assertEqual(str(milestone), 'milestone')
