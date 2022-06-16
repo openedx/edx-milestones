@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-asgiref==3.5.0
+asgiref==3.5.2
     # via django
-django==3.2.12
+django==3.2.13
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
@@ -15,11 +15,11 @@ django-model-utils==4.2.0
     # via -r requirements/base.in
 edx-opaque-keys==2.3.0
     # via -r requirements/base.in
-pbr==5.8.1
+pbr==5.9.0
     # via stevedore
 pymongo==3.12.3
     # via edx-opaque-keys
-pytz==2021.3
+pytz==2022.1
     # via django
 six==1.16.0
     # via -r requirements/base.in
