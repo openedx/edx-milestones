@@ -58,7 +58,7 @@ If you're having trouble, we have discussion forums at
 https://discuss.openedx.org where you can connect with others in the community.
 
 Our real-time conversations are on Slack. You can request a [Slack
-invitation](https://openedx-slack-invite.herokuapp.com/), then join our [community Slack team](http://openedx.slack.com/).
+invitation](https://openedx.org/slack), then join our [community Slack team](http://openedx.slack.com/).
 
 For more information about these options, see the [Getting Help](https://openedx.org/getting-help) page.
 
