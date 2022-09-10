@@ -1,4 +1,4 @@
-edx-milestones [![Build Status](https://github.com/edx/edx-milestones/workflows/Python%20CI/badge.svg?branch=master)](https://github.com/edx/edx-milestones/actions?query=workflow%3A%22Python+CI%22) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-milestones.svg)](https://coveralls.io/r/edx/edx-milestones?branch=master)
+edx-milestones [![Build Status](https://github.com/openedx/edx-milestones/workflows/Python%20CI/badge.svg?branch=master)](https://github.com/openedx/edx-milestones/actions?query=workflow%3A%22Python+CI%22) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-milestones.svg)](https://coveralls.io/r/edx/edx-milestones?branch=master)
 ===================
 
 edx-milestones (`milestones`) is a Django application which manages significant Course and/or Student events in the Open edX platform.
@@ -38,7 +38,7 @@ Standalone Testing and Quality Check
 
 Open edX Platform Integration
 -----------------------------
-* This package is included in the [base](https://github.com/edx/edx-platform/blob/master/requirements/edx/base.in#L85) requirements of [edx-platform](https://github.com/edx/edx-platform/)
+* This package is included in the [base](https://github.com/openedx/edx-platform/blob/master/requirements/edx/base.in#L85) requirements of [edx-platform](https://github.com/openedx/edx-platform/)
 * `milestones` is included in the list of installed apps for edx-platform:
 * These documents outline the feature flags required to enable the features that use edx-milestones.
   * [Course Run prerequisites](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/configuration/enable_prerequisites.html#enable-course-prerequisites)
@@ -48,7 +48,7 @@ Open edX Platform Integration
 How to Contribute
 -----------------
 Contributions are very welcome please see our
-[CONTRIBUTING](https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst)
+[CONTRIBUTING](https://github.com/openedx/edx-platform/blob/master/CONTRIBUTING.rst)
 file for more information -- it also contains guidelines for how to maintain
 high code quality, which will make your contribution more likely to be accepted.
 
