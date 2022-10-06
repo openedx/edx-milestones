@@ -65,7 +65,7 @@ setup(
     long_description=open('README.md', encoding='utf-8').read(),  # pylint: disable=consider-using-with
     long_description_content_type="text/markdown",
     author='edX',
-    url='https://github.com/edx/edx-milestones',
+    url='https://github.com/openedx/edx-milestones',
     license='AGPL',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
