@@ -79,6 +79,7 @@ setup(
         'Framework :: Django',
         'Framework :: Django :: 3.2',
         'Framework :: Django :: 4.0',
+        'Framework :: Django :: 4.2',
     ],
     packages=find_packages(exclude=["tests"]),
     install_requires=load_requirements('requirements/base.in'),
