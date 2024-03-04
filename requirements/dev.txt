@@ -8,15 +8,27 @@ asgiref==3.7.2
     # via
     #   -r requirements/quality.txt
     #   django
-astroid==3.0.1
+astroid==3.1.0
     # via
     #   -r requirements/quality.txt
     #   pylint
     #   pylint-celery
-build==1.0.3
+backports-zoneinfo==0.2.1 ; python_version < "3.9"
+    # via
+    #   -r requirements/quality.txt
+    #   django
+build==1.1.1
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
+cachetools==5.3.3
+    # via
+    #   -r requirements/ci.txt
+    #   tox
+chardet==5.2.0
+    # via
+    #   -r requirements/ci.txt
+    #   tox
 click==8.1.7
     # via
     #   -r requirements/pip-tools.txt
@@ -29,44 +41,47 @@ click-log==0.4.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-code-annotations==1.5.0
+code-annotations==1.6.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-coverage[toml]==7.3.2
+colorama==0.4.6
+    # via
+    #   -r requirements/ci.txt
+    #   tox
+coverage[toml]==7.4.3
     # via
     #   -r requirements/quality.txt
-    #   coverage
     #   pytest-cov
-dill==0.3.7
+dill==0.3.8
     # via
     #   -r requirements/quality.txt
     #   pylint
-distlib==0.3.7
+distlib==0.3.8
     # via
     #   -r requirements/ci.txt
     #   virtualenv
-django==3.2.22
+django==4.2.11
     # via
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/quality.txt
     #   django-model-utils
-django-model-utils==4.3.1
+django-model-utils==4.4.0
     # via -r requirements/quality.txt
-edx-lint==5.3.4
+edx-lint==5.3.6
     # via -r requirements/quality.txt
 edx-opaque-keys==2.5.1
     # via -r requirements/quality.txt
-exceptiongroup==1.1.3
+exceptiongroup==1.2.0
     # via
     #   -r requirements/quality.txt
     #   pytest
-filelock==3.12.4
+filelock==3.13.1
     # via
     #   -r requirements/ci.txt
     #   tox
     #   virtualenv
-importlib-metadata==6.8.0
+importlib-metadata==7.0.1
     # via
     #   -r requirements/pip-tools.txt
     #   build
@@ -74,15 +89,15 @@ iniconfig==2.0.0
     # via
     #   -r requirements/quality.txt
     #   pytest
-isort==5.12.0
+isort==5.13.2
     # via
     #   -r requirements/quality.txt
     #   pylint
-jinja2==3.1.2
+jinja2==3.1.3
     # via
     #   -r requirements/quality.txt
     #   code-annotations
-markupsafe==2.1.3
+markupsafe==2.1.5
     # via
     #   -r requirements/quality.txt
     #   jinja2
@@ -96,35 +111,33 @@ packaging==23.2
     #   -r requirements/pip-tools.txt
     #   -r requirements/quality.txt
     #   build
+    #   pyproject-api
     #   pytest
     #   tox
-pbr==5.11.1
+pbr==6.0.0
     # via
     #   -r requirements/quality.txt
     #   stevedore
-pip-tools==7.3.0
+pip-tools==7.4.0
     # via -r requirements/pip-tools.txt
-platformdirs==3.11.0
+platformdirs==4.2.0
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   pylint
+    #   tox
     #   virtualenv
-pluggy==1.3.0
+pluggy==1.4.0
     # via
     #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   pytest
-    #   tox
-py==1.11.0
-    # via
-    #   -r requirements/ci.txt
     #   tox
 pycodestyle==2.11.1
     # via -r requirements/quality.txt
 pydocstyle==6.3.0
     # via -r requirements/quality.txt
-pylint==3.0.2
+pylint==3.1.0
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -135,7 +148,7 @@ pylint-celery==0.3
     # via
     #   -r requirements/quality.txt
     #   edx-lint
-pylint-django==2.5.4
+pylint-django==2.5.5
     # via
     #   -r requirements/quality.txt
     #   edx-lint
@@ -148,37 +161,36 @@ pymongo==3.13.0
     # via
     #   -r requirements/quality.txt
     #   edx-opaque-keys
+pyproject-api==1.6.1
+    # via
+    #   -r requirements/ci.txt
+    #   tox
 pyproject-hooks==1.0.0
     # via
     #   -r requirements/pip-tools.txt
     #   build
-pytest==7.4.2
+    #   pip-tools
+pytest==8.1.0
     # via
     #   -r requirements/quality.txt
     #   pytest-cov
     #   pytest-django
 pytest-cov==4.1.0
     # via -r requirements/quality.txt
-pytest-django==4.5.2
+pytest-django==4.8.0
     # via -r requirements/quality.txt
-python-slugify==8.0.1
+python-slugify==8.0.4
     # via
     #   -r requirements/quality.txt
     #   code-annotations
-pytz==2023.3.post1
-    # via
-    #   -r requirements/quality.txt
-    #   django
 pyyaml==6.0.1
     # via
     #   -r requirements/quality.txt
     #   code-annotations
 six==1.16.0
     # via
-    #   -r requirements/ci.txt
     #   -r requirements/quality.txt
     #   edx-lint
-    #   tox
 snowballstemmer==2.2.0
     # via
     #   -r requirements/quality.txt
@@ -187,7 +199,7 @@ sqlparse==0.4.4
     # via
     #   -r requirements/quality.txt
     #   django
-stevedore==5.1.0
+stevedore==5.2.0
     # via
     #   -r requirements/quality.txt
     #   code-annotations
@@ -205,29 +217,28 @@ tomli==2.0.1
     #   coverage
     #   pip-tools
     #   pylint
+    #   pyproject-api
     #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.12.1
+tomlkit==0.12.4
     # via
     #   -r requirements/quality.txt
     #   pylint
-tox==3.28.0
-    # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
-    #   -r requirements/ci.txt
-typing-extensions==4.8.0
+tox==4.13.0
+    # via -r requirements/ci.txt
+typing-extensions==4.10.0
     # via
     #   -r requirements/quality.txt
     #   asgiref
     #   astroid
     #   edx-opaque-keys
     #   pylint
-virtualenv==20.24.5
+virtualenv==20.25.1
     # via
     #   -r requirements/ci.txt
     #   tox
-wheel==0.41.2
+wheel==0.42.0
     # via
     #   -r requirements/pip-tools.txt
     #   pip-tools
@@ -237,5 +248,12 @@ zipp==3.17.0
     #   importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
-# setuptools
+pip==24.0
+    # via
+    #   -r requirements/pip-tools.txt
+    #   pip-tools
+setuptools==69.1.1
+    # via
+    #   -r requirements/pip-tools.txt
+    #   -r requirements/quality.txt
+    #   pip-tools

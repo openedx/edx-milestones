@@ -5,3 +5,5 @@ Django                                     # Web application framework
 django-model-utils                         # Provides TimeStampedModel abstract base class
 edx-opaque-keys>=0.2.1                     # Create and introspect course and xblock identities
 six                                        # Utilities for supporting Python 2 & 3 in the same codebase
+setuptools
+backports.zoneinfo; python_version<'3.9'
