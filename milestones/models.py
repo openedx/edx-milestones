@@ -19,6 +19,8 @@ class Milestone(TimeStampedModel):
     Milestones can be used to drive functionality and behavior 'behind
     the scenes' in Open edX, such as with the Pre-Requisite Course and
     Course Entrance Exam use cases.
+
+    .. no_pii:
     """
     namespace = models.CharField(max_length=255, db_index=True)
     name = models.CharField(max_length=255, db_index=True)
@@ -52,6 +54,8 @@ class MilestoneRelationshipType(TimeStampedModel):
     This same process of indicating MilestoneRelationshipTypes can be
     applied to other learning objects as well, such as course content
     (XBlocks/modules).
+
+    .. no_pii:
     """
     # name = models.CharField(max_length=255, db_index=True, unique=True)
 
@@ -82,6 +86,8 @@ class CourseMilestone(TimeStampedModel):
     below. In addition, a MilestoneRelationshipType specifies the
     particular sort of relationship that exists between the Course and
     the Milestone, such as "requires".
+
+    .. no_pii:
     """
     course_id = models.CharField(max_length=255, db_index=True)
     milestone = models.ForeignKey(Milestone, db_index=True, on_delete=models.CASCADE)
@@ -107,6 +113,8 @@ class CourseContentMilestone(TimeStampedModel):
     ones. In addition, a MilestoneRelationshipType specifies the
     particular sort of relationship that exists between the Milestone
     and the CourseContent, such as "requires" or "fulfills".
+
+    .. no_pii:
     """
     course_id = models.CharField(max_length=255, db_index=True)
     content_id = models.CharField(max_length=255, db_index=True)
@@ -143,6 +151,8 @@ class UserMilestone(TimeStampedModel):
     The 'source' field was originally introduced as a free-form auditing
     field to document the method, location, or event which triggered the
     collection of the milestone by this user.
+
+    .. no_pii:
     """
     user_id = models.IntegerField(db_index=True)
     milestone = models.ForeignKey(Milestone, db_index=True, on_delete=models.CASCADE)
