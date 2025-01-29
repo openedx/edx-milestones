@@ -225,8 +225,9 @@ pip==24.2
     #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/pip-tools.txt
     #   pip-tools
-setuptools==75.8.0
+setuptools==75.3.0
     # via
+    #   -c requirements/constraints.txt
     #   -r requirements/pip-tools.txt
     #   -r requirements/quality.txt
     #   pip-tools
