@@ -55,3 +55,8 @@ htmlcov/
 acceptance_tests/*.png
 .tox/
 
+# pyenv
+.python-version
+
+# code coverage
+coverage.xml
