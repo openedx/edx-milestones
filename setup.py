@@ -64,7 +64,7 @@ def load_requirements(*requirements_paths):
     re_package_name_base_chars = r"a-zA-Z0-9\-_."  # chars allowed in base package name
     # Two groups: name[maybe,extras], and optionally a constraint
     requirement_line_regex = re.compile(
-        r"([%s]+(?:\[[%s,\s]+\])?)([<>=][^#\s]+)?"
+        r"([%s]+(?:\[[%s,\s]+\])?)([<>=][^#\s]+)?"  #pylint: disable=consider-using-f-string
         % (re_package_name_base_chars, re_package_name_base_chars)
     )
 
@@ -88,7 +88,7 @@ def load_requirements(*requirements_paths):
     # Read requirements from .in files and store the path to any
     # constraint files that are pulled in.
     for path in requirements_paths:
-        with open(path) as reqs:
+        with open(path, encoding='utf-8') as reqs:
             for line in reqs:
                 if is_requirement(line):
                     add_version_constraint_or_raise(line, requirements, True)
@@ -97,7 +97,7 @@ def load_requirements(*requirements_paths):
 
     # process constraint files: add constraints to existing requirements
     for constraint_file in constraint_files:
-        with open(constraint_file) as reader:
+        with open(constraint_file, encoding='utf-8') as reader:
             for line in reader:
                 if is_requirement(line):
                     add_version_constraint_or_raise(line, requirements, False)
