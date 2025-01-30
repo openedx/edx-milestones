@@ -64,7 +64,7 @@ def load_requirements(*requirements_paths):
     re_package_name_base_chars = r"a-zA-Z0-9\-_."  # chars allowed in base package name
     # Two groups: name[maybe,extras], and optionally a constraint
     requirement_line_regex = re.compile(
-        r"([%s]+(?:\[[%s,\s]+\])?)([<>=][^#\s]+)?"  #pylint: disable=consider-using-f-string
+        r"([%s]+(?:\[[%s,\s]+\])?)([<>=][^#\s]+)?"  # pylint: disable=consider-using-f-string
         % (re_package_name_base_chars, re_package_name_base_chars)
     )
 
