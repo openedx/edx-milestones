@@ -74,20 +74,20 @@ def _activate_milestone(milestone, propagate=True):
     """
     Activates an inactivated (soft-deleted) milestone as well as any inactive relationships
     """
-    # We use models.Value(0) to make use of the indexing on the field. MySQL does not
+    # We use models.Value(False) to make use of the indexing on the field. MySQL does not
     # support boolean types natively, and checking for False will cause a table scan.
     if propagate:
         [_activate_record(record) for record
-         in internal.CourseMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(0))]
+         in internal.CourseMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(False))]
 
         [_activate_record(record) for record
-         in internal.CourseContentMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(0))]
+         in internal.CourseContentMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(False))]
 
         [_activate_record(record) for record
-         in internal.UserMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(0))]
+         in internal.UserMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(False))]
 
     [_activate_record(record) for record
-     in internal.Milestone.objects.filter(id=milestone.id, active=models.Value(0))]
+     in internal.Milestone.objects.filter(id=milestone.id, active=models.Value(False))]
 
 
 def _inactivate_milestone(milestone):
@@ -95,16 +95,16 @@ def _inactivate_milestone(milestone):
     Inactivates an activated milestone as well as any active relationships
     """
     [_inactivate_record(record) for record
-     in internal.CourseMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(1))]
+     in internal.CourseMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(True))]
 
     [_inactivate_record(record) for record
-     in internal.CourseContentMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(1))]
+     in internal.CourseContentMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(True))]
 
     [_inactivate_record(record) for record
-     in internal.UserMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(1))]
+     in internal.UserMilestone.objects.filter(milestone_id=milestone.id, active=models.Value(True))]
 
     [_inactivate_record(record) for record
-     in internal.Milestone.objects.filter(id=milestone.id, active=models.Value(1))]
+     in internal.Milestone.objects.filter(id=milestone.id, active=models.Value(True))]
 
 
 # PUBLIC METHODS
@@ -195,12 +195,12 @@ def fetch_milestones(milestone):
     if milestone_obj.id is not None:
         return serializers.serialize_milestones(internal.Milestone.objects.filter(
             id=milestone_obj.id,
-            active=models.Value(1),
+            active=models.Value(True),
         ))
     if milestone_obj.namespace:
         return serializers.serialize_milestones(internal.Milestone.objects.filter(
             namespace=str(milestone_obj.namespace),
-            active=models.Value(1)
+            active=models.Value(True)
         ))
 
     # If we get to this point the caller is attempting to match on an unsupported field
@@ -235,7 +235,7 @@ def create_course_milestone(course_key, relationship, milestone):
             course_id=str(course_key),
             milestone=milestone_obj,
             milestone_relationship_type=relationship_type,
-            active=models.Value(1)
+            active=models.Value(True)
         )
 
 
@@ -248,7 +248,7 @@ def delete_course_milestone(course_key, milestone):
         relationship = internal.CourseMilestone.objects.get(
             course_id=str(course_key),
             milestone=milestone['id'],
-            active=models.Value(1),
+            active=models.Value(True),
         )
         _inactivate_record(relationship)
     except internal.CourseMilestone.DoesNotExist:
@@ -265,7 +265,7 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     """
     queryset = internal.CourseMilestone.objects.filter(
         course_id__in=course_keys,
-        active=models.Value(1)
+        active=models.Value(True)
     ).select_related('milestone')
 
     # if milestones relationship type found then apply the filter
@@ -282,7 +282,7 @@ def fetch_courses_milestones(course_keys, relationship=None, user=None):
     if relationship == relationships['REQUIRES'] and user and user.get('id', 0) > 0:
         queryset = queryset.exclude(
             milestone__usermilestone__in=internal.UserMilestone.objects.filter(user_id=user['id'],
-                                                                               active=models.Value(1))
+                                                                               active=models.Value(True))
         )
 
     return [serializers.serialize_milestone_with_course(milestone) for milestone in queryset]
@@ -332,7 +332,7 @@ def delete_course_content_milestone(course_key, content_key, milestone):
             course_id=str(course_key),
             content_id=str(content_key),
             milestone=milestone['id'],
-            active=models.Value(1),
+            active=models.Value(True),
         )
         _inactivate_record(relationship)
     except internal.CourseContentMilestone.DoesNotExist:
@@ -348,7 +348,7 @@ def fetch_course_content_milestones(content_key=None, course_key=None, relations
     Optionally pass in 'user' to further-filter the set (ex. for retrieving unfulfilled milestones)
     """
     queryset = internal.CourseContentMilestone.objects.filter(
-        active=models.Value(1)
+        active=models.Value(True)
     ).select_related('milestone')
 
     if course_key is not None:
@@ -365,7 +365,7 @@ def fetch_course_content_milestones(content_key=None, course_key=None, relations
         if relationship == 'requires' and user and user.get('id'):
             queryset = queryset.exclude(
                 milestone__usermilestone__in=internal.UserMilestone.objects.filter(user_id=user['id'],
-                                                                                   active=models.Value(1))
+                                                                                   active=models.Value(True))
             )
 
     return [serializers.serialize_milestone_with_course_content(ccm) for ccm in queryset]
@@ -379,7 +379,7 @@ def fetch_milestone_courses(milestone, relationship=None):
     milestone_obj = serializers.deserialize_milestone(milestone)
     queryset = internal.CourseMilestone.objects.filter(
         milestone=milestone_obj,
-        active=models.Value(1)
+        active=models.Value(True)
     ).select_related('milestone')
 
     # if milestones relationship type found then apply the filter
@@ -399,7 +399,7 @@ def fetch_milestone_course_content(milestone, relationship=None):
     milestone_obj = serializers.deserialize_milestone(milestone)
     queryset = internal.CourseContentMilestone.objects.filter(
         milestone=milestone_obj,
-        active=models.Value(1)
+        active=models.Value(True)
     ).select_related('milestone')
 
     # if milestones relationship type found then apply the filter
@@ -429,7 +429,7 @@ def create_user_milestone(user, milestone):
         relationship = internal.UserMilestone.objects.create(
             user_id=user['id'],
             milestone=milestone_obj,
-            active=models.Value(1)
+            active=models.Value(True)
         )
 
 
@@ -442,7 +442,7 @@ def delete_user_milestone(user, milestone):
         record = internal.UserMilestone.objects.get(
             user_id=user['id'],
             milestone=milestone['id'],
-            active=models.Value(1),
+            active=models.Value(True),
         )
         _inactivate_record(record)
     except internal.UserMilestone.DoesNotExist:
@@ -457,7 +457,7 @@ def fetch_user_milestones(user, milestone_data):
     """
     queryset = internal.Milestone.objects.filter(
         usermilestone__user_id=user['id'],
-        usermilestone__active=models.Value(1),
+        usermilestone__active=models.Value(True),
     )
 
     # We don't currently support a 'fetch all' use case -- must supply at least one filter
@@ -480,7 +480,7 @@ def delete_content_references(content_key):
     """
     [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
         content_id=str(content_key),
-        active=models.Value(1)
+        active=models.Value(True)
     )]
 
 
@@ -490,10 +490,10 @@ def delete_course_references(course_key):
     """
     [_inactivate_record(record) for record in internal.CourseMilestone.objects.filter(
         course_id=str(course_key),
-        active=models.Value(1)
+        active=models.Value(True)
     )]
 
     [_inactivate_record(record) for record in internal.CourseContentMilestone.objects.filter(
         course_id=str(course_key),
-        active=models.Value(1)
+        active=models.Value(True)
     )]
