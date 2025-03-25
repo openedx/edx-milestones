@@ -41,8 +41,8 @@ Open edX Platform Integration
 * This package is included in the [base](https://github.com/openedx/edx-platform/blob/master/requirements/edx/base.in#L85) requirements of [edx-platform](https://github.com/openedx/edx-platform/)
 * `milestones` is included in the list of installed apps for edx-platform:
 * These documents outline the feature flags required to enable the features that use edx-milestones.
-  * [Course Run prerequisites](https://edx.readthedocs.io/projects/edx-installing-configuring-and-running/en/latest/configuration/enable_prerequisites.html#enable-course-prerequisites)
-  * [Subsection prerequisites](https://edx-partner-course-staff.readthedocs.io/en/latest/developing_course/controlling_content_visibility.html#prerequisite-course-subsections)
+  * [Course Run prerequisites](https://docs.openedx.org/en/latest/site_ops/install_configure_run_guide/configuration/enable_prerequisites.html)
+  * [Subsection prerequisites](https://docs.openedx.org/en/latest/educators/references/controlling_content_visibility.html)
 
 
 How to Contribute
