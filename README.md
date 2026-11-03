@@ -33,8 +33,9 @@ Usage
 Standalone Testing and Quality Check
 ------------------------------------
 
-        $ make quality
-        $ make test
+        $ make requirements
+        $ uv run make quality
+        $ uv run make test  # installed Django version only; run `uv run tox` for the full matrix
 
 Open edX Platform Integration
 -----------------------------

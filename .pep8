@@ -1,4 +1,4 @@
 [pycodestyle]
 ignore=E501
 max_line_length=120
-exclude=.git,.tox,milestones/migrations,settings
+exclude=.git,.tox,src/milestones/migrations,settings
